@@ -6,6 +6,8 @@ import Drivers from './pages/Drivers';
 import History from './pages/History';
 import DriverTrips from './pages/DriverTrips';
 import DriverHistory from './pages/DriverHistory';
+import Vehicles from './pages/Vehicles';
+import Maintenance from './pages/Maintenance';
 import __Layout from './Layout.jsx';
 
 
@@ -18,6 +20,8 @@ export const PAGES = {
     "History": History,
     "DriverTrips": DriverTrips,
     "DriverHistory": DriverHistory,
+    "Vehicles": Vehicles,
+    "Maintenance": Maintenance,
 }
 
 export const pagesConfig = {

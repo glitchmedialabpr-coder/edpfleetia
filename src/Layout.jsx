@@ -13,7 +13,9 @@ import {
   X,
   LogOut,
   ChevronRight,
-  User
+  User,
+  Car,
+  Wrench
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -46,6 +48,8 @@ export default function Layout({ children, currentPageName }) {
   const adminNavItems = [
     { name: 'Dashboard', page: 'Dashboard', icon: LayoutDashboard },
     { name: 'Viajes', page: 'Trips', icon: Bus },
+    { name: 'Vehículos', page: 'Vehicles', icon: Car },
+    { name: 'Mantenimiento', page: 'Maintenance', icon: Wrench },
     { name: 'Choferes', page: 'Drivers', icon: Users },
     { name: 'Estudiantes', page: 'Students', icon: GraduationCap },
     { name: 'Hospedajes', page: 'Housing', icon: Building2 },

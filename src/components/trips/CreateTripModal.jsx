@@ -27,9 +27,11 @@ export default function CreateTripModal({ open, onClose, onCreated }) {
   const [drivers, setDrivers] = useState([]);
   const [students, setStudents] = useState([]);
   const [housings, setHousings] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
   const [formData, setFormData] = useState({
     driver_id: '',
     driver_name: '',
+    vehicle_id: '',
     scheduled_date: format(new Date(), 'yyyy-MM-dd'),
     scheduled_time: '',
     route_name: '',
@@ -49,14 +51,16 @@ export default function CreateTripModal({ open, onClose, onCreated }) {
 
   const loadData = async () => {
     try {
-      const [driversData, studentsData, housingsData] = await Promise.all([
+      const [driversData, studentsData, housingsData, vehiclesData] = await Promise.all([
         base44.entities.User.filter({ role: 'user' }),
         base44.entities.Student.filter({ status: 'active' }),
-        base44.entities.Housing.list()
+        base44.entities.Housing.list(),
+        base44.entities.Vehicle.filter({ status: 'available' })
       ]);
       setDrivers(driversData);
       setStudents(studentsData);
       setHousings(housingsData);
+      setVehicles(vehiclesData);
     } catch (e) {
       console.error(e);
     }
@@ -104,6 +108,7 @@ export default function CreateTripModal({ open, onClose, onCreated }) {
       setFormData({
         driver_id: '',
         driver_name: '',
+        vehicle_id: '',
         scheduled_date: format(new Date(), 'yyyy-MM-dd'),
         scheduled_time: '',
         route_name: '',
@@ -183,12 +188,29 @@ export default function CreateTripModal({ open, onClose, onCreated }) {
 
               {/* Vehicle */}
               <div className="space-y-2">
-                <Label>Vehículo (opcional)</Label>
-                <Input
-                  value={formData.vehicle_info}
-                  onChange={(e) => setFormData({ ...formData, vehicle_info: e.target.value })}
-                  placeholder="Ej: Van Blanca - ABC-123"
-                />
+                <Label>Vehículo</Label>
+                <Select 
+                  value={formData.vehicle_id} 
+                  onValueChange={(value) => {
+                    const vehicle = vehicles.find(v => v.id === value);
+                    setFormData({ 
+                      ...formData, 
+                      vehicle_id: value,
+                      vehicle_info: vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : ''
+                    });
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar vehículo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {vehicles.map(vehicle => (
+                      <SelectItem key={vehicle.id} value={vehicle.id}>
+                        {vehicle.brand} {vehicle.model} - {vehicle.plate}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Students Selection */}
