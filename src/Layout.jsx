@@ -77,8 +77,12 @@ export default function Layout({ children, currentPageName }) {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-600/30">
-              <Bus className="w-10 h-10 text-white" />
+            <div className="w-32 h-32 mx-auto mb-6">
+              <img 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/303d16ba3_471231367_1006775134815986_8615529326532786364_n.jpg" 
+                alt="EDP University"
+                className="w-full h-full object-contain"
+              />
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">EDP Transport</h1>
             <p className="text-slate-400">Sistema de Gestión de Transporte Estudiantil</p>
@@ -86,7 +90,7 @@ export default function Layout({ children, currentPageName }) {
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/10">
             <Button 
               onClick={() => base44.auth.redirectToLogin()}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-base font-medium rounded-xl"
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white h-12 text-base font-medium rounded-xl"
             >
               Iniciar Sesión
             </Button>
@@ -101,8 +105,12 @@ export default function Layout({ children, currentPageName }) {
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-40 px-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
-            <Bus className="w-5 h-5 text-white" />
+          <div className="w-9 h-9 rounded-lg overflow-hidden">
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/303d16ba3_471231367_1006775134815986_8615529326532786364_n.jpg" 
+              alt="EDP"
+              className="w-full h-full object-cover"
+            />
           </div>
           <span className="font-semibold text-slate-800">EDP Transport</span>
         </div>
@@ -130,8 +138,12 @@ export default function Layout({ children, currentPageName }) {
       )}>
         <div className="p-6 border-b border-slate-100">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20">
-              <Bus className="w-6 h-6 text-white" />
+            <div className="w-11 h-11 rounded-xl overflow-hidden">
+              <img 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/303d16ba3_471231367_1006775134815986_8615529326532786364_n.jpg" 
+                alt="EDP"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <h1 className="font-bold text-slate-800 text-lg">EDP Transport</h1>
@@ -151,7 +163,7 @@ export default function Layout({ children, currentPageName }) {
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
                   isActive 
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" 
+                    ? "bg-teal-600 text-white shadow-lg shadow-teal-600/20" 
                     : "text-slate-600 hover:bg-slate-100"
                 )}
               >

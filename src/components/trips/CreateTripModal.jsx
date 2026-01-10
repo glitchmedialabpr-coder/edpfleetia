@@ -251,7 +251,7 @@ export default function CreateTripModal({ open, onClose, onCreated }) {
             <Button 
               type="submit" 
               disabled={loading || !formData.driver_id}
-              className="flex-1 bg-blue-600 hover:bg-blue-700"
+              className="flex-1 bg-teal-600 hover:bg-teal-700"
             >
               {loading ? (
                 <>

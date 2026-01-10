@@ -104,7 +104,7 @@ export default function Housing() {
         </div>
         <Button 
           onClick={openCreateModal}
-          className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20"
+          className="bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-600/20"
         >
           <Plus className="w-4 h-4 mr-2" />
           Agregar Hospedaje
@@ -140,8 +140,8 @@ export default function Housing() {
           {filteredHousings.map(housing => (
             <Card key={housing.id} className="p-5 border-0 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <Building2 className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
+                  <Building2 className="w-6 h-6 text-teal-600" />
                 </div>
                 <div className="flex gap-1">
                   <Button 
@@ -255,7 +255,7 @@ export default function Housing() {
               <Button type="button" variant="outline" onClick={() => setModalOpen(false)} className="flex-1">
                 Cancelar
               </Button>
-              <Button type="submit" disabled={loading} className="flex-1 bg-blue-600 hover:bg-blue-700">
+              <Button type="submit" disabled={loading} className="flex-1 bg-teal-600 hover:bg-teal-700">
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (editingHousing ? 'Guardar' : 'Agregar')}
               </Button>
             </div>

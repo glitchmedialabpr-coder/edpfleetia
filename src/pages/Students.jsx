@@ -137,7 +137,7 @@ export default function Students() {
         </div>
         <Button 
           onClick={openCreateModal}
-          className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20"
+          className="bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-600/20"
         >
           <Plus className="w-4 h-4 mr-2" />
           Agregar Estudiante
@@ -327,7 +327,7 @@ export default function Students() {
               <Button type="button" variant="outline" onClick={() => setModalOpen(false)} className="flex-1">
                 Cancelar
               </Button>
-              <Button type="submit" disabled={loading} className="flex-1 bg-blue-600 hover:bg-blue-700">
+              <Button type="submit" disabled={loading} className="flex-1 bg-teal-600 hover:bg-teal-700">
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (editingStudent ? 'Guardar' : 'Agregar')}
               </Button>
             </div>

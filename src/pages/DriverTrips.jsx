@@ -80,7 +80,7 @@ export default function DriverTrips() {
           title="En Progreso"
           value={inProgressToday.length}
           icon={Clock}
-          color="blue"
+          color="teal"
         />
         <StatsCard
           title="Completados"
@@ -92,14 +92,14 @@ export default function DriverTrips() {
 
       {/* In Progress Alert */}
       {inProgressToday.length > 0 && (
-        <Card className="p-4 bg-blue-50 border-blue-200">
+        <Card className="p-4 bg-teal-50 border-teal-200">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center animate-pulse">
+            <div className="w-10 h-10 bg-teal-600 rounded-xl flex items-center justify-center animate-pulse">
               <Bus className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="font-semibold text-blue-800">Viaje en Progreso</p>
-              <p className="text-sm text-blue-600">
+              <p className="font-semibold text-teal-800">Viaje en Progreso</p>
+              <p className="text-sm text-teal-600">
                 Tienes {inProgressToday.length} viaje{inProgressToday.length > 1 ? 's' : ''} activo{inProgressToday.length > 1 ? 's' : ''}
               </p>
             </div>

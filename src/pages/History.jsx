@@ -161,8 +161,8 @@ export default function History() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span className="text-xs font-semibold text-blue-600">
+                          <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                            <span className="text-xs font-semibold text-teal-600">
                               {trip.driver_name?.charAt(0) || '?'}
                             </span>
                           </div>

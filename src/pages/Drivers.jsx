@@ -88,7 +88,7 @@ export default function Drivers() {
         </div>
         <Button 
           onClick={() => setModalOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20"
+          className="bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-600/20"
         >
           <Plus className="w-4 h-4 mr-2" />
           Invitar Chofer
@@ -137,8 +137,8 @@ export default function Drivers() {
                     <TableRow key={driver.id} className="hover:bg-slate-50">
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span className="font-semibold text-blue-600">
+                          <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+                            <span className="font-semibold text-teal-600">
                               {driver.full_name?.charAt(0) || driver.email?.charAt(0) || '?'}
                             </span>
                           </div>
@@ -206,7 +206,7 @@ export default function Drivers() {
               <Button type="button" variant="outline" onClick={() => setModalOpen(false)} className="flex-1">
                 Cancelar
               </Button>
-              <Button type="submit" disabled={loading} className="flex-1 bg-blue-600 hover:bg-blue-700">
+              <Button type="submit" disabled={loading} className="flex-1 bg-teal-600 hover:bg-teal-700">
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Enviar Invitación'}
               </Button>
             </div>

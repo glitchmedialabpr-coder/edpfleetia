@@ -75,7 +75,7 @@ export default function DriverHistory() {
           title="Últimos 7 días"
           value={last7Days}
           icon={Calendar}
-          color="blue"
+          color="teal"
         />
         <StatsCard
           title="Estudiantes Transportados"

@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 
 const statusConfig = {
   scheduled: { label: 'Programado', color: 'bg-amber-100 text-amber-700 border-amber-200' },
-  in_progress: { label: 'En Progreso', color: 'bg-blue-100 text-blue-700 border-blue-200' },
+  in_progress: { label: 'En Progreso', color: 'bg-teal-100 text-teal-700 border-teal-200' },
   completed: { label: 'Completado', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
   cancelled: { label: 'Cancelado', color: 'bg-red-100 text-red-700 border-red-200' }
 };
@@ -34,7 +34,7 @@ export default function TripCard({
   return (
     <Card className={cn(
       "overflow-hidden transition-all duration-300 hover:shadow-lg border-0 shadow-sm",
-      trip.status === 'in_progress' && "ring-2 ring-blue-500 ring-offset-2"
+      trip.status === 'in_progress' && "ring-2 ring-teal-500 ring-offset-2"
     )}>
       <div className="p-5">
         {/* Header */}
@@ -58,8 +58,8 @@ export default function TripCard({
         {/* Driver Info */}
         {showDriver && trip.driver_name && (
           <div className="flex items-center gap-2 mb-4 p-3 bg-slate-50 rounded-xl">
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-blue-600" />
+            <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+              <User className="w-4 h-4 text-teal-600" />
             </div>
             <div>
               <p className="text-sm font-medium text-slate-700">{trip.driver_name}</p>
@@ -142,7 +142,7 @@ export default function TripCard({
             {trip.status === 'scheduled' && onStart && (
               <Button 
                 onClick={() => onStart(trip)}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20"
+                className="flex-1 bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-600/20"
               >
                 <Play className="w-4 h-4 mr-2" />
                 Iniciar Viaje

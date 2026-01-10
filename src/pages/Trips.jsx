@@ -60,7 +60,7 @@ export default function Trips() {
         </div>
         <Button 
           onClick={() => setCreateModalOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20"
+          className="bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-600/20"
         >
           <Plus className="w-4 h-4 mr-2" />
           Nuevo Viaje
