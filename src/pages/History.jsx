@@ -27,7 +27,8 @@ import {
   User,
   Users,
   Clock,
-  Filter
+  Filter,
+  Car
 } from 'lucide-react';
 import EmptyState from '../components/common/EmptyState';
 import { format } from 'date-fns';
@@ -135,6 +136,7 @@ export default function History() {
                 <TableRow className="bg-slate-50">
                   <TableHead>Fecha</TableHead>
                   <TableHead>Chofer</TableHead>
+                  <TableHead>Vehículo</TableHead>
                   <TableHead>Ruta</TableHead>
                   <TableHead>Estudiantes</TableHead>
                   <TableHead>Horario</TableHead>
@@ -168,6 +170,9 @@ export default function History() {
                           </div>
                           <span className="text-slate-700">{trip.driver_name || 'Sin asignar'}</span>
                         </div>
+                      </TableCell>
+                      <TableCell className="text-slate-600 text-sm">
+                        {trip.vehicle_info || '-'}
                       </TableCell>
                       <TableCell className="text-slate-600">
                         {trip.route_name || '-'}

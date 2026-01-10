@@ -9,7 +9,8 @@ import {
   Play, 
   CheckCircle2,
   Building2,
-  User
+  User,
+  Car
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -55,16 +56,31 @@ export default function TripCard({
           </Badge>
         </div>
 
-        {/* Driver Info */}
-        {showDriver && trip.driver_name && (
-          <div className="flex items-center gap-2 mb-4 p-3 bg-slate-50 rounded-xl">
-            <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-teal-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-slate-700">{trip.driver_name}</p>
-              <p className="text-xs text-slate-500">Chofer asignado</p>
-            </div>
+        {/* Driver & Vehicle Info */}
+        {showDriver && (trip.driver_name || trip.vehicle_info) && (
+          <div className="mb-4 space-y-2">
+            {trip.driver_name && (
+              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl">
+                <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4 text-teal-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-700">{trip.driver_name}</p>
+                  <p className="text-xs text-slate-500">Chofer</p>
+                </div>
+              </div>
+            )}
+            {trip.vehicle_info && (
+              <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-xl">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Car className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-700">{trip.vehicle_info}</p>
+                  <p className="text-xs text-slate-500">Vehículo</p>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
