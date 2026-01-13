@@ -18,15 +18,22 @@ import {
   Wrench,
   AlertTriangle,
   ClipboardList,
-  ShoppingCart
+  ShoppingCart,
+  Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+
+const ADMIN_PIN = '0573';
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [pin, setPin] = useState('');
+  const [pinError, setPinError] = useState('');
+  const [pinLoading, setPinLoading] = useState(false);
 
   useEffect(() => {
     loadUser();
@@ -44,6 +51,28 @@ export default function Layout({ children, currentPageName }) {
 
   const handleLogout = () => {
     base44.auth.logout();
+  };
+
+  const handlePinLogin = (e) => {
+    e.preventDefault();
+    setPinLoading(true);
+    setPinError('');
+
+    setTimeout(() => {
+      if (pin === ADMIN_PIN) {
+        // Simulate admin login
+        setUser({
+          email: 'admin@edp.edu',
+          full_name: 'Administrador',
+          role: 'admin'
+        });
+        setPin('');
+      } else {
+        setPinError('PIN incorrecto');
+        setPin('');
+      }
+      setPinLoading(false);
+    }, 500);
   };
 
   const isAdmin = user?.role === 'admin';
@@ -99,12 +128,50 @@ export default function Layout({ children, currentPageName }) {
             <h1 className="text-3xl font-bold text-white mb-2">EDP Transport</h1>
             <p className="text-slate-400">Sistema de Gestión de Transporte Estudiantil</p>
           </div>
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/10">
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/10 space-y-4">
+            <form onSubmit={handlePinLogin} className="space-y-4">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-teal-600/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Shield className="w-8 h-8 text-teal-400" />
+                </div>
+                <p className="text-sm text-slate-300 mb-4">Ingresa tu PIN de administrador</p>
+              </div>
+              <Input
+                type="password"
+                inputMode="numeric"
+                maxLength={4}
+                value={pin}
+                onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+                placeholder="••••"
+                className="text-center text-2xl tracking-widest bg-white/10 border-white/20 text-white placeholder:text-slate-500"
+              />
+              {pinError && (
+                <p className="text-sm text-red-400 text-center">{pinError}</p>
+              )}
+              <Button 
+                type="submit"
+                disabled={pinLoading || pin.length !== 4}
+                className="w-full bg-teal-600 hover:bg-teal-700 text-white h-12 text-base font-medium rounded-xl"
+              >
+                {pinLoading ? 'Verificando...' : 'Iniciar Sesión con PIN'}
+              </Button>
+            </form>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/20"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-transparent text-slate-400">o</span>
+              </div>
+            </div>
+
             <Button 
               onClick={() => base44.auth.redirectToLogin()}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white h-12 text-base font-medium rounded-xl"
+              variant="outline"
+              className="w-full bg-white/5 hover:bg-white/10 text-white border-white/20 h-12 text-base font-medium rounded-xl"
             >
-              Iniciar Sesión
+              Iniciar con Google
             </Button>
           </div>
         </div>
