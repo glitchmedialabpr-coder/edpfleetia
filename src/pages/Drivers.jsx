@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import DocumentManager from '../components/documents/DocumentManager';
 import {
   Dialog,
   DialogContent,
@@ -373,7 +375,14 @@ export default function Drivers() {
             </DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          {editingDriver ? (
+            <Tabs defaultValue="info" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="info">Información</TabsTrigger>
+                <TabsTrigger value="documents">Documentos</TabsTrigger>
+              </TabsList>
+              <TabsContent value="info">
+                <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Info */}
             <div>
               <h3 className="font-semibold text-slate-800 mb-3">Información Personal</h3>
@@ -539,11 +548,189 @@ export default function Drivers() {
                     Guardando...
                   </>
                 ) : (
-                  editingDriver ? 'Guardar Cambios' : 'Agregar Chofer'
+                  'Guardar Cambios'
                 )}
               </Button>
             </div>
           </form>
+              </TabsContent>
+              <TabsContent value="documents">
+                <DocumentManager
+                  entityType="driver"
+                  entity={editingDriver}
+                  onUpdate={refetch}
+                  documentTypes={['license', 'certificate', 'medical', 'insurance', 'identification', 'contract', 'training', 'other']}
+                />
+              </TabsContent>
+            </Tabs>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <h3 className="font-semibold text-slate-800 mb-3">Información Personal</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Nombre Completo *</Label>
+                    <Input
+                      value={formData.full_name}
+                      onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                      placeholder="Juan Pérez"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <Input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="chofer@example.com"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Teléfono</Label>
+                    <Input
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="(787) 123-4567"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Fecha de Contratación</Label>
+                    <Input
+                      type="date"
+                      value={formData.hire_date}
+                      onChange={(e) => setFormData({ ...formData, hire_date: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="space-y-2 md:col-span-2">
+                    <Label>Dirección</Label>
+                    <Input
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      placeholder="Calle, Ciudad, PR"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <h3 className="font-semibold text-slate-800 mb-3">Información de Licencia</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label>Número de Licencia *</Label>
+                    <Input
+                      value={formData.license_number}
+                      onChange={(e) => setFormData({ ...formData, license_number: e.target.value })}
+                      placeholder="123456789"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Categoría *</Label>
+                    <Select 
+                      value={formData.license_category} 
+                      onValueChange={(val) => setFormData({ ...formData, license_category: val })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="A">Categoría A</SelectItem>
+                        <SelectItem value="B">Categoría B</SelectItem>
+                        <SelectItem value="C">Categoría C</SelectItem>
+                        <SelectItem value="D">Categoría D</SelectItem>
+                        <SelectItem value="E">Categoría E</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Fecha de Vencimiento</Label>
+                    <Input
+                      type="date"
+                      value={formData.license_expiry}
+                      onChange={(e) => setFormData({ ...formData, license_expiry: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <h3 className="font-semibold text-slate-800 mb-3">Contacto de Emergencia</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Nombre del Contacto</Label>
+                    <Input
+                      value={formData.emergency_contact}
+                      onChange={(e) => setFormData({ ...formData, emergency_contact: e.target.value })}
+                      placeholder="Nombre completo"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Teléfono de Emergencia</Label>
+                    <Input
+                      value={formData.emergency_phone}
+                      onChange={(e) => setFormData({ ...formData, emergency_phone: e.target.value })}
+                      placeholder="(787) 123-4567"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Estado</Label>
+                    <Select 
+                      value={formData.status} 
+                      onValueChange={(val) => setFormData({ ...formData, status: val })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Activo</SelectItem>
+                        <SelectItem value="on_leave">De Licencia</SelectItem>
+                        <SelectItem value="inactive">Inactivo</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2 mt-4">
+                  <Label>Notas Adicionales</Label>
+                  <Textarea
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    placeholder="Notas sobre el chofer..."
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button type="button" variant="outline" onClick={() => setModalOpen(false)} className="flex-1">
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={loading} className="flex-1 bg-teal-600 hover:bg-teal-700">
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Guardando...
+                    </>
+                  ) : (
+                    'Agregar Chofer'
+                  )}
+                </Button>
+              </div>
+            </form>
+          )}
         </DialogContent>
       </Dialog>
     </div>
