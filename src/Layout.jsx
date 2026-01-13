@@ -134,10 +134,10 @@ export default function Layout({ children, currentPageName }) {
               <div className="space-y-3">
                 <Button 
                   onClick={() => setShowPinForm(true)}
-                  className="w-full bg-teal-600 hover:bg-teal-700 text-white h-12 text-base font-medium rounded-xl flex items-center justify-center gap-2"
+                  className="w-full bg-teal-600 hover:bg-teal-700 text-white h-14 text-lg font-bold rounded-xl flex items-center justify-center gap-3 shadow-lg"
                 >
-                  <Shield className="w-5 h-5" />
-                  Iniciar con PIN
+                  <Shield className="w-6 h-6" />
+                  PIN CODE
                 </Button>
                 <Button 
                   onClick={() => base44.auth.redirectToLogin()}
