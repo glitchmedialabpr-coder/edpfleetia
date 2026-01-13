@@ -40,6 +40,14 @@ export default function Layout({ children, currentPageName }) {
   }, []);
 
   const loadUser = async () => {
+    // Check if user logged in with PIN
+    const pinUser = localStorage.getItem('pin_user');
+    if (pinUser) {
+      setUser(JSON.parse(pinUser));
+      setLoading(false);
+      return;
+    }
+    
     try {
       const userData = await base44.auth.me();
       setUser(userData);
@@ -50,7 +58,8 @@ export default function Layout({ children, currentPageName }) {
   };
 
   const handleLogout = () => {
-    base44.auth.logout();
+    localStorage.removeItem('pin_user');
+    setUser(null);
   };
 
   const handlePinLogin = (e) => {
@@ -60,12 +69,13 @@ export default function Layout({ children, currentPageName }) {
 
     setTimeout(() => {
       if (pin === ADMIN_PIN) {
-        // Simulate admin login
-        setUser({
+        const adminUser = {
           email: 'admin@edp.edu',
           full_name: 'Administrador',
           role: 'admin'
-        });
+        };
+        localStorage.setItem('pin_user', JSON.stringify(adminUser));
+        setUser(adminUser);
         setPin('');
       } else {
         setPinError('PIN incorrecto');
