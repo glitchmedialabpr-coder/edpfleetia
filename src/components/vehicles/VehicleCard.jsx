@@ -22,7 +22,7 @@ const statusConfig = {
   inactive: { label: 'Inactivo', color: 'bg-slate-100 text-slate-700 border-slate-200' }
 };
 
-export default function VehicleCard({ vehicle, onEdit, onMaintenance }) {
+export default function VehicleCard({ vehicle, onEdit, onMaintenance, onDocuments }) {
   const status = statusConfig[vehicle.status] || statusConfig.available;
   
   // Check service alerts

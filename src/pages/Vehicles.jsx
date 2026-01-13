@@ -29,12 +29,15 @@ import {
 import VehicleCard from '../components/vehicles/VehicleCard';
 import MaintenanceForm from '../components/maintenance/MaintenanceForm';
 import EmptyState from '../components/common/EmptyState';
+import DocumentManager from '../components/documents/DocumentManager';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { differenceInDays, parseISO } from 'date-fns';
 
 export default function Vehicles() {
   const [modalOpen, setModalOpen] = useState(false);
   const [maintenanceModalOpen, setMaintenanceModalOpen] = useState(false);
+  const [documentsModalOpen, setDocumentsModalOpen] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [search, setSearch] = useState('');
@@ -125,6 +128,11 @@ export default function Vehicles() {
   const openMaintenanceModal = (vehicle) => {
     setSelectedVehicle(vehicle);
     setMaintenanceModalOpen(true);
+  };
+
+  const openDocumentsModal = (vehicle) => {
+    setSelectedVehicle(vehicle);
+    setDocumentsModalOpen(true);
   };
 
   const handleSubmit = async (e) => {
@@ -233,6 +241,7 @@ export default function Vehicles() {
               vehicle={vehicle}
               onEdit={openEditModal}
               onMaintenance={openMaintenanceModal}
+              onDocuments={openDocumentsModal}
             />
           ))}
         </div>
@@ -240,14 +249,21 @@ export default function Vehicles() {
 
       {/* Vehicle Form Modal */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingVehicle ? 'Editar Vehículo' : 'Agregar Vehículo'}
             </DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {editingVehicle ? (
+            <Tabs defaultValue="info" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="info">Información</TabsTrigger>
+                <TabsTrigger value="documents">Documentos</TabsTrigger>
+              </TabsList>
+              <TabsContent value="info">
+                <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Placa *</Label>
@@ -362,6 +378,133 @@ export default function Vehicles() {
               </Button>
             </div>
           </form>
+              </TabsContent>
+              <TabsContent value="documents">
+                <DocumentManager
+                  entityType="vehicle"
+                  entity={editingVehicle}
+                  onUpdate={refetch}
+                  documentTypes={['registration', 'insurance', 'inspection', 'permit', 'warranty', 'manual', 'other']}
+                />
+              </TabsContent>
+            </Tabs>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Placa *</Label>
+                  <Input
+                    value={formData.plate}
+                    onChange={(e) => setFormData({ ...formData, plate: e.target.value })}
+                    placeholder="ABC-123"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Marca *</Label>
+                  <Input
+                    value={formData.brand}
+                    onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+                    placeholder="Toyota, Ford, etc."
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Modelo *</Label>
+                  <Input
+                    value={formData.model}
+                    onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                    placeholder="Corolla, Transit, etc."
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Año</Label>
+                  <Input
+                    type="number"
+                    value={formData.year}
+                    onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Color</Label>
+                  <Input
+                    value={formData.color}
+                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                    placeholder="Blanco, Gris, etc."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Capacidad (pasajeros)</Label>
+                  <Input
+                    type="number"
+                    value={formData.capacity}
+                    onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Kilometraje Actual</Label>
+                  <Input
+                    type="number"
+                    value={formData.current_mileage}
+                    onChange={(e) => setFormData({ ...formData, current_mileage: parseInt(e.target.value) })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Estado</Label>
+                  <Select 
+                    value={formData.status} 
+                    onValueChange={(val) => setFormData({ ...formData, status: val })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="available">Disponible</SelectItem>
+                      <SelectItem value="in_use">En Uso</SelectItem>
+                      <SelectItem value="maintenance">Mantenimiento</SelectItem>
+                      <SelectItem value="inactive">Inactivo</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Vencimiento del Seguro</Label>
+                  <Input
+                    type="date"
+                    value={formData.insurance_expiry}
+                    onChange={(e) => setFormData({ ...formData, insurance_expiry: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Notas</Label>
+                <Textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  placeholder="Notas adicionales sobre el vehículo..."
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button type="button" variant="outline" onClick={() => setModalOpen(false)} className="flex-1">
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={loading} className="flex-1 bg-teal-600 hover:bg-teal-700">
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Agregar'}
+                </Button>
+              </div>
+            </form>
+          )}
         </DialogContent>
       </Dialog>
 

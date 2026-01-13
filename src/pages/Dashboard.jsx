@@ -14,7 +14,9 @@ import {
   CheckCircle2,
   Plus,
   ArrowRight,
-  Calendar
+  Calendar,
+  AlertTriangle,
+  FileText
 } from 'lucide-react';
 import StatsCard from '../components/common/StatsCard';
 import TripCard from '../components/trips/TripCard';
@@ -22,6 +24,7 @@ import CreateTripModal from '../components/trips/CreateTripModal';
 import EmptyState from '../components/common/EmptyState';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
+import { differenceInDays, parseISO } from 'date-fns';
 
 export default function Dashboard() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -39,13 +42,55 @@ export default function Dashboard() {
 
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers'],
-    queryFn: () => base44.entities.User.filter({ role: 'user' })
+    queryFn: () => base44.entities.Driver.list()
+  });
+
+  const { data: vehicles = [] } = useQuery({
+    queryKey: ['vehicles'],
+    queryFn: () => base44.entities.Vehicle.list()
   });
 
   const todayTrips = trips.filter(t => t.scheduled_date === today);
   const scheduledToday = todayTrips.filter(t => t.status === 'scheduled').length;
   const inProgressToday = todayTrips.filter(t => t.status === 'in_progress').length;
   const completedToday = todayTrips.filter(t => t.status === 'completed').length;
+
+  // Check for expiring documents
+  const expiringDocuments = [];
+  
+  drivers.forEach(driver => {
+    if (driver.license_expiry) {
+      const days = differenceInDays(parseISO(driver.license_expiry), new Date());
+      if (days <= 30 && days >= 0) {
+        expiringDocuments.push({ type: 'Licencia', name: driver.full_name, days, entity: 'driver' });
+      }
+    }
+    driver.documents?.forEach(doc => {
+      if (doc.expiry_date) {
+        const days = differenceInDays(parseISO(doc.expiry_date), new Date());
+        if (days <= 30 && days >= 0) {
+          expiringDocuments.push({ type: doc.name, name: driver.full_name, days, entity: 'driver' });
+        }
+      }
+    });
+  });
+
+  vehicles.forEach(vehicle => {
+    if (vehicle.insurance_expiry) {
+      const days = differenceInDays(parseISO(vehicle.insurance_expiry), new Date());
+      if (days <= 30 && days >= 0) {
+        expiringDocuments.push({ type: 'Seguro', name: vehicle.plate, days, entity: 'vehicle' });
+      }
+    }
+    vehicle.documents?.forEach(doc => {
+      if (doc.expiry_date) {
+        const days = differenceInDays(parseISO(doc.expiry_date), new Date());
+        if (days <= 30 && days >= 0) {
+          expiringDocuments.push({ type: doc.name, name: vehicle.plate, days, entity: 'vehicle' });
+        }
+      }
+    });
+  });
 
   const handleStartTrip = async (trip) => {
     const now = format(new Date(), 'HH:mm');
@@ -83,6 +128,32 @@ export default function Dashboard() {
           Nuevo Viaje
         </Button>
       </div>
+
+      {/* Expiring Documents Alert */}
+      {expiringDocuments.length > 0 && (
+        <Card className="p-4 bg-amber-50 border-amber-200">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-amber-800 mb-2">
+                {expiringDocuments.length} documento{expiringDocuments.length > 1 ? 's' : ''} por vencer
+              </h3>
+              <div className="space-y-1">
+                {expiringDocuments.slice(0, 3).map((doc, idx) => (
+                  <p key={idx} className="text-sm text-amber-700">
+                    {doc.type} - {doc.name} (vence en {doc.days}d)
+                  </p>
+                ))}
+                {expiringDocuments.length > 3 && (
+                  <p className="text-sm text-amber-600">
+                    +{expiringDocuments.length - 3} más
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
