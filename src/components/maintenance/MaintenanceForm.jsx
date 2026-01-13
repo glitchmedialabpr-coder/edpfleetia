@@ -46,7 +46,7 @@ export default function MaintenanceForm({ open, onClose, vehicle, onCreated }) {
     service_provider: '',
     description: '',
     cost: 0,
-    invoice_url: '',
+    files: [],
     next_service_date: '',
     next_service_mileage: 0,
     performed_by: '',
@@ -75,17 +75,43 @@ export default function MaintenanceForm({ open, onClose, vehicle, onCreated }) {
   };
 
   const handleFileUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
 
     setUploadingFile(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setFormData({ ...formData, invoice_url: file_url });
+      const uploadPromises = files.map(async (file) => {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        return {
+          url: file_url,
+          name: file.name,
+          notes: '',
+          uploaded_date: format(new Date(), 'yyyy-MM-dd')
+        };
+      });
+      
+      const uploadedFiles = await Promise.all(uploadPromises);
+      setFormData({ 
+        ...formData, 
+        files: [...formData.files, ...uploadedFiles] 
+      });
     } catch (error) {
       console.error('Error uploading file:', error);
     }
     setUploadingFile(false);
+  };
+
+  const handleRemoveFile = (index) => {
+    setFormData({
+      ...formData,
+      files: formData.files.filter((_, i) => i !== index)
+    });
+  };
+
+  const handleFileNotes = (index, notes) => {
+    const updatedFiles = [...formData.files];
+    updatedFiles[index].notes = notes;
+    setFormData({ ...formData, files: updatedFiles });
   };
 
   const handleSubmit = async (e) => {
@@ -125,7 +151,7 @@ export default function MaintenanceForm({ open, onClose, vehicle, onCreated }) {
         service_provider: '',
         description: '',
         cost: 0,
-        invoice_url: '',
+        files: [],
         next_service_date: '',
         next_service_mileage: 0,
         performed_by: '',
@@ -224,49 +250,66 @@ export default function MaintenanceForm({ open, onClose, vehicle, onCreated }) {
             />
           </div>
 
-          {/* Invoice Upload */}
+          {/* Files Upload */}
           <div className="space-y-2">
-            <Label>Factura</Label>
-            {formData.invoice_url ? (
-              <div className="flex items-center gap-2 p-3 border rounded-lg bg-slate-50">
-                <FileText className="w-5 h-5 text-teal-600" />
-                <a 
-                  href={formData.invoice_url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex-1 text-sm text-slate-700 hover:text-teal-600 truncate"
-                >
-                  Factura adjunta
-                </a>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setFormData({ ...formData, invoice_url: '' })}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
+            <Label>Archivos (Facturas, Fotos, Reportes)</Label>
+            <label className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+              <div className="flex items-center justify-center gap-2">
+                {uploadingFile ? (
+                  <Loader2 className="w-5 h-5 text-slate-400 animate-spin" />
+                ) : (
+                  <>
+                    <Upload className="w-5 h-5 text-slate-400" />
+                    <p className="text-sm text-slate-500">Click para subir archivos</p>
+                  </>
+                )}
               </div>
-            ) : (
-              <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                <div className="flex flex-col items-center justify-center">
-                  {uploadingFile ? (
-                    <Loader2 className="w-8 h-8 text-slate-400 animate-spin" />
-                  ) : (
-                    <>
-                      <Upload className="w-8 h-8 text-slate-400 mb-2" />
-                      <p className="text-sm text-slate-500">Click para subir factura</p>
-                    </>
-                  )}
-                </div>
-                <input 
-                  type="file" 
-                  className="hidden" 
-                  onChange={handleFileUpload}
-                  accept="image/*,.pdf"
-                  disabled={uploadingFile}
-                />
-              </label>
+              <input 
+                type="file" 
+                className="hidden" 
+                onChange={handleFileUpload}
+                accept="image/*,.pdf"
+                disabled={uploadingFile}
+                multiple
+              />
+            </label>
+            {formData.files.length > 0 && (
+              <div className="space-y-2 mt-3">
+                {formData.files.map((file, idx) => (
+                  <div key={idx} className="p-3 border rounded-lg bg-slate-50">
+                    <div className="flex items-start gap-3">
+                      <FileText className="w-5 h-5 text-teal-600 mt-1" />
+                      <div className="flex-1 min-w-0">
+                        <a 
+                          href={file.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-sm font-medium text-slate-700 hover:text-teal-600 truncate block"
+                        >
+                          {file.name}
+                        </a>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Subido: {file.uploaded_date}
+                        </p>
+                        <Input
+                          placeholder="Notas sobre este archivo..."
+                          value={file.notes}
+                          onChange={(e) => handleFileNotes(idx, e.target.value)}
+                          className="mt-2 text-sm"
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveFile(idx)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
 
