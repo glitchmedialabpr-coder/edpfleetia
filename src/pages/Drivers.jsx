@@ -39,7 +39,8 @@ import {
   CreditCard,
   AlertTriangle,
   Pencil,
-  Users
+  Users,
+  Badge as BadgeIcon
 } from 'lucide-react';
 import EmptyState from '../components/common/EmptyState';
 import { format, differenceInDays, parseISO } from 'date-fns';
@@ -76,6 +77,11 @@ export default function Drivers() {
   const { data: drivers = [], refetch } = useQuery({
     queryKey: ['drivers'],
     queryFn: () => base44.entities.Driver.list('-created_date')
+  });
+
+  const { data: allAccidents = [] } = useQuery({
+    queryKey: ['accidents'],
+    queryFn: () => base44.entities.VehicleAccident.list()
   });
 
   const filteredDrivers = drivers.filter(d => 
@@ -334,13 +340,20 @@ export default function Drivers() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openEditModal(driver)}
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openEditModal(driver)}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          {allAccidents.filter(a => a.driver_id === driver.id).length > 0 && (
+                            <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 text-xs">
+                              {allAccidents.filter(a => a.driver_id === driver.id).length} accidente{allAccidents.filter(a => a.driver_id === driver.id).length > 1 ? 's' : ''}
+                            </Badge>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   );

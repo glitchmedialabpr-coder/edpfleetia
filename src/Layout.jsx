@@ -15,7 +15,8 @@ import {
   ChevronRight,
   User,
   Car,
-  Wrench
+  Wrench,
+  AlertTriangle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -50,6 +51,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Viajes', page: 'Trips', icon: Bus },
     { name: 'Vehículos', page: 'Vehicles', icon: Car },
     { name: 'Mantenimiento', page: 'Maintenance', icon: Wrench },
+    { name: 'Accidentes', page: 'Accidents', icon: AlertTriangle },
     { name: 'Choferes', page: 'Drivers', icon: Users },
     { name: 'Estudiantes', page: 'Students', icon: GraduationCap },
     { name: 'Hospedajes', page: 'Housing', icon: Building2 },
