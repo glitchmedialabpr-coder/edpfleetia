@@ -68,6 +68,7 @@ export default function Accidents() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
+  const [uploadingDocs, setUploadingDocs] = useState(false);
   const [formData, setFormData] = useState({
     driver_id: '',
     driver_name: '',
@@ -83,6 +84,7 @@ export default function Accidents() {
     insurance_claim_number: '',
     estimated_cost: 0,
     photos_urls: [],
+    documents_urls: [],
     status: 'reported',
     notes: ''
   });
@@ -130,6 +132,7 @@ export default function Accidents() {
       insurance_claim_number: '',
       estimated_cost: 0,
       photos_urls: [],
+      documents_urls: [],
       status: 'reported',
       notes: ''
     });
@@ -153,6 +156,7 @@ export default function Accidents() {
       insurance_claim_number: accident.insurance_claim_number || '',
       estimated_cost: accident.estimated_cost || 0,
       photos_urls: accident.photos_urls || [],
+      documents_urls: accident.documents_urls || [],
       status: accident.status || 'reported',
       notes: accident.notes || ''
     });
@@ -184,6 +188,35 @@ export default function Accidents() {
     const newPhotos = [...(formData.photos_urls || [])];
     newPhotos.splice(index, 1);
     setFormData({ ...formData, photos_urls: newPhotos });
+  };
+
+  const handleDocumentUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setUploadingDocs(true);
+    try {
+      const uploadPromises = files.map(file => 
+        base44.integrations.Core.UploadFile({ file }).then(result => ({
+          name: file.name,
+          url: result.file_url
+        }))
+      );
+      const newDocs = await Promise.all(uploadPromises);
+      setFormData({ 
+        ...formData, 
+        documents_urls: [...(formData.documents_urls || []), ...newDocs] 
+      });
+    } catch (error) {
+      console.error('Error uploading documents:', error);
+    }
+    setUploadingDocs(false);
+  };
+
+  const removeDocument = (index) => {
+    const newDocs = [...(formData.documents_urls || [])];
+    newDocs.splice(index, 1);
+    setFormData({ ...formData, documents_urls: newDocs });
   };
 
   const handleSubmit = async (e) => {
@@ -280,6 +313,7 @@ export default function Accidents() {
                   <TableHead>Ubicación</TableHead>
                   <TableHead>Severidad</TableHead>
                   <TableHead>Costo</TableHead>
+                  <TableHead>Docs</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
@@ -328,6 +362,15 @@ export default function Accidents() {
                         <span className="font-semibold text-red-600">
                           ${accident.estimated_cost?.toFixed(2) || '0.00'}
                         </span>
+                      </TableCell>
+                      <TableCell>
+                        {accident.documents_urls && accident.documents_urls.length > 0 ? (
+                          <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200">
+                            {accident.documents_urls.length} doc{accident.documents_urls.length > 1 ? 's' : ''}
+                          </Badge>
+                        ) : (
+                          <span className="text-slate-400">-</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         <Badge className={status.color}>
@@ -585,6 +628,56 @@ export default function Accidents() {
                   accept="image/*"
                   multiple
                   disabled={uploadingPhotos}
+                />
+              </label>
+            </div>
+
+            {/* Documents */}
+            <div className="space-y-2">
+              <Label>Documentos (Reporte Policial, Seguro, etc.)</Label>
+              {formData.documents_urls && formData.documents_urls.length > 0 && (
+                <div className="space-y-2 mb-3">
+                  {formData.documents_urls.map((doc, index) => (
+                    <div key={index} className="flex items-center gap-2 p-3 border rounded-lg bg-slate-50 group">
+                      <FileText className="w-5 h-5 text-teal-600" />
+                      <a 
+                        href={doc.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex-1 text-sm text-slate-700 hover:text-teal-600 truncate"
+                      >
+                        {doc.name}
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => removeDocument(index)}
+                        className="text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                <div className="flex flex-col items-center justify-center">
+                  {uploadingDocs ? (
+                    <Loader2 className="w-8 h-8 text-slate-400 animate-spin" />
+                  ) : (
+                    <>
+                      <Upload className="w-6 h-6 text-slate-400 mb-1" />
+                      <p className="text-xs text-slate-500">Click para agregar documentos</p>
+                      <p className="text-xs text-slate-400">PDF, imágenes, Word, etc.</p>
+                    </>
+                  )}
+                </div>
+                <input 
+                  type="file" 
+                  className="hidden" 
+                  onChange={handleDocumentUpload}
+                  accept=".pdf,.doc,.docx,image/*"
+                  multiple
+                  disabled={uploadingDocs}
                 />
               </label>
             </div>
