@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { base44 } from '@/api/base44Client';
 import { 
   Bus, 
   LayoutDashboard, 
@@ -39,7 +38,7 @@ export default function Layout({ children, currentPageName }) {
     loadUser();
   }, []);
 
-  const loadUser = async () => {
+  const loadUser = () => {
     // Check if user logged in with PIN
     const pinUser = localStorage.getItem('pin_user');
     if (pinUser) {
