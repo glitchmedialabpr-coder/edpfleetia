@@ -12,6 +12,7 @@ import Vehicles from './pages/Vehicles';
 import DailyReports from './pages/DailyReports';
 import Warnings from './pages/Warnings';
 import FuelRecords from './pages/FuelRecords';
+import Purchases from './pages/Purchases';
 import __Layout from './Layout.jsx';
 
 
@@ -30,6 +31,7 @@ export const PAGES = {
     "DailyReports": DailyReports,
     "Warnings": Warnings,
     "FuelRecords": FuelRecords,
+    "Purchases": Purchases,
 }
 
 export const pagesConfig = {
