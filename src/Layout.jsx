@@ -16,7 +16,8 @@ import {
   User,
   Car,
   Wrench,
-  AlertTriangle
+  AlertTriangle,
+  ClipboardList
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -52,6 +53,8 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Vehículos', page: 'Vehicles', icon: Car },
     { name: 'Mantenimiento', page: 'Maintenance', icon: Wrench },
     { name: 'Accidentes', page: 'Accidents', icon: AlertTriangle },
+    { name: 'Reportes Diarios', page: 'DailyReports', icon: ClipboardList },
+    { name: 'Advertencias', page: 'Warnings', icon: AlertTriangle },
     { name: 'Choferes', page: 'Drivers', icon: Users },
     { name: 'Estudiantes', page: 'Students', icon: GraduationCap },
     { name: 'Hospedajes', page: 'Housing', icon: Building2 },
