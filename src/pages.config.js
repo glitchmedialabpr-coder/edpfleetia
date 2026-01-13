@@ -1,27 +1,27 @@
 import Dashboard from './pages/Dashboard';
-import Trips from './pages/Trips';
-import Students from './pages/Students';
-import Housing from './pages/Housing';
+import DriverHistory from './pages/DriverHistory';
+import DriverTrips from './pages/DriverTrips';
 import Drivers from './pages/Drivers';
 import History from './pages/History';
-import DriverTrips from './pages/DriverTrips';
-import DriverHistory from './pages/DriverHistory';
-import Vehicles from './pages/Vehicles';
+import Housing from './pages/Housing';
 import Maintenance from './pages/Maintenance';
+import Students from './pages/Students';
+import Trips from './pages/Trips';
+import Vehicles from './pages/Vehicles';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Dashboard": Dashboard,
-    "Trips": Trips,
-    "Students": Students,
-    "Housing": Housing,
+    "DriverHistory": DriverHistory,
+    "DriverTrips": DriverTrips,
     "Drivers": Drivers,
     "History": History,
-    "DriverTrips": DriverTrips,
-    "DriverHistory": DriverHistory,
-    "Vehicles": Vehicles,
+    "Housing": Housing,
     "Maintenance": Maintenance,
+    "Students": Students,
+    "Trips": Trips,
+    "Vehicles": Vehicles,
 }
 
 export const pagesConfig = {

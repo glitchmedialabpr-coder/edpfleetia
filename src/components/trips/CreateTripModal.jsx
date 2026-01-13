@@ -52,7 +52,7 @@ export default function CreateTripModal({ open, onClose, onCreated }) {
   const loadData = async () => {
     try {
       const [driversData, studentsData, housingsData, vehiclesData] = await Promise.all([
-        base44.entities.User.filter({ role: 'user' }),
+        base44.entities.Driver.filter({ status: 'active' }),
         base44.entities.Student.filter({ status: 'active' }),
         base44.entities.Housing.list(),
         base44.entities.Vehicle.filter({ status: 'available' })
@@ -146,7 +146,7 @@ export default function CreateTripModal({ open, onClose, onCreated }) {
                     <SelectContent>
                       {drivers.map(driver => (
                         <SelectItem key={driver.id} value={driver.id}>
-                          {driver.full_name || driver.email}
+                          {driver.full_name} {driver.license_number ? `- Lic: ${driver.license_number}` : ''}
                         </SelectItem>
                       ))}
                     </SelectContent>
