@@ -22,12 +22,15 @@ import StatsCard from '../components/common/StatsCard';
 import TripCard from '../components/trips/TripCard';
 import CreateTripModal from '../components/trips/CreateTripModal';
 import EmptyState from '../components/common/EmptyState';
+import PinVerification from '../components/auth/PinVerification';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { differenceInDays, parseISO } from 'date-fns';
 
 export default function Dashboard() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [pinModalOpen, setPinModalOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
   const today = format(new Date(), 'yyyy-MM-dd');
 
   const { data: trips = [], refetch: refetchTrips } = useQuery({
@@ -92,22 +95,35 @@ export default function Dashboard() {
     });
   });
 
-  const handleStartTrip = async (trip) => {
-    const now = format(new Date(), 'HH:mm');
-    await base44.entities.Trip.update(trip.id, {
-      status: 'in_progress',
-      departure_time: now
-    });
-    refetchTrips();
+  const handleStartTrip = (trip) => {
+    setPendingAction({ type: 'start', trip });
+    setPinModalOpen(true);
   };
 
-  const handleCompleteTrip = async (trip) => {
+  const handleCompleteTrip = (trip) => {
+    setPendingAction({ type: 'complete', trip });
+    setPinModalOpen(true);
+  };
+
+  const executeAction = async () => {
+    if (!pendingAction) return;
+
     const now = format(new Date(), 'HH:mm');
-    await base44.entities.Trip.update(trip.id, {
-      status: 'completed',
-      arrival_time: now
-    });
+    
+    if (pendingAction.type === 'start') {
+      await base44.entities.Trip.update(pendingAction.trip.id, {
+        status: 'in_progress',
+        departure_time: now
+      });
+    } else if (pendingAction.type === 'complete') {
+      await base44.entities.Trip.update(pendingAction.trip.id, {
+        status: 'completed',
+        arrival_time: now
+      });
+    }
+
     refetchTrips();
+    setPendingAction(null);
   };
 
   return (
@@ -308,6 +324,16 @@ export default function Dashboard() {
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onCreated={refetchTrips}
+      />
+
+      <PinVerification
+        open={pinModalOpen}
+        onClose={() => {
+          setPinModalOpen(false);
+          setPendingAction(null);
+        }}
+        onVerified={executeAction}
+        title={pendingAction?.type === 'start' ? 'Iniciar Viaje' : 'Completar Viaje'}
       />
     </div>
   );
