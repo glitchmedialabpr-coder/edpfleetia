@@ -43,16 +43,11 @@ export default function Layout({ children, currentPageName }) {
     // Check if user logged in with PIN
     const pinUser = localStorage.getItem('pin_user');
     if (pinUser) {
-      setUser(JSON.parse(pinUser));
-      setLoading(false);
-      return;
-    }
-    
-    try {
-      const userData = await base44.auth.me();
-      setUser(userData);
-    } catch (e) {
-      console.log('User not logged in');
+      try {
+        setUser(JSON.parse(pinUser));
+      } catch (e) {
+        localStorage.removeItem('pin_user');
+      }
     }
     setLoading(false);
   };
