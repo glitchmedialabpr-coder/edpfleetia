@@ -51,6 +51,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Dashboard', page: 'Dashboard', icon: LayoutDashboard },
     { name: 'Viajes', page: 'Trips', icon: Bus },
     { name: 'Vehículos', page: 'Vehicles', icon: Car },
+    { name: 'Combustible', page: 'FuelRecords', icon: Wrench },
     { name: 'Mantenimiento', page: 'Maintenance', icon: Wrench },
     { name: 'Accidentes', page: 'Accidents', icon: AlertTriangle },
     { name: 'Reportes Diarios', page: 'DailyReports', icon: ClipboardList },
