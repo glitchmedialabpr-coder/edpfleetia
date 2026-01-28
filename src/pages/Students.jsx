@@ -34,7 +34,8 @@ import {
   Building2,
   Pencil,
   Trash2,
-  Loader2
+  Loader2,
+  FileSpreadsheet
 } from 'lucide-react';
 import EmptyState from '../components/common/EmptyState';
 
@@ -135,13 +136,22 @@ export default function Students() {
           <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Estudiantes</h1>
           <p className="text-slate-500 mt-1">Gestiona la información de los estudiantes</p>
         </div>
-        <Button 
-          onClick={openCreateModal}
-          className="bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-600/20"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Agregar Estudiante
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={openCreateModal}
+            className="bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-600/20"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Agregar Estudiante
+          </Button>
+          <Button 
+            variant="outline"
+            className="border-teal-600 text-teal-600 hover:bg-teal-50"
+          >
+            <FileSpreadsheet className="w-4 h-4 mr-2" />
+            Añadir Estudiantes Via .csv
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
