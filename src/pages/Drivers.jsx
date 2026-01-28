@@ -42,7 +42,8 @@ import {
   AlertTriangle,
   Pencil,
   Users,
-  Badge as BadgeIcon
+  Badge as BadgeIcon,
+  FileSpreadsheet
 } from 'lucide-react';
 import EmptyState from '../components/common/EmptyState';
 import { format, differenceInDays, parseISO } from 'date-fns';
@@ -174,13 +175,22 @@ export default function Drivers() {
           <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Choferes</h1>
           <p className="text-slate-500 mt-1">Gestiona la información de los choferes</p>
         </div>
-        <Button 
-          onClick={openCreateModal}
-          className="bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-600/20"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Agregar Chofer
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={openCreateModal}
+            className="bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-600/20"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Agregar Chofer
+          </Button>
+          <Button 
+            variant="outline"
+            className="border-teal-600 text-teal-600 hover:bg-teal-50"
+          >
+            <FileSpreadsheet className="w-4 h-4 mr-2" />
+            Añadir Choferes Via .csv
+          </Button>
+        </div>
       </div>
 
       {/* Alert Banner */}
