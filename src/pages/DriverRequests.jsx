@@ -90,6 +90,8 @@ export default function DriverRequests() {
 
     try {
       const vehicle = vehicles.find(v => v.id === selectedVehicle);
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       
       await base44.entities.TripRequest.update(request.id, {
         status: 'accepted',
@@ -97,10 +99,10 @@ export default function DriverRequests() {
         driver_name: user.full_name || user.email,
         vehicle_id: selectedVehicle,
         vehicle_info: vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '',
-        accepted_at: new Date().toISOString()
+        accepted_at: timeString
       });
 
-      toast.success('Viaje aceptado');
+      toast.success('Viaje aceptado - ' + timeString);
       refetchPending();
       refetchMyTrips();
     } catch (error) {
@@ -110,10 +112,14 @@ export default function DriverRequests() {
 
   const handleStartTrip = async (request) => {
     try {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      
       await base44.entities.TripRequest.update(request.id, {
-        status: 'in_progress'
+        status: 'in_progress',
+        started_at: timeString
       });
-      toast.success('Viaje iniciado');
+      toast.success('Viaje iniciado - ' + timeString);
       refetchMyTrips();
     } catch (error) {
       toast.error('Error al iniciar viaje');
@@ -122,11 +128,14 @@ export default function DriverRequests() {
 
   const handleCompleteTrip = async (request) => {
     try {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      
       await base44.entities.TripRequest.update(request.id, {
         status: 'completed',
-        completed_at: new Date().toISOString()
+        completed_at: timeString
       });
-      toast.success('Viaje completado');
+      toast.success('Viaje completado - ' + timeString);
       refetchMyTrips();
     } catch (error) {
       toast.error('Error al completar viaje');
