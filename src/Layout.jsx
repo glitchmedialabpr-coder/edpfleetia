@@ -83,6 +83,7 @@ export default function Layout({ children, currentPageName }) {
 
   const adminNavItems = [
     { name: 'Dashboard', page: 'Dashboard', icon: LayoutDashboard },
+    { name: 'Viajes en Vivo', page: 'LiveTrips', icon: Bus },
     { name: 'Viajes', page: 'Trips', icon: Bus },
     { name: 'Vehículos', page: 'Vehicles', icon: Car },
     { name: 'Combustible', page: 'FuelRecords', icon: Wrench },
@@ -98,11 +99,19 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   const driverNavItems = [
+    { name: 'Solicitudes', page: 'DriverRequests', icon: Bus },
     { name: 'Mis Viajes', page: 'DriverTrips', icon: Bus },
     { name: 'Historial', page: 'DriverHistory', icon: History },
   ];
 
-  const navItems = isAdmin ? adminNavItems : driverNavItems;
+  const passengerNavItems = [
+    { name: 'Mis Viajes', page: 'PassengerTrips', icon: Bus },
+  ];
+
+  const isDriver = user?.role === 'driver';
+  const isPassenger = user?.role === 'user';
+  
+  const navItems = isAdmin ? adminNavItems : isDriver ? driverNavItems : passengerNavItems;
 
   if (loading) {
     return (
@@ -252,7 +261,9 @@ export default function Layout({ children, currentPageName }) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-slate-800 truncate text-sm">{user.full_name || user.email}</p>
-              <p className="text-xs text-slate-500 capitalize">{isAdmin ? 'Administrador' : 'Chofer'}</p>
+              <p className="text-xs text-slate-500 capitalize">
+                {isAdmin ? 'Administrador' : isDriver ? 'Conductor' : 'Pasajero'}
+              </p>
             </div>
           </div>
           <Button 
