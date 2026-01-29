@@ -23,6 +23,7 @@ import TripCard from '../components/trips/TripCard';
 import CreateTripModal from '../components/trips/CreateTripModal';
 import EmptyState from '../components/common/EmptyState';
 import PinVerification from '../components/auth/PinVerification';
+import DriverStats from '../components/dashboard/DriverStats';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { differenceInDays, parseISO } from 'date-fns';
@@ -51,6 +52,11 @@ export default function Dashboard() {
   const { data: vehicles = [] } = useQuery({
     queryKey: ['vehicles'],
     queryFn: () => base44.entities.Vehicle.list()
+  });
+
+  const { data: tripRequests = [] } = useQuery({
+    queryKey: ['trip-requests'],
+    queryFn: () => base44.entities.TripRequest.list('-created_date', 200)
   });
 
   const todayTrips = trips.filter(t => t.scheduled_date === today);
@@ -319,6 +325,9 @@ export default function Dashboard() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Driver Statistics */}
+      <DriverStats drivers={drivers} trips={tripRequests} />
 
       <CreateTripModal
         open={createModalOpen}
