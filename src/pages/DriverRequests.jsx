@@ -4,14 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
@@ -135,38 +127,16 @@ export default function DriverRequests() {
     }
   };
 
-  const [completingTrip, setCompletingTrip] = useState(null);
-  const [completionData, setCompletionData] = useState({
-    destination_town: '',
-    destination_type: '',
-    destination_other: '',
-    passengers_count: 1
-  });
-
-  const handleOpenCompleteModal = (request) => {
-    setCompletingTrip(request);
-    setCompletionData({
-      destination_town: '',
-      destination_type: '',
-      destination_other: '',
-      passengers_count: 1
-    });
-  };
-
-  const handleCompleteTrip = async () => {
-    if (!completingTrip) return;
-    
+  const handleCompleteTrip = async (request) => {
     try {
       const now = new Date();
       const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       
-      await base44.entities.TripRequest.update(completingTrip.id, {
+      await base44.entities.TripRequest.update(request.id, {
         status: 'completed',
-        completed_at: timeString,
-        ...completionData
+        completed_at: timeString
       });
       toast.success('Viaje completado - ' + timeString);
-      setCompletingTrip(null);
       refetchMyTrips();
     } catch (error) {
       toast.error('Error al completar viaje');
@@ -262,7 +232,7 @@ export default function DriverRequests() {
                   )}
                   {trip.status === 'in_progress' && (
                     <Button 
-                      onClick={() => handleOpenCompleteModal(trip)}
+                      onClick={() => handleCompleteTrip(trip)}
                       className="flex-1 bg-green-600 hover:bg-green-700"
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
@@ -353,87 +323,6 @@ export default function DriverRequests() {
           </div>
         )}
       </div>
-
-      {/* Complete Trip Modal */}
-      <Dialog open={!!completingTrip} onOpenChange={() => setCompletingTrip(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Completar Viaje</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Número de Estudiantes *</Label>
-              <Input
-                type="number"
-                min="1"
-                value={completionData.passengers_count}
-                onChange={(e) => setCompletionData({ ...completionData, passengers_count: parseInt(e.target.value) || 1 })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Pueblo/Ciudad *</Label>
-              <Input
-                placeholder="Ej: San Juan, Bayamón..."
-                value={completionData.destination_town}
-                onChange={(e) => setCompletionData({ ...completionData, destination_town: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Tipo de Destino *</Label>
-              <Select 
-                value={completionData.destination_type} 
-                onValueChange={(value) => setCompletionData({ ...completionData, destination_type: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona el tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="hospedaje">Hospedaje</SelectItem>
-                  <SelectItem value="farmacia">Farmacia</SelectItem>
-                  <SelectItem value="hospital">Hospital</SelectItem>
-                  <SelectItem value="supermercado">Supermercado</SelectItem>
-                  <SelectItem value="otros">Otros</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {completionData.destination_type === 'otros' && (
-              <div className="space-y-2">
-                <Label>Especificar Destino *</Label>
-                <Input
-                  placeholder="¿A dónde fue?"
-                  value={completionData.destination_other}
-                  onChange={(e) => setCompletionData({ ...completionData, destination_other: e.target.value })}
-                />
-              </div>
-            )}
-
-            <div className="flex gap-3 pt-4">
-              <Button 
-                variant="outline" 
-                onClick={() => setCompletingTrip(null)}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button 
-                onClick={handleCompleteTrip}
-                className="flex-1 bg-green-600 hover:bg-green-700"
-                disabled={
-                  !completionData.destination_town || 
-                  !completionData.destination_type ||
-                  (completionData.destination_type === 'otros' && !completionData.destination_other)
-                }
-              >
-                <CheckCircle className="w-4 h-4 mr-2" />
-                Completar
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

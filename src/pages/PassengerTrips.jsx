@@ -30,7 +30,11 @@ export default function PassengerTrips() {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     student_name: '',
-    student_id: ''
+    student_id: '',
+    destination_type: '',
+    destination_other: '',
+    destination_town: '',
+    passengers_count: 1
   });
 
   useEffect(() => {
@@ -81,6 +85,10 @@ export default function PassengerTrips() {
         passenger_phone: user.phone || '',
         origin: 'EDP University',
         destination: formData.student_id,
+        destination_type: formData.destination_type,
+        destination_other: formData.destination_other,
+        destination_town: formData.destination_town,
+        passengers_count: formData.passengers_count,
         pickup_time: timeString,
         status: 'pending'
       });
@@ -89,7 +97,11 @@ export default function PassengerTrips() {
       setModalOpen(false);
       setFormData({
         student_name: '',
-        student_id: ''
+        student_id: '',
+        destination_type: '',
+        destination_other: '',
+        destination_town: '',
+        passengers_count: 1
       });
       refetch();
     } catch (error) {
@@ -264,6 +276,59 @@ export default function PassengerTrips() {
               />
             </div>
 
+            <div className="space-y-2">
+              <Label>Número de Estudiantes *</Label>
+              <Input
+                type="number"
+                min="1"
+                value={formData.passengers_count}
+                onChange={(e) => setFormData({ ...formData, passengers_count: parseInt(e.target.value) || 1 })}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Tipo de Destino *</Label>
+              <Select 
+                value={formData.destination_type} 
+                onValueChange={(value) => setFormData({ ...formData, destination_type: value })}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="¿A dónde vas?" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="hospedaje">Hospedaje</SelectItem>
+                  <SelectItem value="farmacia">Farmacia</SelectItem>
+                  <SelectItem value="hospital">Hospital</SelectItem>
+                  <SelectItem value="supermercado">Supermercado</SelectItem>
+                  <SelectItem value="otros">Otros</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {formData.destination_type === 'otros' && (
+              <div className="space-y-2">
+                <Label>Especificar Destino *</Label>
+                <Input
+                  placeholder="¿A dónde vas?"
+                  value={formData.destination_other}
+                  onChange={(e) => setFormData({ ...formData, destination_other: e.target.value })}
+                  required
+                />
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label>Pueblo/Ciudad *</Label>
+              <Input
+                placeholder="Ej: San Juan, Bayamón..."
+                value={formData.destination_town}
+                onChange={(e) => setFormData({ ...formData, destination_town: e.target.value })}
+                required
+              />
+            </div>
+
             <div className="p-3 bg-slate-50 rounded-lg text-sm text-slate-600">
               <p className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
@@ -275,7 +340,17 @@ export default function PassengerTrips() {
               <Button type="button" variant="outline" onClick={() => setModalOpen(false)} className="flex-1">
                 Cancelar
               </Button>
-              <Button type="submit" className="flex-1 bg-teal-600 hover:bg-teal-700">
+              <Button 
+                type="submit" 
+                className="flex-1 bg-teal-600 hover:bg-teal-700"
+                disabled={
+                  !formData.student_name ||
+                  !formData.student_id ||
+                  !formData.destination_type ||
+                  !formData.destination_town ||
+                  (formData.destination_type === 'otros' && !formData.destination_other)
+                }
+              >
                 Enviar Solicitud
               </Button>
             </div>
