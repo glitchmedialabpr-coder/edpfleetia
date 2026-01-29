@@ -56,12 +56,12 @@ export default function Layout({ children, currentPageName }) {
     setUser(null);
   };
 
-  const handlePinLogin = (e) => {
+  const handlePinLogin = async (e) => {
     e.preventDefault();
     setPinLoading(true);
     setPinError('');
 
-    setTimeout(() => {
+    try {
       if (pin === ADMIN_PIN) {
         const adminUser = {
           email: 'admin@edp.edu',
@@ -72,11 +72,36 @@ export default function Layout({ children, currentPageName }) {
         setUser(adminUser);
         setPin('');
       } else {
-        setPinError('PIN incorrecto');
-        setPin('');
+        // Buscar estudiante por student_id (PIN)
+        const { base44 } = await import('./api/base44Client');
+        const students = await base44.entities.Student.filter({ student_id: pin });
+        
+        if (students && students.length > 0) {
+          const student = students[0];
+          const studentUser = {
+            id: student.id,
+            email: student.email || `student_${student.student_id}@edp.edu`,
+            full_name: student.full_name,
+            phone: student.phone,
+            role: 'user',
+            user_type: 'passenger',
+            student_id: student.student_id,
+            housing_name: student.housing_name
+          };
+          localStorage.setItem('pin_user', JSON.stringify(studentUser));
+          setUser(studentUser);
+          setPin('');
+        } else {
+          setPinError('ID de estudiante no encontrado');
+          setPin('');
+        }
       }
       setPinLoading(false);
-    }, 500);
+    } catch (error) {
+      setPinError('Error al verificar ID');
+      setPin('');
+      setPinLoading(false);
+    }
   };
 
   const isAdmin = user?.role === 'admin';
@@ -146,16 +171,14 @@ export default function Layout({ children, currentPageName }) {
                 <div className="w-16 h-16 bg-teal-600/20 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Shield className="w-8 h-8 text-teal-400" />
                 </div>
-                <p className="text-sm text-slate-300 mb-4">Ingresa tu PIN de administrador</p>
+                <p className="text-sm text-slate-300 mb-4">Ingresa tu PIN (admin) o ID de estudiante</p>
               </div>
               <Input
-                type="password"
-                inputMode="numeric"
-                maxLength={4}
+                type="text"
                 value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                placeholder="••••"
-                className="text-center text-2xl tracking-widest bg-white/10 border-white/20 text-white placeholder:text-slate-500"
+                onChange={(e) => setPin(e.target.value)}
+                placeholder="PIN o ID estudiante"
+                className="text-center text-lg bg-white/10 border-white/20 text-white placeholder:text-slate-500"
                 autoFocus
               />
               {pinError && (
@@ -163,7 +186,7 @@ export default function Layout({ children, currentPageName }) {
               )}
               <Button 
                 type="submit"
-                disabled={pinLoading || pin.length !== 4}
+                disabled={pinLoading || !pin}
                 className="w-full bg-teal-600 hover:bg-teal-700 text-white h-12 rounded-xl"
               >
                 {pinLoading ? 'Verificando...' : 'Entrar'}

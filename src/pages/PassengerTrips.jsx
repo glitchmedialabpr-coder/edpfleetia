@@ -78,10 +78,10 @@ export default function PassengerTrips() {
       
       await base44.entities.TripRequest.create({
         passenger_id: user.id,
-        passenger_name: user.full_name || user.email,
+        passenger_name: user.full_name,
         passenger_phone: user.phone || '',
         origin: 'EDP University',
-        destination: user.id,
+        destination: user.student_id || user.id,
         destination_type: formData.destination_type,
         destination_other: formData.destination_other,
         destination_town: formData.destination_town,
