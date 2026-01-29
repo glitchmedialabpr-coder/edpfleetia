@@ -80,6 +80,8 @@ export default function Layout({ children, currentPageName }) {
   };
 
   const isAdmin = user?.role === 'admin';
+  const isDriver = user?.user_type === 'driver';
+  const isPassenger = !isAdmin && !isDriver;
 
   const adminNavItems = [
     { name: 'Dashboard', page: 'Dashboard', icon: LayoutDashboard },
@@ -107,9 +109,6 @@ export default function Layout({ children, currentPageName }) {
   const passengerNavItems = [
     { name: 'Mis Viajes', page: 'PassengerTrips', icon: Bus },
   ];
-
-  const isDriver = user?.role === 'driver';
-  const isPassenger = user?.role === 'user';
   
   const navItems = isAdmin ? adminNavItems : isDriver ? driverNavItems : passengerNavItems;
 
