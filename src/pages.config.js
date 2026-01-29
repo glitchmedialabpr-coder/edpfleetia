@@ -51,20 +51,20 @@ import Accidents from './pages/Accidents';
 import DailyReports from './pages/DailyReports';
 import Dashboard from './pages/Dashboard';
 import DriverHistory from './pages/DriverHistory';
+import DriverRequests from './pages/DriverRequests';
 import DriverTrips from './pages/DriverTrips';
 import Drivers from './pages/Drivers';
 import FuelRecords from './pages/FuelRecords';
 import History from './pages/History';
 import Housing from './pages/Housing';
+import LiveTrips from './pages/LiveTrips';
 import Maintenance from './pages/Maintenance';
+import PassengerTrips from './pages/PassengerTrips';
 import Purchases from './pages/Purchases';
 import Students from './pages/Students';
 import Trips from './pages/Trips';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
-import PassengerTrips from './pages/PassengerTrips';
-import DriverRequests from './pages/DriverRequests';
-import LiveTrips from './pages/LiveTrips';
 import __Layout from './Layout.jsx';
 
 
@@ -73,20 +73,20 @@ export const PAGES = {
     "DailyReports": DailyReports,
     "Dashboard": Dashboard,
     "DriverHistory": DriverHistory,
+    "DriverRequests": DriverRequests,
     "DriverTrips": DriverTrips,
     "Drivers": Drivers,
     "FuelRecords": FuelRecords,
     "History": History,
     "Housing": Housing,
+    "LiveTrips": LiveTrips,
     "Maintenance": Maintenance,
+    "PassengerTrips": PassengerTrips,
     "Purchases": Purchases,
     "Students": Students,
     "Trips": Trips,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
-    "PassengerTrips": PassengerTrips,
-    "DriverRequests": DriverRequests,
-    "LiveTrips": LiveTrips,
 }
 
 export const pagesConfig = {

@@ -29,12 +29,9 @@ export default function PassengerTrips() {
   const [modalOpen, setModalOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
-    student_name: '',
-    student_id: '',
     destination_type: '',
     destination_other: '',
-    destination_town: '',
-    passengers_count: 1
+    destination_town: ''
   });
 
   useEffect(() => {
@@ -81,14 +78,14 @@ export default function PassengerTrips() {
       
       await base44.entities.TripRequest.create({
         passenger_id: user.id,
-        passenger_name: formData.student_name,
+        passenger_name: user.full_name || user.email,
         passenger_phone: user.phone || '',
         origin: 'EDP University',
-        destination: formData.student_id,
+        destination: user.id,
         destination_type: formData.destination_type,
         destination_other: formData.destination_other,
         destination_town: formData.destination_town,
-        passengers_count: formData.passengers_count,
+        passengers_count: 1,
         pickup_time: timeString,
         status: 'pending'
       });
@@ -96,12 +93,9 @@ export default function PassengerTrips() {
       toast.success('Solicitud enviada');
       setModalOpen(false);
       setFormData({
-        student_name: '',
-        student_id: '',
         destination_type: '',
         destination_other: '',
-        destination_town: '',
-        passengers_count: 1
+        destination_town: ''
       });
       refetch();
     } catch (error) {
@@ -257,37 +251,6 @@ export default function PassengerTrips() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Nombre del Estudiante *</Label>
-              <Input
-                value={formData.student_name}
-                onChange={(e) => setFormData({ ...formData, student_name: e.target.value })}
-                placeholder="Nombre completo"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>ID del Estudiante *</Label>
-              <Input
-                value={formData.student_id}
-                onChange={(e) => setFormData({ ...formData, student_id: e.target.value })}
-                placeholder="ID del estudiante"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Número de Estudiantes *</Label>
-              <Input
-                type="number"
-                min="1"
-                value={formData.passengers_count}
-                onChange={(e) => setFormData({ ...formData, passengers_count: parseInt(e.target.value) || 1 })}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label>Tipo de Destino *</Label>
               <Select 
                 value={formData.destination_type} 
@@ -344,8 +307,6 @@ export default function PassengerTrips() {
                 type="submit" 
                 className="flex-1 bg-teal-600 hover:bg-teal-700"
                 disabled={
-                  !formData.student_name ||
-                  !formData.student_id ||
                   !formData.destination_type ||
                   !formData.destination_town ||
                   (formData.destination_type === 'otros' && !formData.destination_other)
