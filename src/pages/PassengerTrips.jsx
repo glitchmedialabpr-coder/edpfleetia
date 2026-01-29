@@ -14,6 +14,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { MapPin, Clock, Plus, Car, User, Phone, Navigation } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { toast } from 'sonner';
 import EmptyState from '../components/common/EmptyState';
 
