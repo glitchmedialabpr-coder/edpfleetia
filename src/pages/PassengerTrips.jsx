@@ -29,11 +29,8 @@ export default function PassengerTrips() {
   const [modalOpen, setModalOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
-    origin: '',
-    destination: '',
-    pickup_time: '',
-    passengers_count: 1,
-    notes: ''
+    student_name: '',
+    student_id: ''
   });
 
   useEffect(() => {
@@ -75,22 +72,24 @@ export default function PassengerTrips() {
     if (!user) return;
 
     try {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      
       await base44.entities.TripRequest.create({
-        ...formData,
         passenger_id: user.id,
-        passenger_name: user.full_name || user.email,
+        passenger_name: formData.student_name,
         passenger_phone: user.phone || '',
+        origin: 'EDP University',
+        destination: formData.student_id,
+        pickup_time: timeString,
         status: 'pending'
       });
 
       toast.success('Solicitud enviada');
       setModalOpen(false);
       setFormData({
-        origin: '',
-        destination: '',
-        pickup_time: '',
-        passengers_count: 1,
-        notes: ''
+        student_name: '',
+        student_id: ''
       });
       refetch();
     } catch (error) {
@@ -246,52 +245,30 @@ export default function PassengerTrips() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Punto de Origen *</Label>
+              <Label>Nombre del Estudiante *</Label>
               <Input
-                value={formData.origin}
-                onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-                placeholder="Ej: Mi casa, Universidad..."
+                value={formData.student_name}
+                onChange={(e) => setFormData({ ...formData, student_name: e.target.value })}
+                placeholder="Nombre completo"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Punto de Destino *</Label>
+              <Label>ID del Estudiante *</Label>
               <Input
-                value={formData.destination}
-                onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-                placeholder="Ej: Centro comercial, Hospital..."
+                value={formData.student_id}
+                onChange={(e) => setFormData({ ...formData, student_id: e.target.value })}
+                placeholder="ID del estudiante"
                 required
               />
             </div>
 
-            <div className="space-y-2">
-              <Label>Hora de Recogida</Label>
-              <Input
-                type="time"
-                value={formData.pickup_time}
-                onChange={(e) => setFormData({ ...formData, pickup_time: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Número de Pasajeros</Label>
-              <Input
-                type="number"
-                min="1"
-                value={formData.passengers_count}
-                onChange={(e) => setFormData({ ...formData, passengers_count: parseInt(e.target.value) })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Notas Adicionales</Label>
-              <Textarea
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="Información adicional..."
-                rows={3}
-              />
+            <div className="p-3 bg-slate-50 rounded-lg text-sm text-slate-600">
+              <p className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                La hora se registrará automáticamente al enviar
+              </p>
             </div>
 
             <div className="flex gap-3 pt-4">
