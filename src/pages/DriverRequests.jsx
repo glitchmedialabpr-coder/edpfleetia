@@ -35,6 +35,12 @@ const statusConfig = {
 export default function DriverRequests() {
   const [user, setUser] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState('');
+  const [notificationSound] = useState(() => {
+    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUKnl87RiGwU7k9n0yHInBSh+zPLaizsKFF+28ud2URwMTKXh8bllHAU2jdTxy3ksiCV8zPDbjzsKEly18O2jUBsMSqPf8r1nHwU6kdnzxnErBSh+zvPaiTwKEV619Oy+aCAGL47V8tWTQwsVYLXp7JhPEAxMovTyvmsiBTaO1vLNdSYEJ4HO8tiJOAgZaLzu551NEQxPqOT0s2IcBTiQ2PPLeSgEKH7N8tmJPAoUXrXy77hVGApFnuHytW0hBSuCz/PaiDUHGWi78OWcTQ0OUKjk87NhHAU7k9jzy3krBCiAz/PaiD0GEly08uq5Vx0LRZP0yHMnBSh9zfDcjD4HEly18uq5V+0LPJrc8shzJwUng87y2Ik3CBpouPDmnk0PDlCo5fKzYhwFOpPZ88t5KwQogc7y2Yk3CBlopfHvnU0QDFGr5PK0YRsFO5TZ88p5LAUpgdDx14c5CBdltO3qnFENDlGp5fO0YRoFPJTY88p5TAUAAAAAAAA=');
+    audio.volume = 0.5;
+    return audio;
+  });
+  const [hasNewRequest, setHasNewRequest] = useState(false);
 
   useEffect(() => {
     loadUser();
@@ -70,16 +76,38 @@ export default function DriverRequests() {
 
   useEffect(() => {
     const unsubscribe = base44.entities.TripRequest.subscribe((event) => {
-      if (event.type === 'create' || event.type === 'update') {
+      if (event.type === 'create' && event.data?.status === 'pending' && selectedVehicle) {
+        // New trip request - notify driver
+        notificationSound.play().catch(e => console.log('Audio play failed:', e));
+        setHasNewRequest(true);
+        setTimeout(() => setHasNewRequest(false), 3000);
+        toast.success('🔔 Nueva solicitud de viaje disponible!', {
+          duration: 5000,
+        });
+        refetchPending();
+      } else if (event.type === 'update') {
         refetchPending();
         if (user?.id) {
-          refetchMyTrips();
+          // Check if it's my trip and status changed
+          if (event.data?.driver_id === user.id) {
+            const oldStatus = event.old_data?.status;
+            const newStatus = event.data?.status;
+            
+            if (oldStatus !== newStatus) {
+              if (newStatus === 'in_progress') {
+                toast.info('🚗 Viaje iniciado');
+              } else if (newStatus === 'completed') {
+                toast.success('✅ Viaje completado');
+              }
+            }
+            refetchMyTrips();
+          }
         }
       }
     });
 
     return unsubscribe;
-  }, [refetchPending, refetchMyTrips, user?.id]);
+  }, [refetchPending, refetchMyTrips, user?.id, selectedVehicle, notificationSound]);
 
   const handleAccept = async (request) => {
     if (!selectedVehicle) {
@@ -248,7 +276,14 @@ export default function DriverRequests() {
 
       {/* Available Requests */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-slate-800">Solicitudes Disponibles</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-semibold text-slate-800">Solicitudes Disponibles</h2>
+          {hasNewRequest && (
+            <Badge className="bg-red-500 text-white animate-pulse">
+              ¡Nuevo!
+            </Badge>
+          )}
+        </div>
         {!selectedVehicle && (
           <Card className="p-4 bg-amber-50 border-amber-200">
             <div className="flex items-center gap-2">
