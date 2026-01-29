@@ -44,7 +44,14 @@ export default function DriverRequests() {
 
   useEffect(() => {
     loadUser();
+    requestNotificationPermission();
   }, []);
+
+  const requestNotificationPermission = async () => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      await Notification.requestPermission();
+    }
+  };
 
   const loadUser = async () => {
     try {
@@ -81,6 +88,17 @@ export default function DriverRequests() {
         notificationSound.play().catch(e => console.log('Audio play failed:', e));
         setHasNewRequest(true);
         setTimeout(() => setHasNewRequest(false), 3000);
+        
+        // Browser notification
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('🚗 Nueva Solicitud de Viaje', {
+            body: `${event.data.passenger_name} necesita ir a ${event.data.destination}`,
+            icon: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/303d16ba3_471231367_1006775134815986_8615529326532786364_n.jpg',
+            vibrate: [200, 100, 200],
+            requireInteraction: true
+          });
+        }
+        
         toast.success('🔔 Nueva solicitud de viaje disponible!', {
           duration: 5000,
         });
@@ -131,11 +149,50 @@ export default function DriverRequests() {
         accepted_at: timeString
       });
 
+      // Save response history
+      await base44.entities.TripRequestResponse.create({
+        trip_request_id: request.id,
+        driver_id: user.id,
+        driver_name: user.full_name || user.email,
+        response: 'accepted',
+        response_time: timeString,
+        vehicle_id: selectedVehicle,
+        vehicle_info: vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '',
+        passenger_name: request.passenger_name,
+        destination: request.destination
+      });
+
       toast.success('Viaje aceptado - ' + timeString);
       refetchPending();
       refetchMyTrips();
     } catch (error) {
       toast.error('Error al aceptar viaje');
+    }
+  };
+
+  const handleReject = async (request) => {
+    if (!user) return;
+
+    try {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      
+      // Save rejection in history
+      await base44.entities.TripRequestResponse.create({
+        trip_request_id: request.id,
+        driver_id: user.id,
+        driver_name: user.full_name || user.email,
+        response: 'rejected',
+        response_time: timeString,
+        vehicle_id: selectedVehicle,
+        passenger_name: request.passenger_name,
+        destination: request.destination
+      });
+
+      toast.info('Viaje rechazado');
+      refetchPending();
+    } catch (error) {
+      toast.error('Error al rechazar viaje');
     }
   };
 
@@ -345,14 +402,23 @@ export default function DriverRequests() {
                   </div>
                 </div>
 
-                <Button 
-                  onClick={() => handleAccept(request)}
-                  disabled={!selectedVehicle}
-                  className="w-full bg-teal-600 hover:bg-teal-700"
-                >
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Aceptar Viaje
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => handleReject(request)}
+                    variant="outline"
+                    className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
+                  >
+                    Rechazar
+                  </Button>
+                  <Button 
+                    onClick={() => handleAccept(request)}
+                    disabled={!selectedVehicle}
+                    className="flex-1 bg-teal-600 hover:bg-teal-700"
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Aceptar
+                  </Button>
+                </div>
               </Card>
             ))}
           </div>

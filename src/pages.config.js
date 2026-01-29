@@ -65,6 +65,7 @@ import Students from './pages/Students';
 import Trips from './pages/Trips';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
+import ResponseHistory from './pages/ResponseHistory';
 import __Layout from './Layout.jsx';
 
 
@@ -87,6 +88,7 @@ export const PAGES = {
     "Trips": Trips,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
+    "ResponseHistory": ResponseHistory,
 }
 
 export const pagesConfig = {
