@@ -52,6 +52,30 @@ export default function DriverRequests() {
     requestNotificationPermission();
   }, []);
 
+  useEffect(() => {
+    if (user?.driver_id) {
+      const savedVehicle = localStorage.getItem(`driver_vehicle_${user.driver_id}`);
+      if (savedVehicle) {
+        try {
+          const { vehicleId, timestamp } = JSON.parse(savedVehicle);
+          const now = Date.now();
+          const elapsed = now - timestamp;
+          const twentyFourHours = 24 * 60 * 60 * 1000;
+          
+          // Si no pasaron 24 horas, preseleccionar el vehículo
+          if (elapsed < twentyFourHours) {
+            setSelectedVehicle(vehicleId);
+          } else {
+            // Si pasaron 24 horas, limpiar
+            localStorage.removeItem(`driver_vehicle_${user.driver_id}`);
+          }
+        } catch (e) {
+          localStorage.removeItem(`driver_vehicle_${user.driver_id}`);
+        }
+      }
+    }
+  }, [user?.driver_id]);
+
   const requestNotificationPermission = async () => {
     if ('Notification' in window && Notification.permission === 'default') {
       await Notification.requestPermission();
