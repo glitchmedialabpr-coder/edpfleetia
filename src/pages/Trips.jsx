@@ -19,17 +19,32 @@ import {
   MapPin,
   Clock,
   CheckCircle2,
-  Users
+  Users,
+  Pencil,
+  Trash2
 } from 'lucide-react';
 import TripCard from '../components/trips/TripCard';
 import CreateTripModal from '../components/trips/CreateTripModal';
+import EditTripModal from '../components/trips/EditTripModal';
 import EmptyState from '../components/common/EmptyState';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function Trips() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [user, setUser] = useState(null);
   const [selectedTrip, setSelectedTrip] = useState(null);
+  const [editTrip, setEditTrip] = useState(null);
+  const [deleteTrip, setDeleteTrip] = useState(null);
 
   React.useEffect(() => {
     const loadUser = async () => {
@@ -159,6 +174,33 @@ export default function Trips() {
         onCreated={refetch}
       />
 
+      <EditTripModal
+        trip={editTrip}
+        open={!!editTrip}
+        onClose={() => setEditTrip(null)}
+        onUpdated={refetch}
+      />
+
+      <AlertDialog open={!!deleteTrip} onOpenChange={() => setDeleteTrip(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar viaje?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. El viaje será eliminado permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteTrip}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* All Completed Trips */}
       <div className="space-y-4 mt-8">
         <h2 className="text-xl font-bold text-slate-800">Todos los Viajes Completados</h2>
@@ -200,15 +242,32 @@ export default function Trips() {
                       </p>
                     </div>
                   </div>
-                  <Button
-                    onClick={() => setSelectedTrip(trip)}
-                    size="sm"
-                    variant="outline"
-                    className="ml-4"
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    Ver Detalles
-                  </Button>
+                  <div className="flex gap-2 ml-4">
+                    <Button
+                      onClick={() => setSelectedTrip(trip)}
+                      size="sm"
+                      variant="outline"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      Ver Detalles
+                    </Button>
+                    <Button
+                      onClick={() => setEditTrip(trip)}
+                      size="sm"
+                      variant="ghost"
+                      className="text-teal-600 hover:text-teal-700 hover:bg-teal-50"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      onClick={() => setDeleteTrip(trip)}
+                      size="sm"
+                      variant="ghost"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}

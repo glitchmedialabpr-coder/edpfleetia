@@ -10,7 +10,9 @@ import {
   CheckCircle2,
   Building2,
   User,
-  Car
+  Car,
+  Pencil,
+  Trash2
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -26,7 +28,9 @@ const statusConfig = {
 export default function TripCard({ 
   trip, 
   onStart, 
-  onComplete, 
+  onComplete,
+  onEdit,
+  onDelete,
   showDriver = false,
   compact = false 
 }) {
@@ -51,9 +55,31 @@ export default function TripCard({
               <p className="text-sm text-slate-500">{trip.route_name}</p>
             )}
           </div>
-          <Badge variant="outline" className={cn("font-medium border", status.color)}>
-            {status.label}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className={cn("font-medium border", status.color)}>
+              {status.label}
+            </Badge>
+            {onEdit && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onEdit(trip)}
+                className="h-8 w-8 text-slate-500 hover:text-teal-600 hover:bg-teal-50"
+              >
+                <Pencil className="w-4 h-4" />
+              </Button>
+            )}
+            {onDelete && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onDelete(trip)}
+                className="h-8 w-8 text-slate-500 hover:text-red-600 hover:bg-red-50"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Driver & Vehicle Info */}
