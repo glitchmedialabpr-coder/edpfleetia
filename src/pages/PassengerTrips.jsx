@@ -83,12 +83,16 @@ export default function PassengerTrips() {
       const now = new Date();
       const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       
+      const destination = formData.destination_type === 'otros' 
+        ? `${formData.destination_other} - ${formData.destination_town}`
+        : `${formData.destination_type} - ${formData.destination_town}`;
+      
       await base44.entities.TripRequest.create({
-        passenger_id: user.id,
+        passenger_id: user.student_id || user.id,
         passenger_name: user.full_name,
         passenger_phone: user.phone || '',
         origin: 'EDP University',
-        destination: user.student_id || user.id,
+        destination: destination,
         destination_type: formData.destination_type,
         destination_other: formData.destination_other,
         destination_town: formData.destination_town,
@@ -134,10 +138,10 @@ export default function PassengerTrips() {
         </div>
         <Button 
           onClick={() => setModalOpen(true)}
-          className="bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-600/20"
+          className="bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-600/20 text-lg h-12"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          Solicitar Viaje
+          <Plus className="w-5 h-5 mr-2" />
+          Pedir Viaje
         </Button>
       </div>
 
@@ -253,10 +257,21 @@ export default function PassengerTrips() {
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Solicitar Viaje</DialogTitle>
+            <DialogTitle>¿A dónde vas?</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {user && (
+              <div className="p-4 bg-teal-50 rounded-lg border border-teal-200">
+                <div className="flex items-center gap-2 text-teal-900">
+                  <User className="w-5 h-5" />
+                  <div>
+                    <p className="font-medium">{user.full_name}</p>
+                    <p className="text-sm text-teal-700">ID: {user.student_id}</p>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="space-y-2">
               <Label>Tipo de Destino *</Label>
               <Select 
