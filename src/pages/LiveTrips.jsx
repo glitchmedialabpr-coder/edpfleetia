@@ -55,10 +55,20 @@ export default function LiveTrips() {
     return unsubscribe;
   }, [refetch]);
 
-  const activeRequests = allRequests.filter(r => 
+  const is48HoursOld = (createdDate) => {
+    const now = new Date();
+    const created = new Date(createdDate);
+    const diffMs = now - created;
+    const diff48Hours = 48 * 60 * 60 * 1000;
+    return diffMs > diff48Hours;
+  };
+
+  const recentRequests = allRequests.filter(r => !is48HoursOld(r.created_date));
+  
+  const activeRequests = recentRequests.filter(r => 
     ['pending', 'accepted', 'accepted_by_driver', 'in_trip'].includes(r.status)
   );
-  const todayRequests = allRequests.filter(r => {
+  const todayRequests = recentRequests.filter(r => {
     const today = new Date().toDateString();
     return new Date(r.created_date).toDateString() === today;
   });
