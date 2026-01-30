@@ -44,7 +44,8 @@ export default function PassengerLogin() {
           role: 'user',
           user_type: 'passenger',
           student_id: student.student_id,
-          housing_name: student.housing_name
+          housing_name: student.housing_name,
+          login_time: Date.now()
         };
         localStorage.setItem('pin_user', JSON.stringify(studentUser));
         toast.success(`¡Bienvenido ${student.full_name}!`);

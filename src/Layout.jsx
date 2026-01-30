@@ -36,6 +36,29 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     loadUser();
+    
+    // Check session timeout for passengers every 10 seconds
+    const interval = setInterval(() => {
+      const pinUser = localStorage.getItem('pin_user');
+      if (pinUser) {
+        try {
+          const user = JSON.parse(pinUser);
+          if (user.user_type === 'passenger' && user.login_time) {
+            const elapsed = Date.now() - user.login_time;
+            const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+            
+            if (elapsed >= fiveMinutes) {
+              localStorage.removeItem('pin_user');
+              window.location.href = createPageUrl('PassengerLogin');
+            }
+          }
+        } catch (e) {
+          // Ignore errors
+        }
+      }
+    }, 10000); // Check every 10 seconds
+    
+    return () => clearInterval(interval);
   }, []);
 
   const loadUser = () => {
