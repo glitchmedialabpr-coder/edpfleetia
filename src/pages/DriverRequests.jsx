@@ -410,9 +410,9 @@ export default function DriverRequests() {
                             : 'bg-white border-slate-200'
                         }`}
                       >
-                        <div className="flex-1">
-                          <p className="font-medium text-slate-800">{student.student_name}</p>
-                          <p className="text-sm text-slate-500">{student.destination}</p>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-slate-800 truncate">{student.student_name}</p>
+                          <p className="text-sm text-slate-500 truncate">{student.destination}</p>
                           {student.delivery_status === 'delivered' && (
                             <p className="text-xs text-green-600 mt-1">
                               Entregado: {student.delivery_time}
@@ -423,13 +423,14 @@ export default function DriverRequests() {
                           <Button
                             size="sm"
                             onClick={() => handleDeliverStudent(trip, idx)}
-                            className="bg-green-600 hover:bg-green-700"
+                            className="flex-shrink-0 ml-2 bg-green-600 hover:bg-green-700 text-xs sm:text-sm"
                           >
                             <CheckCircle className="w-4 h-4 mr-1" />
-                            Entregado
+                            <span className="hidden sm:inline">Entregado</span>
+                            <span className="sm:hidden">OK</span>
                           </Button>
                         ) : (
-                          <CheckCircle className="w-5 h-5 text-green-600" />
+                          <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 ml-2" />
                         )}
                       </div>
                     ))}
