@@ -540,11 +540,12 @@ export default function DriverRequests() {
                     Aceptar
                   </Button>
                 </div>
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+                </Card>
+                );
+                })}
+                </div>
+                )}
+                </div>
+                </div>
+                );
+                }
