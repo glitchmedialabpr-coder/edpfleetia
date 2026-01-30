@@ -151,6 +151,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Viajes en Vivo', page: 'LiveTrips', icon: Bus },
     { name: 'Viajes', page: 'Trips', icon: Bus },
     { name: 'Horarios', page: 'DriverSchedule', icon: Clock },
+    { name: 'Notificaciones', page: 'Notifications', icon: AlertTriangle },
     { name: 'Respuestas', page: 'ResponseHistory', icon: ClipboardList },
     { name: 'Vehículos', page: 'Vehicles', icon: Car },
     { name: 'Combustible', page: 'FuelRecords', icon: Wrench },
