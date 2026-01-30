@@ -80,7 +80,15 @@ export default function PassengerTrips() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user) {
+      toast.error('Usuario no identificado');
+      return;
+    }
+
+    if (!user.student_id) {
+      toast.error('ID de estudiante no encontrado');
+      return;
+    }
 
     try {
       const now = new Date();
@@ -113,7 +121,8 @@ export default function PassengerTrips() {
       });
       refetch();
     } catch (error) {
-      toast.error('Error al crear solicitud');
+      console.error('Error al crear solicitud:', error);
+      toast.error(`Error: ${error.message || 'No se pudo crear la solicitud'}`);
     }
   };
 
