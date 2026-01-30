@@ -178,7 +178,7 @@ export default function LiveTrips() {
           ) : (
             <div className="grid gap-4">
               {activeRequests.map(request => (
-                <TripRequestCard key={request.id} request={request} />
+                <TripRequestCard key={request.id} request={request} onDelete={deleteMutation.mutate} />
               ))}
             </div>
           )}
@@ -192,7 +192,7 @@ export default function LiveTrips() {
           ) : (
             <div className="grid gap-4">
               {todayRequests.map(request => (
-                <TripRequestCard key={request.id} request={request} />
+                <TripRequestCard key={request.id} request={request} onDelete={deleteMutation.mutate} />
               ))}
             </div>
           )}
@@ -201,7 +201,7 @@ export default function LiveTrips() {
         <TabsContent value="all" className="space-y-4 mt-4">
           <div className="grid gap-4">
             {recentRequests.map(request => (
-              <TripRequestCard key={request.id} request={request} />
+              <TripRequestCard key={request.id} request={request} onDelete={deleteMutation.mutate} />
             ))}
           </div>
         </TabsContent>
