@@ -182,6 +182,11 @@ export default function DriverRequests() {
       toast.success(`Estudiante aceptado (${acceptedRequests.length + 1}/15)`);
       refetchPending();
       refetchAccepted();
+
+      // Navigate to accepted students page after accepting
+      setTimeout(() => {
+        navigate(createPageUrl('DriverAcceptedStudents'));
+      }, 500);
     } catch (error) {
       toast.error('Error al aceptar estudiante');
     }
