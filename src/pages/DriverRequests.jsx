@@ -456,8 +456,12 @@ export default function DriverRequests() {
               </Card>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <Card className="p-4 bg-slate-50 border-slate-200">
+            <p className="text-sm text-slate-500 text-center">Sin viajes en progreso</p>
+          </Card>
+        )}
+      </div>
 
       {/* Available Requests */}
       <div className="space-y-4">
