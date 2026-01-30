@@ -147,7 +147,7 @@ export default function LiveTrips() {
 
         <TabsContent value="all" className="space-y-4 mt-4">
           <div className="grid gap-4">
-            {allRequests.map(request => (
+            {recentRequests.map(request => (
               <TripRequestCard key={request.id} request={request} />
             ))}
           </div>
