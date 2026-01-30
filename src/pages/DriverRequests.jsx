@@ -351,36 +351,25 @@ export default function DriverRequests() {
          </div>
       </div>
 
-      {/* Accepted Students (Ready to Start Trip) */}
+      {/* Accepted Students - Link to dedicated page */}
       {acceptedRequests && acceptedRequests.length > 0 && (
-        <div className="w-full space-y-3 p-4 md:p-5 bg-gradient-to-br from-purple-50 to-white rounded-xl border border-purple-200 overflow-visible">
-          <h2 className="text-base md:text-lg font-semibold text-slate-800">
-            Estudiantes Aceptados ({acceptedRequests.length}/15)
-          </h2>
-
-          <Button 
-            onClick={handleStartTrip}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 md:py-3 text-sm md:text-base h-auto"
-          >
-            <Navigation className="w-4 h-4 mr-2" />
-            Comenzar Viaje
-          </Button>
-
-          <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {acceptedRequests.map(req => (
-              <Card key={req.id} className="p-3 border-l-4 border-orange-500">
-                <div className="flex items-center gap-2 mb-1 min-w-0">
-                  <User className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                  <span className="font-medium text-slate-800 text-xs md:text-sm truncate">{req.passenger_name}</span>
-                </div>
-                <div className="flex items-center gap-2 min-w-0">
-                  <MapPin className="w-4 h-4 text-red-500 flex-shrink-0" />
-                  <span className="text-xs text-slate-600 truncate">{req.destination}</span>
-                </div>
-              </Card>
-            ))}
+        <Card className="p-4 md:p-6 bg-gradient-to-br from-purple-50 to-white border border-purple-200">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg md:text-xl font-semibold text-slate-800">
+                {acceptedRequests.length} Estudiante{acceptedRequests.length > 1 ? 's' : ''} Aceptado{acceptedRequests.length > 1 ? 's' : ''}
+              </h2>
+              <p className="text-sm text-slate-500 mt-1">Listo para comenzar el viaje</p>
+            </div>
+            <Button 
+              onClick={() => navigate(createPageUrl('DriverAcceptedStudents'))}
+              className="w-full md:w-auto bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 md:py-3 px-6"
+            >
+              <Navigation className="w-4 h-4 mr-2" />
+              Gestionar Viaje
+            </Button>
           </div>
-        </div>
+        </Card>
       )}
 
       {/* Active Trips */}
