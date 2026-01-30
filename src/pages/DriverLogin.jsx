@@ -32,35 +32,25 @@ export default function DriverLogin() {
     setLoading(true);
 
     try {
-      // Validate 3 digits
       if (driverId.length !== 3) {
         toast.error('El ID del conductor debe tener 3 dígitos');
         setLoading(false);
         return;
       }
 
-      const drivers = await base44.entities.Driver.filter({ driver_id: driverId.trim() });
+      const response = await base44.functions.invoke('validateDriverLogin', { driverId });
       
-      if (drivers && drivers.length > 0) {
-        const driver = drivers[0];
-        const driverUser = {
-          id: driver.id,
-          email: driver.email,
-          full_name: driver.full_name,
-          phone: driver.phone,
-          role: 'user',
-          user_type: 'driver',
-          driver_id: driver.driver_id
-        };
-        localStorage.setItem('pin_user', JSON.stringify(driverUser));
-        toast.success(`¡Bienvenido ${driver.full_name}!`);
+      if (response.data.success) {
+        localStorage.setItem('pin_user', JSON.stringify(response.data.user));
+        toast.success(`¡Bienvenido ${response.data.user.full_name}!`);
         navigate(createPageUrl('DriverRequests'));
       } else {
-        toast.error('Conductor no encontrado');
+        toast.error(response.data.error || 'Conductor no encontrado');
         setDriverId('');
       }
     } catch (error) {
       toast.error('Error al verificar conductor');
+      setDriverId('');
     }
     setLoading(false);
   };

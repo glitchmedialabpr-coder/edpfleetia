@@ -37,15 +37,29 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     loadUser();
     
-    // Check session timeout for passengers every 10 seconds
-    const interval = setInterval(() => {
+    // Check session expiry for all users every 30 seconds
+    const interval = setInterval(async () => {
       const pinUser = localStorage.getItem('pin_user');
       if (pinUser) {
         try {
           const user = JSON.parse(pinUser);
-          if (user.user_type === 'passenger' && user.login_time) {
+          
+          // Check if session has session_expiry
+          if (user.session_expiry) {
+            if (Date.now() > user.session_expiry) {
+              localStorage.removeItem('pin_user');
+              const loginPage = user.role === 'admin' ? 'AdminLogin' 
+                : user.user_type === 'driver' ? 'DriverLogin' 
+                : 'PassengerLogin';
+              window.location.href = createPageUrl(loginPage);
+              return;
+            }
+          }
+          
+          // Legacy check for old sessions without token
+          if (user.user_type === 'passenger' && user.login_time && !user.session_expiry) {
             const elapsed = Date.now() - user.login_time;
-            const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+            const fiveMinutes = 5 * 60 * 1000;
             
             if (elapsed >= fiveMinutes) {
               localStorage.removeItem('pin_user');
@@ -53,10 +67,10 @@ export default function Layout({ children, currentPageName }) {
             }
           }
         } catch (e) {
-          // Ignore errors
+          localStorage.removeItem('pin_user');
         }
       }
-    }, 10000); // Check every 10 seconds
+    }, 30000); // Check every 30 seconds
     
     return () => clearInterval(interval);
   }, []);

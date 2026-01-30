@@ -32,37 +32,25 @@ export default function PassengerLogin() {
     setLoading(true);
 
     try {
-      // Validate 4 digits
       if (studentId.length !== 4) {
         toast.error('El ID del estudiante debe tener 4 dígitos');
         setLoading(false);
         return;
       }
 
-      const students = await base44.entities.Student.filter({ student_id: studentId.trim() });
+      const response = await base44.functions.invoke('validateStudentLogin', { studentId });
       
-      if (students && students.length > 0) {
-        const student = students[0];
-        const studentUser = {
-          id: student.id,
-          email: student.email || `student_${student.student_id}@edp.edu`,
-          full_name: student.full_name,
-          phone: student.phone,
-          role: 'user',
-          user_type: 'passenger',
-          student_id: student.student_id,
-          housing_name: student.housing_name,
-          login_time: Date.now()
-        };
-        localStorage.setItem('pin_user', JSON.stringify(studentUser));
-        toast.success(`¡Bienvenido ${student.full_name}!`);
+      if (response.data.success) {
+        localStorage.setItem('pin_user', JSON.stringify(response.data.user));
+        toast.success(`¡Bienvenido ${response.data.user.full_name}!`);
         navigate(createPageUrl('PassengerTrips'));
       } else {
-        toast.error('ID de estudiante no encontrado');
+        toast.error(response.data.error || 'Estudiante no encontrado');
         setStudentId('');
       }
     } catch (error) {
       toast.error('Error al verificar estudiante');
+      setStudentId('');
     }
     setLoading(false);
   };

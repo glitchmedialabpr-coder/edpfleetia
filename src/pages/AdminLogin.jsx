@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
+import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Shield, Lock } from 'lucide-react';
 import { toast } from 'sonner';
-
-const ADMIN_PIN = '0573';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -33,21 +32,19 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      if (pin === ADMIN_PIN) {
-        const adminUser = {
-          email: 'admin@edp.edu',
-          full_name: 'Administrador',
-          role: 'admin'
-        };
-        localStorage.setItem('pin_user', JSON.stringify(adminUser));
+      const response = await base44.functions.invoke('validateAdminLogin', { pin });
+      
+      if (response.data.success) {
+        localStorage.setItem('pin_user', JSON.stringify(response.data.user));
         toast.success('Acceso autorizado');
         navigate(createPageUrl('Dashboard'));
       } else {
-        toast.error('PIN incorrecto');
+        toast.error(response.data.error || 'PIN incorrecto');
         setPin('');
       }
     } catch (error) {
       toast.error('Error al iniciar sesión');
+      setPin('');
     }
     setLoading(false);
   };
