@@ -78,21 +78,21 @@ export default function DriverRequests() {
   });
 
   const { data: acceptedRequests = [], refetch: refetchAccepted } = useQuery({
-    queryKey: ['accepted-requests', user?.id],
+    queryKey: ['accepted-requests', user?.driver_id],
     queryFn: () => base44.entities.TripRequest.filter({ 
-      driver_id: user?.id,
+      driver_id: user?.driver_id,
       status: 'accepted_by_driver'
     }, '-created_date'),
-    enabled: !!user?.id
+    enabled: !!user?.driver_id
   });
 
   const { data: activeTrips = [], refetch: refetchActiveTrips } = useQuery({
-    queryKey: ['active-trips', user?.id],
+    queryKey: ['active-trips', user?.driver_id],
     queryFn: () => base44.entities.Trip.filter({ 
-      driver_id: user?.id,
+      driver_id: user?.driver_id,
       status: 'in_progress'
     }, '-created_date'),
-    enabled: !!user?.id
+    enabled: !!user?.driver_id
   });
 
   useEffect(() => {
