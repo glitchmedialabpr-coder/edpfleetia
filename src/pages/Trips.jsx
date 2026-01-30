@@ -39,12 +39,10 @@ export default function Trips() {
 
   const formattedDate = format(selectedDate, 'yyyy-MM-dd');
 
-  const { data: allTrips = [], refetch } = useQuery({
+  const { data: trips = [], refetch } = useQuery({
     queryKey: ['trips', formattedDate],
     queryFn: () => base44.entities.Trip.filter({ scheduled_date: formattedDate }, '-scheduled_time')
   });
-
-  const trips = allTrips.filter(trip => trip.status === 'completed');
 
   const handlePrevDay = () => setSelectedDate(subDays(selectedDate, 1));
   const handleNextDay = () => setSelectedDate(addDays(selectedDate, 1));
