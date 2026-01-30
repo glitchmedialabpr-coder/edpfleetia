@@ -165,6 +165,7 @@ export default function Layout({ children, currentPageName }) {
 
   const driverNavItems = [
     { name: 'Solicitudes', page: 'DriverRequests', icon: Bus },
+    { name: 'Estudiantes Aceptados', page: 'DriverAcceptedStudents', icon: Users },
     { name: 'Mis Viajes', page: 'DriverTrips', icon: Bus },
     { name: 'Historial', page: 'DriverHistory', icon: History },
   ];
