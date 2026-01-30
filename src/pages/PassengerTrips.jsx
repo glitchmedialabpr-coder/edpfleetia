@@ -55,16 +55,16 @@ export default function PassengerTrips() {
   };
 
   const { data: requests = [], refetch } = useQuery({
-    queryKey: ['trip-requests', user?.id],
-    queryFn: () => base44.entities.TripRequest.filter({ passenger_id: user?.id }, '-created_date'),
-    enabled: !!user?.id
+    queryKey: ['trip-requests', user?.student_id],
+    queryFn: () => base44.entities.TripRequest.filter({ passenger_id: user?.student_id }, '-created_date'),
+    enabled: !!user?.student_id
   });
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.student_id) return;
 
     const unsubscribe = base44.entities.TripRequest.subscribe((event) => {
-      if (event.type === 'update' && event.data?.passenger_id === user.id) {
+      if (event.type === 'update' && event.data?.passenger_id === user.student_id) {
         refetch();
         if (event.data.status === 'accepted') {
           toast.success('¡Un conductor aceptó tu viaje!');
@@ -73,7 +73,7 @@ export default function PassengerTrips() {
     });
 
     return unsubscribe;
-  }, [user?.id, refetch]);
+  }, [user?.student_id, refetch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
