@@ -47,8 +47,11 @@ export default function PassengerTrips() {
 
   const loadUser = async () => {
     try {
-      const currentUser = await base44.auth.me();
-      setUser(currentUser);
+      const pinUser = localStorage.getItem('pin_user');
+      if (pinUser) {
+        const userData = JSON.parse(pinUser);
+        setUser(userData);
+      }
     } catch (error) {
       console.error('Error loading user:', error);
     }
@@ -64,9 +67,9 @@ export default function PassengerTrips() {
     if (!user?.student_id) return;
 
     const unsubscribe = base44.entities.TripRequest.subscribe((event) => {
-      if (event.type === 'update' && event.data?.passenger_id === user.student_id) {
+      if (event.data?.passenger_id === user.student_id) {
         refetch();
-        if (event.data.status === 'accepted') {
+        if (event.type === 'update' && event.data.status === 'accepted') {
           toast.success('¡Un conductor aceptó tu viaje!');
         }
       }
