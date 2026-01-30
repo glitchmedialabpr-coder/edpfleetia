@@ -70,6 +70,7 @@ import Students from './pages/Students';
 import Trips from './pages/Trips';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
+import ShareLinks from './pages/ShareLinks';
 import __Layout from './Layout.jsx';
 
 
@@ -97,6 +98,7 @@ export const PAGES = {
     "Trips": Trips,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
+    "ShareLinks": ShareLinks,
 }
 
 export const pagesConfig = {
