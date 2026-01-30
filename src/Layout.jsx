@@ -153,10 +153,10 @@ export default function Layout({ children, currentPageName }) {
 
   if (!user) {
     // Redirect to appropriate login page
-    const loginPages = ['AdminLogin', 'DriverLogin', 'PassengerLogin'];
+    const loginPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin'];
     if (!loginPages.includes(currentPageName)) {
-      // Default redirect to admin login
-      window.location.href = createPageUrl('AdminLogin');
+      // Default redirect to home
+      window.location.href = createPageUrl('Home');
       return null;
     }
 

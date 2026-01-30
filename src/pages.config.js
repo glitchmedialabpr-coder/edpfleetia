@@ -69,6 +69,7 @@ import ResponseHistory from './pages/ResponseHistory';
 import AdminLogin from './pages/AdminLogin';
 import DriverLogin from './pages/DriverLogin';
 import PassengerLogin from './pages/PassengerLogin';
+import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
@@ -95,6 +96,7 @@ export const PAGES = {
     "AdminLogin": AdminLogin,
     "DriverLogin": DriverLogin,
     "PassengerLogin": PassengerLogin,
+    "Home": Home,
 }
 
 export const pagesConfig = {
