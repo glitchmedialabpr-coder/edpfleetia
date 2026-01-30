@@ -384,12 +384,12 @@ export default function DriverRequests() {
       </div>
 
       {/* Active Trips */}
-      {activeTrips.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-slate-800">Viajes en Vivo</h2>
-          <div className="grid gap-4">
+      <div className="space-y-3 md:space-y-4">
+        <h2 className="text-base md:text-lg font-semibold text-slate-800">Viajes en Vivo</h2>
+        {activeTrips.length > 0 ? (
+          <div className="grid gap-3 md:gap-4">
             {activeTrips.map(trip => (
-              <Card key={trip.id} className="p-6 border-l-4 border-indigo-600">
+              <Card key={trip.id} className="p-4 md:p-6 border-l-4 border-indigo-600">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge className="bg-indigo-100 text-indigo-700">
