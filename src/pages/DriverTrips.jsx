@@ -33,9 +33,14 @@ export default function DriverTrips() {
   };
 
   const { data: trips = [], refetch } = useQuery({
-    queryKey: ['driver-trips', user?.driver_id],
-    queryFn: () => base44.entities.Trip.filter({ driver_id: user?.driver_id }, '-scheduled_date'),
-    enabled: !!user?.driver_id
+    queryKey: ['driver-trips', user?.driver_id, user?.role],
+    queryFn: () => {
+      if (user?.role === 'admin') {
+        return base44.entities.Trip.list('-scheduled_date');
+      }
+      return base44.entities.Trip.filter({ driver_id: user?.driver_id }, '-scheduled_date');
+    },
+    enabled: !!user?.driver_id || user?.role === 'admin'
   });
 
   const todayTrips = trips.filter(t => t.scheduled_date === today);
@@ -65,7 +70,9 @@ export default function DriverTrips() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Mis Viajes</h1>
+        <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">
+          {user?.role === 'admin' ? 'Todos los Viajes' : 'Mis Viajes'}
+        </h1>
         <p className="text-slate-500 mt-1">
           {format(new Date(), "EEEE, d 'de' MMMM yyyy", { locale: es })}
         </p>

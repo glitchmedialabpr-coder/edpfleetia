@@ -39,8 +39,13 @@ export default function DriverHistory() {
   };
 
   const { data: trips = [] } = useQuery({
-    queryKey: ['driver-history', user?.id],
-    queryFn: () => base44.entities.Trip.filter({ driver_id: user?.id }, '-scheduled_date', 100),
+    queryKey: ['driver-history', user?.id, user?.role],
+    queryFn: () => {
+      if (user?.role === 'admin') {
+        return base44.entities.Trip.list('-scheduled_date', 100);
+      }
+      return base44.entities.Trip.filter({ driver_id: user?.id }, '-scheduled_date', 100);
+    },
     enabled: !!user?.id
   });
 
@@ -59,8 +64,12 @@ export default function DriverHistory() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Mi Historial</h1>
-        <p className="text-slate-500 mt-1">Consulta tus viajes completados</p>
+        <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">
+          {user?.role === 'admin' ? 'Historial de Todos los Viajes' : 'Mi Historial'}
+        </h1>
+        <p className="text-slate-500 mt-1">
+          {user?.role === 'admin' ? 'Consulta todos los viajes completados' : 'Consulta tus viajes completados'}
+        </p>
       </div>
 
       {/* Stats */}
@@ -112,6 +121,7 @@ export default function DriverHistory() {
               <TableHeader>
                 <TableRow className="bg-slate-50">
                   <TableHead>Fecha</TableHead>
+                  {user?.role === 'admin' && <TableHead>Conductor</TableHead>}
                   <TableHead>Ruta</TableHead>
                   <TableHead>Estudiantes</TableHead>
                   <TableHead>Salida</TableHead>
@@ -129,6 +139,11 @@ export default function DriverHistory() {
                         </span>
                       </div>
                     </TableCell>
+                    {user?.role === 'admin' && (
+                      <TableCell className="text-slate-600 font-medium">
+                        {trip.driver_name || '-'}
+                      </TableCell>
+                    )}
                     <TableCell className="text-slate-600">
                       {trip.route_name || '-'}
                     </TableCell>
