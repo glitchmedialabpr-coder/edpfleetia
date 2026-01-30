@@ -479,10 +479,12 @@ export default function DriverRequests() {
           </Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
-            {pendingRequests.map(request => (
+            {pendingRequests.map(request => {
+              const requestStatus = request.status && statusConfig[request.status] ? statusConfig[request.status] : statusConfig.pending;
+              return (
               <Card key={request.id} className="p-6 hover:shadow-lg transition-shadow">
                 <div className="flex justify-between items-start mb-4">
-                  <Badge className={statusConfig[request.status].color}>
+                  <Badge className={requestStatus.color}>
                     Nuevo viaje
                   </Badge>
                   <span className="text-xs text-slate-400">
