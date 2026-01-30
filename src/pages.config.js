@@ -66,11 +66,11 @@ import PassengerLogin from './pages/PassengerLogin';
 import PassengerTrips from './pages/PassengerTrips';
 import Purchases from './pages/Purchases';
 import ResponseHistory from './pages/ResponseHistory';
+import ShareLinks from './pages/ShareLinks';
 import Students from './pages/Students';
 import Trips from './pages/Trips';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
-import ShareLinks from './pages/ShareLinks';
 import __Layout from './Layout.jsx';
 
 
@@ -94,11 +94,11 @@ export const PAGES = {
     "PassengerTrips": PassengerTrips,
     "Purchases": Purchases,
     "ResponseHistory": ResponseHistory,
+    "ShareLinks": ShareLinks,
     "Students": Students,
     "Trips": Trips,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
-    "ShareLinks": ShareLinks,
 }
 
 export const pagesConfig = {
