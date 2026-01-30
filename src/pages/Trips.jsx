@@ -45,6 +45,20 @@ export default function Trips() {
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [editTrip, setEditTrip] = useState(null);
   const [deleteTrip, setDeleteTrip] = useState(null);
+  const [deleteAllConfirm, setDeleteAllConfirm] = useState(false);
+  const queryClient = useQueryClient();
+
+  const deleteAllMutation = useMutation({
+    mutationFn: async () => {
+      for (const trip of allCompletedTrips) {
+        await base44.entities.Trip.delete(trip.id);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-completed-trips'] });
+      setDeleteAllConfirm(false);
+    }
+  });
 
   React.useEffect(() => {
     const loadUser = async () => {
