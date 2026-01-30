@@ -346,13 +346,13 @@ export default function DriverRequests() {
       {/* Accepted Students (Ready to Start Trip) */}
       {acceptedRequests.length > 0 && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <h2 className="text-lg font-semibold text-slate-800">
               Estudiantes Aceptados ({acceptedRequests.length}/15)
             </h2>
             <Button 
               onClick={handleStartTrip}
-              className="bg-purple-600 hover:bg-purple-700"
+              className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700"
             >
               <Navigation className="w-4 h-4 mr-2" />
               Comenzar Viaje
