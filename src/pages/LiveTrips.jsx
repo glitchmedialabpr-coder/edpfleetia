@@ -29,6 +29,7 @@ const statusConfig = {
 
 export default function LiveTrips() {
   const [user, setUser] = React.useState(null);
+  const queryClient = useQueryClient();
 
   React.useEffect(() => {
     const loadUser = async () => {
@@ -49,6 +50,35 @@ export default function LiveTrips() {
     queryKey: ['all-trip-requests'],
     queryFn: () => base44.entities.TripRequest.list('-created_date'),
     enabled: !!user
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (requestId) => base44.entities.TripRequest.delete(requestId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-trip-requests'] });
+      toast.success('Viaje eliminado');
+      refetch();
+    },
+    onError: () => toast.error('Error al eliminar viaje')
+  });
+
+  const deleteAllMutation = useMutation({
+    mutationFn: async () => {
+      const now = new Date();
+      const created = new Date(recentRequests[0]?.created_date);
+      const diffMs = now - created;
+      const diff48Hours = 48 * 60 * 60 * 1000;
+      
+      for (const request of recentRequests.filter(r => diffMs <= diff48Hours)) {
+        await base44.entities.TripRequest.delete(request.id);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-trip-requests'] });
+      toast.success('Todos los viajes eliminados');
+      refetch();
+    },
+    onError: () => toast.error('Error al eliminar viajes')
   });
 
   useEffect(() => {
