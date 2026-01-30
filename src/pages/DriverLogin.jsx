@@ -4,12 +4,12 @@ import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Truck, Mail } from 'lucide-react';
+import { Truck, Hash } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function DriverLogin() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [driverId, setDriverId] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -32,7 +32,14 @@ export default function DriverLogin() {
     setLoading(true);
 
     try {
-      const drivers = await base44.entities.Driver.filter({ email: email.toLowerCase().trim() });
+      // Validate 3 digits
+      if (driverId.length !== 3) {
+        toast.error('El ID del conductor debe tener 3 dígitos');
+        setLoading(false);
+        return;
+      }
+
+      const drivers = await base44.entities.Driver.filter({ driver_id: driverId.trim() });
       
       if (drivers && drivers.length > 0) {
         const driver = drivers[0];
@@ -42,14 +49,15 @@ export default function DriverLogin() {
           full_name: driver.full_name,
           phone: driver.phone,
           role: 'user',
-          user_type: 'driver'
+          user_type: 'driver',
+          driver_id: driver.driver_id
         };
         localStorage.setItem('pin_user', JSON.stringify(driverUser));
         toast.success(`¡Bienvenido ${driver.full_name}!`);
         navigate(createPageUrl('DriverRequests'));
       } else {
         toast.error('Conductor no encontrado');
-        setEmail('');
+        setDriverId('');
       }
     } catch (error) {
       toast.error('Error al verificar conductor');
@@ -79,16 +87,17 @@ export default function DriverLogin() {
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-teal-100 mb-2">
-                Correo Electrónico
+                ID de Conductor (3 dígitos)
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-teal-300" />
+                <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-teal-300" />
                 <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="tu@email.com"
-                  className="pl-12 bg-white/10 border-white/20 text-white placeholder:text-teal-300/50 h-12"
+                  type="text"
+                  value={driverId}
+                  onChange={(e) => setDriverId(e.target.value.replace(/\D/g, '').slice(0, 3))}
+                  placeholder="123"
+                  maxLength="3"
+                  className="pl-12 bg-white/10 border-white/20 text-white placeholder:text-teal-300/50 h-12 text-center text-lg"
                   autoFocus
                 />
               </div>
@@ -96,7 +105,7 @@ export default function DriverLogin() {
 
             <Button 
               type="submit"
-              disabled={loading || !email}
+              disabled={loading || driverId.length !== 3}
               className="w-full bg-teal-600 hover:bg-teal-700 text-white h-12 text-lg rounded-xl shadow-lg"
             >
               {loading ? 'Verificando...' : 'Iniciar Sesión'}

@@ -32,6 +32,13 @@ export default function PassengerLogin() {
     setLoading(true);
 
     try {
+      // Validate 4 digits
+      if (studentId.length !== 4) {
+        toast.error('El ID del estudiante debe tener 4 dígitos');
+        setLoading(false);
+        return;
+      }
+
       const students = await base44.entities.Student.filter({ student_id: studentId.trim() });
       
       if (students && students.length > 0) {
@@ -82,15 +89,16 @@ export default function PassengerLogin() {
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-purple-100 mb-2">
-                ID de Estudiante
+                ID de Estudiante (4 dígitos)
               </label>
               <div className="relative">
                 <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-300" />
                 <Input
                   type="text"
                   value={studentId}
-                  onChange={(e) => setStudentId(e.target.value)}
-                  placeholder="Ingresa tu ID"
+                  onChange={(e) => setStudentId(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                  placeholder="1234"
+                  maxLength="4"
                   className="pl-12 bg-white/10 border-white/20 text-white placeholder:text-purple-300/50 h-12 text-center text-lg"
                   autoFocus
                 />
@@ -99,7 +107,7 @@ export default function PassengerLogin() {
 
             <Button 
               type="submit"
-              disabled={loading || !studentId}
+              disabled={loading || studentId.length !== 4}
               className="w-full bg-purple-600 hover:bg-purple-700 text-white h-12 text-lg rounded-xl shadow-lg"
             >
               {loading ? 'Verificando...' : 'Acceder'}
