@@ -95,6 +95,18 @@ export default function Trips() {
     refetch();
   };
 
+  const handleDeleteTrip = async () => {
+    if (!deleteTrip) return;
+    
+    try {
+      await base44.entities.Trip.delete(deleteTrip.id);
+      refetch();
+      setDeleteTrip(null);
+    } catch (error) {
+      console.error('Error deleting trip:', error);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -163,6 +175,8 @@ export default function Trips() {
               showDriver
               onStart={handleStartTrip}
               onComplete={handleCompleteTrip}
+              onEdit={setEditTrip}
+              onDelete={setDeleteTrip}
             />
           ))}
         </div>
