@@ -119,7 +119,7 @@ export default function DriverRequests() {
     });
 
     const unsubscribeTrip = base44.entities.Trip.subscribe((event) => {
-      if (event.type === 'update' && user?.id && event.data?.driver_id === user.id) {
+      if (event.type === 'update' && user?.driver_id && event.data?.driver_id === user.driver_id) {
         refetchActiveTrips();
       }
     });
@@ -128,7 +128,7 @@ export default function DriverRequests() {
       unsubscribeRequest();
       unsubscribeTrip();
     };
-  }, [refetchPending, refetchAccepted, refetchActiveTrips, user?.id, selectedVehicle, notificationSound]);
+  }, [refetchPending, refetchAccepted, refetchActiveTrips, user?.driver_id, selectedVehicle, notificationSound]);
 
   const handleAccept = async (request) => {
     if (!selectedVehicle) {
@@ -151,7 +151,7 @@ export default function DriverRequests() {
       
       await base44.entities.TripRequest.update(request.id, {
         status: 'accepted_by_driver',
-        driver_id: user.id,
+        driver_id: user.driver_id,
         driver_name: user.full_name || user.email,
         vehicle_id: selectedVehicle,
         vehicle_info: vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '',
@@ -160,7 +160,7 @@ export default function DriverRequests() {
 
       await base44.entities.TripRequestResponse.create({
         trip_request_id: request.id,
-        driver_id: user.id,
+        driver_id: user.driver_id,
         driver_name: user.full_name || user.email,
         response: 'accepted',
         response_time: timeString,
@@ -188,7 +188,7 @@ export default function DriverRequests() {
       // Save rejection in history
       await base44.entities.TripRequestResponse.create({
         trip_request_id: request.id,
-        driver_id: user.id,
+        driver_id: user.driver_id,
         driver_name: user.full_name || user.email,
         response: 'rejected',
         response_time: timeString,
@@ -228,7 +228,7 @@ export default function DriverRequests() {
       }));
 
       const trip = await base44.entities.Trip.create({
-        driver_id: user.id,
+        driver_id: user.driver_id,
         driver_name: user.full_name || user.email,
         vehicle_id: selectedVehicle,
         vehicle_info: vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '',
