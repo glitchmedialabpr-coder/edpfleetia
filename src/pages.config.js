@@ -72,6 +72,7 @@ import Trips from './pages/Trips';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
 import DriverAcceptedStudents from './pages/DriverAcceptedStudents';
+import DriverSchedule from './pages/DriverSchedule';
 import __Layout from './Layout.jsx';
 
 
@@ -101,6 +102,7 @@ export const PAGES = {
     "Vehicles": Vehicles,
     "Warnings": Warnings,
     "DriverAcceptedStudents": DriverAcceptedStudents,
+    "DriverSchedule": DriverSchedule,
 }
 
 export const pagesConfig = {
