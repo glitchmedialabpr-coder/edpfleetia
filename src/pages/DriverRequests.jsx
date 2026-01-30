@@ -327,20 +327,20 @@ export default function DriverRequests() {
           <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Solicitudes de Viaje</h1>
           <p className="text-slate-500 mt-1">Acepta y gestiona viajes disponibles</p>
         </div>
-        <div className="w-full lg:w-64">
-          <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecciona tu vehículo" />
-            </SelectTrigger>
-            <SelectContent>
-              {vehicles.map(vehicle => (
-                <SelectItem key={vehicle.id} value={vehicle.id}>
-                  {vehicle.brand} {vehicle.model} - {vehicle.plate}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <div className="w-full lg:w-64 z-50">
+           <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
+             <SelectTrigger className="w-full">
+               <SelectValue placeholder="Selecciona tu vehículo" />
+             </SelectTrigger>
+             <SelectContent className="z-50">
+               {vehicles.map(vehicle => (
+                 <SelectItem key={vehicle.id} value={vehicle.id}>
+                   {vehicle.brand} {vehicle.model} - {vehicle.plate}
+                 </SelectItem>
+               ))}
+             </SelectContent>
+           </Select>
+         </div>
       </div>
 
       {/* Accepted Students (Ready to Start Trip) */}
