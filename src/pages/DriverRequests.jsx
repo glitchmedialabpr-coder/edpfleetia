@@ -321,13 +321,13 @@ export default function DriverRequests() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <div className="w-full space-y-4 md:space-y-6">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Solicitudes de Viaje</h1>
-          <p className="text-slate-500 mt-1">Acepta y gestiona viajes disponibles</p>
+          <h1 className="text-xl md:text-3xl font-bold text-slate-800">Solicitudes de Viaje</h1>
+          <p className="text-sm md:text-base text-slate-500 mt-1">Acepta y gestiona viajes disponibles</p>
         </div>
-        <div className="w-full lg:w-64 z-50">
+        <div className="w-full z-50">
            <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
              <SelectTrigger className="w-full">
                <SelectValue placeholder="Selecciona tu vehículo" />
@@ -344,36 +344,44 @@ export default function DriverRequests() {
       </div>
 
       {/* Accepted Students (Ready to Start Trip) */}
-      {acceptedRequests.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <h2 className="text-lg font-semibold text-slate-800">
+      <div className="space-y-3">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base md:text-lg font-semibold text-slate-800">
               Estudiantes Aceptados ({acceptedRequests.length}/15)
             </h2>
+          </div>
+          {acceptedRequests.length > 0 && (
             <Button 
               onClick={handleStartTrip}
-              className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-sm md:text-base"
             >
               <Navigation className="w-4 h-4 mr-2" />
               Comenzar Viaje
             </Button>
-          </div>
-          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          )}
+        </div>
+        {acceptedRequests.length > 0 ? (
+          <div className="grid gap-2 md:gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {acceptedRequests.map(req => (
-              <Card key={req.id} className="p-4 border-l-4 border-orange-500">
+              <Card key={req.id} className="p-3 md:p-4 border-l-4 border-orange-500">
                 <div className="flex items-center gap-2 mb-2">
-                  <User className="w-4 h-4 text-slate-400" />
-                  <span className="font-medium text-slate-800 truncate">{req.passenger_name}</span>
+                  <User className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  <span className="font-medium text-slate-800 truncate text-sm">{req.passenger_name}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-slate-600">
                   <MapPin className="w-4 h-4 text-red-500 flex-shrink-0" />
-                  <span className="truncate">{req.destination}</span>
+                  <span className="truncate text-xs md:text-sm">{req.destination}</span>
                 </div>
               </Card>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <Card className="p-4 bg-slate-50 border-slate-200">
+            <p className="text-sm text-slate-500 text-center">Sin estudiantes aceptados aún</p>
+          </Card>
+        )}
+      </div>
 
       {/* Active Trips */}
       {activeTrips.length > 0 && (
