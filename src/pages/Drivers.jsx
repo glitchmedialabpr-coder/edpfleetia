@@ -62,6 +62,7 @@ export default function Drivers() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    driver_id: '',
     full_name: '',
     email: '',
     phone: '',
@@ -103,6 +104,7 @@ export default function Drivers() {
   const openCreateModal = () => {
     setEditingDriver(null);
     setFormData({
+      driver_id: '',
       full_name: '',
       email: '',
       phone: '',
@@ -123,6 +125,7 @@ export default function Drivers() {
   const openEditModal = (driver) => {
     setEditingDriver(driver);
     setFormData({
+      driver_id: driver.driver_id || '',
       full_name: driver.full_name || '',
       email: driver.email || '',
       phone: driver.phone || '',
@@ -264,6 +267,7 @@ export default function Drivers() {
               <TableHeader>
                 <TableRow className="bg-slate-50">
                   <TableHead>Chofer</TableHead>
+                  <TableHead>ID</TableHead>
                   <TableHead>Contacto</TableHead>
                   <TableHead>Licencia</TableHead>
                   <TableHead>Categoría</TableHead>
@@ -297,6 +301,11 @@ export default function Drivers() {
                             )}
                           </div>
                         </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200 font-mono">
+                          {driver.driver_id || '-'}
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="space-y-1">
@@ -397,6 +406,17 @@ export default function Drivers() {
             <div>
               <h3 className="font-semibold text-slate-800 mb-3">Información Personal</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>ID de Conductor (3 dígitos) *</Label>
+                  <Input
+                    value={formData.driver_id}
+                    onChange={(e) => setFormData({ ...formData, driver_id: e.target.value.replace(/\D/g, '').slice(0, 3) })}
+                    placeholder="123"
+                    maxLength="3"
+                    required
+                  />
+                </div>
+
                 <div className="space-y-2">
                   <Label>Nombre Completo *</Label>
                   <Input
@@ -578,6 +598,17 @@ export default function Drivers() {
               <div>
                 <h3 className="font-semibold text-slate-800 mb-3">Información Personal</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>ID de Conductor (3 dígitos) *</Label>
+                    <Input
+                      value={formData.driver_id}
+                      onChange={(e) => setFormData({ ...formData, driver_id: e.target.value.replace(/\D/g, '').slice(0, 3) })}
+                      placeholder="123"
+                      maxLength="3"
+                      required
+                    />
+                  </div>
+
                   <div className="space-y-2">
                     <Label>Nombre Completo *</Label>
                     <Input

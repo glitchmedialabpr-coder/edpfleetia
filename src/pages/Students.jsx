@@ -203,7 +203,11 @@ export default function Students() {
                         <span className="font-medium text-slate-800">{student.full_name}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-slate-600">{student.student_id}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 font-mono">
+                        {student.student_id}
+                      </Badge>
+                    </TableCell>
                     <TableCell>
                       {student.housing_name ? (
                         <div className="flex items-center gap-1 text-slate-600">
@@ -275,10 +279,12 @@ export default function Students() {
               </div>
 
               <div className="space-y-2">
-                <Label>ID Estudiante *</Label>
+                <Label>ID Estudiante (4 dígitos) *</Label>
                 <Input
                   value={formData.student_id}
-                  onChange={(e) => setFormData({ ...formData, student_id: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, student_id: e.target.value.replace(/\D/g, '').slice(0, 4) })}
+                  placeholder="1234"
+                  maxLength="4"
                   required
                 />
               </div>
