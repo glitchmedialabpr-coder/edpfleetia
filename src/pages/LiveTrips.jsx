@@ -210,7 +210,7 @@ export default function LiveTrips() {
   );
 }
 
-function TripRequestCard({ request }) {
+function TripRequestCard({ request, onDelete }) {
   const status = request.status && statusConfig[request.status] ? statusConfig[request.status] : statusConfig.pending;
   
   return (
