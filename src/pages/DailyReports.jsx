@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
   TableBody,
@@ -34,10 +35,11 @@ import {
   Trash2,
   Eye
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { es } from 'date-fns/locale';
 import EmptyState from '../components/common/EmptyState';
 import StatsCard from '../components/common/StatsCard';
+import TripStatistics from '../components/reports/TripStatistics';
 
 export default function DailyReports() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -45,6 +47,7 @@ export default function DailyReports() {
   const [selectedReport, setSelectedReport] = useState(null);
   const [search, setSearch] = useState('');
   const [driverFilter, setDriverFilter] = useState('all');
+  const [statsPeriod, setStatsPeriod] = useState('week');
   const [formData, setFormData] = useState({
     driver_id: '',
     date: format(new Date(), 'yyyy-MM-dd'),
@@ -69,6 +72,32 @@ export default function DailyReports() {
     queryKey: ['drivers'],
     queryFn: () => base44.entities.Driver.list()
   });
+
+  const { data: allTrips = [] } = useQuery({
+    queryKey: ['all-trips'],
+    queryFn: () => base44.entities.Trip.list('-scheduled_date', 500)
+  });
+
+  const filteredTrips = useMemo(() => {
+    const now = new Date();
+    let startDate, endDate;
+
+    if (statsPeriod === 'day') {
+      startDate = format(now, 'yyyy-MM-dd');
+      endDate = startDate;
+    } else if (statsPeriod === 'week') {
+      startDate = format(startOfWeek(now, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+      endDate = format(endOfWeek(now, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+    } else if (statsPeriod === 'month') {
+      startDate = format(startOfMonth(now), 'yyyy-MM-dd');
+      endDate = format(endOfMonth(now), 'yyyy-MM-dd');
+    }
+
+    return allTrips.filter(trip => {
+      if (!trip.scheduled_date) return false;
+      return trip.scheduled_date >= startDate && trip.scheduled_date <= endDate;
+    });
+  }, [allTrips, statsPeriod]);
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.DailyWorkReport.create(data),
@@ -139,14 +168,58 @@ export default function DailyReports() {
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Reportes Diarios</h1>
-          <p className="text-slate-500 mt-1">Registro de trabajo diario de choferes</p>
+          <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Reportes y Estadísticas</h1>
+          <p className="text-slate-500 mt-1">Registro de trabajo diario y análisis de viajes</p>
         </div>
         <Button onClick={() => setModalOpen(true)} className="bg-teal-600 hover:bg-teal-700">
           <Plus className="w-4 h-4 mr-2" />
           Nuevo Reporte
         </Button>
       </div>
+
+      <Tabs defaultValue="stats" className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="stats">Estadísticas de Viajes</TabsTrigger>
+          <TabsTrigger value="reports">Reportes Diarios</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="stats" className="space-y-6 mt-6">
+          <Card className="p-4 border-0 shadow-sm">
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium text-slate-600">Período:</span>
+              <div className="flex gap-2">
+                <Button
+                  variant={statsPeriod === 'day' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setStatsPeriod('day')}
+                  className={statsPeriod === 'day' ? 'bg-teal-600' : ''}
+                >
+                  Hoy
+                </Button>
+                <Button
+                  variant={statsPeriod === 'week' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setStatsPeriod('week')}
+                  className={statsPeriod === 'week' ? 'bg-teal-600' : ''}
+                >
+                  Esta Semana
+                </Button>
+                <Button
+                  variant={statsPeriod === 'month' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setStatsPeriod('month')}
+                  className={statsPeriod === 'month' ? 'bg-teal-600' : ''}
+                >
+                  Este Mes
+                </Button>
+              </div>
+            </div>
+          </Card>
+
+          <TripStatistics trips={filteredTrips} period={statsPeriod} />
+        </TabsContent>
+
+        <TabsContent value="reports" className="space-y-6 mt-6">
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <StatsCard title="Reportes Hoy" value={todayReports} icon={ClipboardList} color="teal" />
@@ -473,6 +546,8 @@ export default function DailyReports() {
           )}
         </DialogContent>
       </Dialog>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
