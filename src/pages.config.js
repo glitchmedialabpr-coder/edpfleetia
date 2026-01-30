@@ -51,6 +51,7 @@ import Accidents from './pages/Accidents';
 import AdminLogin from './pages/AdminLogin';
 import DailyReports from './pages/DailyReports';
 import Dashboard from './pages/Dashboard';
+import DriverAcceptedStudents from './pages/DriverAcceptedStudents';
 import DriverHistory from './pages/DriverHistory';
 import DriverLogin from './pages/DriverLogin';
 import DriverRequests from './pages/DriverRequests';
@@ -71,8 +72,8 @@ import Students from './pages/Students';
 import Trips from './pages/Trips';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
-import DriverAcceptedStudents from './pages/DriverAcceptedStudents';
 import DriverSchedule from './pages/DriverSchedule';
+import Notifications from './pages/Notifications';
 import __Layout from './Layout.jsx';
 
 
@@ -81,6 +82,7 @@ export const PAGES = {
     "AdminLogin": AdminLogin,
     "DailyReports": DailyReports,
     "Dashboard": Dashboard,
+    "DriverAcceptedStudents": DriverAcceptedStudents,
     "DriverHistory": DriverHistory,
     "DriverLogin": DriverLogin,
     "DriverRequests": DriverRequests,
@@ -101,8 +103,8 @@ export const PAGES = {
     "Trips": Trips,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
-    "DriverAcceptedStudents": DriverAcceptedStudents,
     "DriverSchedule": DriverSchedule,
+    "Notifications": Notifications,
 }
 
 export const pagesConfig = {
