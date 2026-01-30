@@ -201,6 +201,31 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      {/* Desktop Header */}
+      <header className="hidden lg:block fixed top-0 left-72 right-0 h-16 bg-white border-b border-slate-200 z-30 px-8">
+        <div className="flex items-center justify-end h-full gap-4">
+          <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-50">
+            <div className="w-9 h-9 bg-slate-200 rounded-full flex items-center justify-center">
+              <User className="w-5 h-5 text-slate-500" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-slate-800 truncate text-sm">{user.full_name || user.email}</p>
+              <p className="text-xs text-slate-500 capitalize">
+                {isAdmin ? 'Administrador' : isDriver ? 'Conductor' : 'Pasajero'}
+              </p>
+            </div>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="text-slate-600 hover:text-red-600 hover:bg-red-50"
+            onClick={handleLogout}
+          >
+            <LogOut className="w-5 h-5" />
+          </Button>
+        </div>
+      </header>
+
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-40 px-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -251,7 +276,7 @@ export default function Layout({ children, currentPageName }) {
           </div>
         </div>
 
-        <nav className="p-4 space-y-1">
+        <nav className="p-4 space-y-1 pb-32 lg:pb-4">
           {navItems.map((item) => {
             const isActive = currentPageName === item.page;
             return (
@@ -277,8 +302,8 @@ export default function Layout({ children, currentPageName }) {
           })}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-100 bg-slate-50/50">
-          <div className="flex items-center gap-3 px-3 py-2 mb-3">
+        <div className="lg:hidden absolute bottom-0 left-0 right-0 p-4 border-t border-slate-100 bg-white">
+          <div className="flex items-center gap-3 px-3 py-2 mb-3 bg-slate-50 rounded-lg">
             <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
               <User className="w-5 h-5 text-slate-500" />
             </div>
@@ -301,7 +326,7 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main Content */}
-      <main className="lg:pl-72 pt-16 lg:pt-0 min-h-screen">
+      <main className="lg:pl-72 pt-16 lg:pt-16 min-h-screen">
         <div className="p-4 lg:p-8">
           {children}
         </div>
