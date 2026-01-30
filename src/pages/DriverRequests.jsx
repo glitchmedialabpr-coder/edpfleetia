@@ -382,18 +382,18 @@ export default function DriverRequests() {
           <div className="grid gap-4">
             {activeTrips.map(trip => (
               <Card key={trip.id} className="p-6 border-l-4 border-indigo-600">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Badge className="bg-indigo-100 text-indigo-700">
                       En Viaje
                     </Badge>
                     <Badge variant="outline" className="flex items-center gap-1">
                       <Users className="w-3 h-3" />
-                      {trip.students?.length || 0} estudiantes
+                      {trip.students?.length || 0} est.
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-500">
-                    <Clock className="w-4 h-4" />
+                  <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-500">
+                    <Clock className="w-4 h-4 flex-shrink-0" />
                     {trip.departure_time}
                   </div>
                 </div>
