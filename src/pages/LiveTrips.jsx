@@ -56,7 +56,7 @@ export default function LiveTrips() {
   }, [refetch]);
 
   const activeRequests = allRequests.filter(r => 
-    ['pending', 'accepted', 'in_progress'].includes(r.status)
+    ['pending', 'accepted', 'accepted_by_driver', 'in_progress'].includes(r.status)
   );
   const todayRequests = allRequests.filter(r => {
     const today = new Date().toDateString();
