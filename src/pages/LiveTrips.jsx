@@ -143,12 +143,31 @@ export default function LiveTrips() {
         />
       </div>
 
+      {/* Delete Actions */}
+      {recentRequests.length > 0 && (
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => {
+              if (window.confirm('¿Eliminar todos los viajes de los últimos 2 días?')) {
+                deleteAllMutation.mutate();
+              }
+            }}
+            disabled={deleteAllMutation.isPending}
+            className="border-red-200 text-red-600 hover:bg-red-50"
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            Eliminar Todo
+          </Button>
+        </div>
+      )}
+
       {/* Tabs */}
       <Tabs defaultValue="active" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="active">Activos ({activeRequests.length})</TabsTrigger>
           <TabsTrigger value="today">Hoy ({todayRequests.length})</TabsTrigger>
-          <TabsTrigger value="all">Todos ({allRequests.length})</TabsTrigger>
+          <TabsTrigger value="all">Todos ({recentRequests.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="active" className="space-y-4 mt-4">
