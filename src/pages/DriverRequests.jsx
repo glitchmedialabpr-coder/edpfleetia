@@ -344,44 +344,37 @@ export default function DriverRequests() {
       </div>
 
       {/* Accepted Students (Ready to Start Trip) */}
-      <div className="space-y-3">
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between">
+      {acceptedRequests.length > 0 && (
+        <div className="space-y-4 p-4 md:p-5 bg-gradient-to-br from-purple-50 to-white rounded-xl border border-purple-200">
+          <div className="flex flex-col gap-3">
             <h2 className="text-base md:text-lg font-semibold text-slate-800">
               Estudiantes Aceptados ({acceptedRequests.length}/15)
             </h2>
-          </div>
-          {acceptedRequests.length > 0 && (
             <Button 
               onClick={handleStartTrip}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-sm md:text-base"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 md:py-3 text-sm md:text-base h-auto"
             >
               <Navigation className="w-4 h-4 mr-2" />
               Comenzar Viaje
             </Button>
-          )}
-        </div>
-        {acceptedRequests.length > 0 ? (
-          <div className="grid gap-2 md:gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          </div>
+          
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {acceptedRequests.map(req => (
-              <Card key={req.id} className="p-3 md:p-4 border-l-4 border-orange-500">
+              <Card key={req.id} className="p-3 md:p-4 border-l-4 border-orange-500 hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-2 mb-2">
                   <User className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                  <span className="font-medium text-slate-800 truncate text-sm">{req.passenger_name}</span>
+                  <span className="font-medium text-slate-800 text-sm line-clamp-2">{req.passenger_name}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-slate-600">
+                <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-red-500 flex-shrink-0" />
-                  <span className="truncate text-xs md:text-sm">{req.destination}</span>
+                  <span className="text-xs md:text-sm text-slate-600 line-clamp-2">{req.destination}</span>
                 </div>
               </Card>
             ))}
           </div>
-        ) : (
-          <Card className="p-4 bg-slate-50 border-slate-200">
-            <p className="text-sm text-slate-500 text-center">Sin estudiantes aceptados aún</p>
-          </Card>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Active Trips */}
       <div className="space-y-3 md:space-y-4">
