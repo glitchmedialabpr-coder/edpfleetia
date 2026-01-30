@@ -136,7 +136,10 @@ export default function DriverRequests() {
       return;
     }
 
-    if (!user) return;
+    if (!user || !user.driver_id) {
+      toast.error('Error: ID de conductor no encontrado');
+      return;
+    }
 
     // Check limit of 15 students
     if (acceptedRequests.length >= 15) {
