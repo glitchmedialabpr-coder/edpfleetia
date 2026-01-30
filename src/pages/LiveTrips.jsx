@@ -258,23 +258,38 @@ function TripRequestCard({ request, onDelete }) {
           </div>
         </div>
 
-        {request.driver_name && (
-          <div className="lg:w-64 p-3 bg-slate-50 rounded-lg">
-            <p className="text-xs font-semibold text-slate-700 mb-2">Conductor</p>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <User className="w-4 h-4" />
-                <span>{request.driver_name}</span>
-              </div>
-              {request.vehicle_info && (
+        <div className="flex flex-col gap-2 lg:w-64">
+          {request.driver_name && (
+            <div className="p-3 bg-slate-50 rounded-lg">
+              <p className="text-xs font-semibold text-slate-700 mb-2">Conductor</p>
+              <div className="space-y-1">
                 <div className="flex items-center gap-2 text-sm text-slate-600">
-                  <Car className="w-4 h-4" />
-                  <span className="text-xs">{request.vehicle_info}</span>
+                  <User className="w-4 h-4" />
+                  <span>{request.driver_name}</span>
                 </div>
-              )}
+                {request.vehicle_info && (
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <Car className="w-4 h-4" />
+                    <span className="text-xs">{request.vehicle_info}</span>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              if (window.confirm('¿Eliminar este viaje?')) {
+                onDelete(request.id);
+              }
+            }}
+            className="border-red-200 text-red-600 hover:bg-red-50 w-full"
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            Eliminar
+          </Button>
+        </div>
       </div>
     </Card>
   );
