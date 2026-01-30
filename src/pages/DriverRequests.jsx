@@ -28,7 +28,9 @@ import EmptyState from '../components/common/EmptyState';
 const statusConfig = {
   pending: { label: 'Disponible', color: 'bg-yellow-100 text-yellow-700' },
   accepted: { label: 'Aceptado', color: 'bg-blue-100 text-blue-700' },
+  accepted_by_driver: { label: 'Por Iniciar', color: 'bg-orange-100 text-orange-700' },
   in_progress: { label: 'En Progreso', color: 'bg-purple-100 text-purple-700' },
+  in_trip: { label: 'En Viaje', color: 'bg-indigo-100 text-indigo-700' },
   completed: { label: 'Completado', color: 'bg-green-100 text-green-700' }
 };
 
@@ -72,24 +74,31 @@ export default function DriverRequests() {
     queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' }, '-created_date')
   });
 
-  const { data: myTrips = [], refetch: refetchMyTrips } = useQuery({
-    queryKey: ['my-trips', user?.id],
+  const { data: acceptedRequests = [], refetch: refetchAccepted } = useQuery({
+    queryKey: ['accepted-requests', user?.id],
     queryFn: () => base44.entities.TripRequest.filter({ 
       driver_id: user?.id,
-      status: { $in: ['accepted', 'in_progress'] }
+      status: 'accepted_by_driver'
+    }, '-created_date'),
+    enabled: !!user?.id
+  });
+
+  const { data: activeTrips = [], refetch: refetchActiveTrips } = useQuery({
+    queryKey: ['active-trips', user?.id],
+    queryFn: () => base44.entities.Trip.filter({ 
+      driver_id: user?.id,
+      status: 'in_progress'
     }, '-created_date'),
     enabled: !!user?.id
   });
 
   useEffect(() => {
-    const unsubscribe = base44.entities.TripRequest.subscribe((event) => {
+    const unsubscribeRequest = base44.entities.TripRequest.subscribe((event) => {
       if (event.type === 'create' && event.data?.status === 'pending' && selectedVehicle) {
-        // New trip request - notify driver
         notificationSound.play().catch(e => console.log('Audio play failed:', e));
         setHasNewRequest(true);
         setTimeout(() => setHasNewRequest(false), 3000);
         
-        // Browser notification
         if ('Notification' in window && Notification.permission === 'granted') {
           new Notification('🚗 Nueva Solicitud de Viaje', {
             body: `${event.data.passenger_name} necesita ir a ${event.data.destination}`,
@@ -105,27 +114,21 @@ export default function DriverRequests() {
         refetchPending();
       } else if (event.type === 'update') {
         refetchPending();
-        if (user?.id) {
-          // Check if it's my trip and status changed
-          if (event.data?.driver_id === user.id) {
-            const oldStatus = event.old_data?.status;
-            const newStatus = event.data?.status;
-            
-            if (oldStatus !== newStatus) {
-              if (newStatus === 'in_progress') {
-                toast.info('🚗 Viaje iniciado');
-              } else if (newStatus === 'completed') {
-                toast.success('✅ Viaje completado');
-              }
-            }
-            refetchMyTrips();
-          }
-        }
+        refetchAccepted();
       }
     });
 
-    return unsubscribe;
-  }, [refetchPending, refetchMyTrips, user?.id, selectedVehicle, notificationSound]);
+    const unsubscribeTrip = base44.entities.Trip.subscribe((event) => {
+      if (event.type === 'update' && user?.id && event.data?.driver_id === user.id) {
+        refetchActiveTrips();
+      }
+    });
+
+    return () => {
+      unsubscribeRequest();
+      unsubscribeTrip();
+    };
+  }, [refetchPending, refetchAccepted, refetchActiveTrips, user?.id, selectedVehicle, notificationSound]);
 
   const handleAccept = async (request) => {
     if (!selectedVehicle) {
@@ -135,13 +138,19 @@ export default function DriverRequests() {
 
     if (!user) return;
 
+    // Check limit of 15 students
+    if (acceptedRequests.length >= 15) {
+      toast.error('Máximo 15 estudiantes. Inicia el viaje primero.');
+      return;
+    }
+
     try {
       const vehicle = vehicles.find(v => v.id === selectedVehicle);
       const now = new Date();
       const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       
       await base44.entities.TripRequest.update(request.id, {
-        status: 'accepted',
+        status: 'accepted_by_driver',
         driver_id: user.id,
         driver_name: user.full_name || user.email,
         vehicle_id: selectedVehicle,
@@ -149,7 +158,6 @@ export default function DriverRequests() {
         accepted_at: timeString
       });
 
-      // Save response history
       await base44.entities.TripRequestResponse.create({
         trip_request_id: request.id,
         driver_id: user.id,
@@ -162,11 +170,11 @@ export default function DriverRequests() {
         destination: request.destination
       });
 
-      toast.success('Viaje aceptado - ' + timeString);
+      toast.success(`Estudiante aceptado (${acceptedRequests.length + 1}/15)`);
       refetchPending();
-      refetchMyTrips();
+      refetchAccepted();
     } catch (error) {
-      toast.error('Error al aceptar viaje');
+      toast.error('Error al aceptar estudiante');
     }
   };
 
@@ -196,33 +204,111 @@ export default function DriverRequests() {
     }
   };
 
-  const handleStartTrip = async (request) => {
+  const handleStartTrip = async () => {
+    if (acceptedRequests.length === 0) {
+      toast.error('No hay estudiantes aceptados');
+      return;
+    }
+
     try {
       const now = new Date();
       const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-      
-      await base44.entities.TripRequest.update(request.id, {
-        status: 'in_progress',
-        started_at: timeString
+      const vehicle = vehicles.find(v => v.id === selectedVehicle);
+
+      // Create Trip with all accepted students
+      const studentsData = acceptedRequests.map(req => ({
+        request_id: req.id,
+        student_id: req.passenger_id,
+        student_name: req.passenger_name,
+        housing_name: req.destination,
+        destination: req.destination,
+        destination_town: req.destination_town,
+        delivery_status: 'pending',
+        delivery_time: null
+      }));
+
+      const trip = await base44.entities.Trip.create({
+        driver_id: user.id,
+        driver_name: user.full_name || user.email,
+        vehicle_id: selectedVehicle,
+        vehicle_info: vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '',
+        scheduled_date: new Date().toISOString().split('T')[0],
+        scheduled_time: timeString,
+        departure_time: timeString,
+        students: studentsData,
+        origin: 'EDP University',
+        status: 'in_progress'
       });
-      toast.success('Viaje iniciado - ' + timeString);
-      refetchMyTrips();
+
+      // Update all accepted requests to in_trip status
+      for (const req of acceptedRequests) {
+        await base44.entities.TripRequest.update(req.id, {
+          status: 'in_trip',
+          started_at: timeString,
+          trip_id: trip.id
+        });
+      }
+
+      toast.success(`Viaje iniciado con ${acceptedRequests.length} estudiante(s)`);
+      refetchAccepted();
+      refetchActiveTrips();
     } catch (error) {
       toast.error('Error al iniciar viaje');
+      console.error(error);
     }
   };
 
-  const handleCompleteTrip = async (request) => {
+  const handleDeliverStudent = async (trip, studentIndex) => {
     try {
       const now = new Date();
       const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       
-      await base44.entities.TripRequest.update(request.id, {
-        status: 'completed',
-        completed_at: timeString
+      const updatedStudents = [...trip.students];
+      updatedStudents[studentIndex] = {
+        ...updatedStudents[studentIndex],
+        delivery_status: 'delivered',
+        delivery_time: timeString
+      };
+
+      await base44.entities.Trip.update(trip.id, {
+        students: updatedStudents
       });
+
+      toast.success('Estudiante entregado - ' + timeString);
+      refetchActiveTrips();
+    } catch (error) {
+      toast.error('Error al marcar estudiante como entregado');
+    }
+  };
+
+  const handleCompleteTrip = async (trip) => {
+    const allDelivered = trip.students.every(s => s.delivery_status === 'delivered');
+    
+    if (!allDelivered) {
+      toast.error('Debes entregar todos los estudiantes primero');
+      return;
+    }
+
+    try {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      
+      await base44.entities.Trip.update(trip.id, {
+        status: 'completed',
+        arrival_time: timeString
+      });
+
+      // Update all trip requests to completed
+      const requestIds = trip.students.map(s => s.request_id);
+      for (const reqId of requestIds) {
+        await base44.entities.TripRequest.update(reqId, {
+          status: 'completed',
+          completed_at: timeString
+        });
+      }
+
       toast.success('Viaje completado - ' + timeString);
-      refetchMyTrips();
+      refetchActiveTrips();
     } catch (error) {
       toast.error('Error al completar viaje');
     }
@@ -251,80 +337,107 @@ export default function DriverRequests() {
         </div>
       </div>
 
-      {/* My Active Trips */}
-      {myTrips.length > 0 && (
+      {/* Accepted Students (Ready to Start Trip) */}
+      {acceptedRequests.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-slate-800">Mis Viajes Activos</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-slate-800">
+              Estudiantes Aceptados ({acceptedRequests.length}/15)
+            </h2>
+            <Button 
+              onClick={handleStartTrip}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              <Navigation className="w-4 h-4 mr-2" />
+              Comenzar Viaje
+            </Button>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {acceptedRequests.map(req => (
+              <Card key={req.id} className="p-4 border-l-4 border-orange-500">
+                <div className="flex items-center gap-2 mb-2">
+                  <User className="w-4 h-4 text-slate-400" />
+                  <span className="font-medium text-slate-800">{req.passenger_name}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-slate-600">
+                  <MapPin className="w-4 h-4 text-red-500" />
+                  <span className="truncate">{req.destination}</span>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Active Trips */}
+      {activeTrips.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-slate-800">Viajes en Vivo</h2>
           <div className="grid gap-4">
-            {myTrips.map(trip => (
-              <Card key={trip.id} className="p-6 border-l-4 border-blue-600">
+            {activeTrips.map(trip => (
+              <Card key={trip.id} className="p-6 border-l-4 border-indigo-600">
                 <div className="flex justify-between items-start mb-4">
-                  <Badge className={statusConfig[trip.status].color}>
-                    {statusConfig[trip.status].label}
-                  </Badge>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4 mb-4">
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-2">
-                      <Navigation className="w-5 h-5 text-teal-600 mt-0.5" />
-                      <div className="flex-1">
-                        <p className="text-sm text-slate-500">Origen</p>
-                        <p className="font-medium text-slate-800">{trip.origin}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-2">
-                      <MapPin className="w-5 h-5 text-red-600 mt-0.5" />
-                      <div className="flex-1">
-                        <p className="text-sm text-slate-500">Destino</p>
-                        <p className="font-medium text-slate-800">{trip.destination}</p>
-                      </div>
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-indigo-100 text-indigo-700">
+                      En Viaje
+                    </Badge>
+                    <Badge variant="outline" className="flex items-center gap-1">
+                      <Users className="w-3 h-3" />
+                      {trip.students?.length || 0} estudiantes
+                    </Badge>
                   </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <User className="w-4 h-4 text-slate-400" />
-                      <span className="text-sm text-slate-600">{trip.passenger_name}</span>
-                    </div>
-
-                    {trip.passenger_phone && (
-                      <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4 text-slate-400" />
-                        <span className="text-sm text-slate-600">{trip.passenger_phone}</span>
-                      </div>
-                    )}
-
-                    {trip.pickup_time && (
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-slate-400" />
-                        <span className="text-sm text-slate-600">{trip.pickup_time}</span>
-                      </div>
-                    )}
+                  <div className="flex items-center gap-2 text-sm text-slate-500">
+                    <Clock className="w-4 h-4" />
+                    {trip.departure_time}
                   </div>
                 </div>
 
-                <div className="flex gap-2 pt-2">
-                  {trip.status === 'accepted' && (
-                    <Button 
-                      onClick={() => handleStartTrip(trip)}
-                      className="flex-1 bg-purple-600 hover:bg-purple-700"
-                    >
-                      <Navigation className="w-4 h-4 mr-2" />
-                      Iniciar Viaje
-                    </Button>
-                  )}
-                  {trip.status === 'in_progress' && (
-                    <Button 
-                      onClick={() => handleCompleteTrip(trip)}
-                      className="flex-1 bg-green-600 hover:bg-green-700"
-                    >
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Completar Viaje
-                    </Button>
-                  )}
+                <div className="space-y-2 mb-4">
+                  <h3 className="font-medium text-slate-700">Estudiantes:</h3>
+                  <div className="space-y-2">
+                    {trip.students?.map((student, idx) => (
+                      <div 
+                        key={idx}
+                        className={`flex items-center justify-between p-3 rounded-lg border ${
+                          student.delivery_status === 'delivered' 
+                            ? 'bg-green-50 border-green-200' 
+                            : 'bg-white border-slate-200'
+                        }`}
+                      >
+                        <div className="flex-1">
+                          <p className="font-medium text-slate-800">{student.student_name}</p>
+                          <p className="text-sm text-slate-500">{student.destination}</p>
+                          {student.delivery_status === 'delivered' && (
+                            <p className="text-xs text-green-600 mt-1">
+                              Entregado: {student.delivery_time}
+                            </p>
+                          )}
+                        </div>
+                        {student.delivery_status === 'pending' ? (
+                          <Button
+                            size="sm"
+                            onClick={() => handleDeliverStudent(trip, idx)}
+                            className="bg-green-600 hover:bg-green-700"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            Entregado
+                          </Button>
+                        ) : (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
+                <Button 
+                  onClick={() => handleCompleteTrip(trip)}
+                  className="w-full bg-teal-600 hover:bg-teal-700"
+                  disabled={!trip.students?.every(s => s.delivery_status === 'delivered')}
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Completar Viaje
+                </Button>
               </Card>
             ))}
           </div>

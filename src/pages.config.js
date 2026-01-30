@@ -48,55 +48,55 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Accidents from './pages/Accidents';
+import AdminLogin from './pages/AdminLogin';
 import DailyReports from './pages/DailyReports';
 import Dashboard from './pages/Dashboard';
 import DriverHistory from './pages/DriverHistory';
+import DriverLogin from './pages/DriverLogin';
 import DriverRequests from './pages/DriverRequests';
 import DriverTrips from './pages/DriverTrips';
 import Drivers from './pages/Drivers';
 import FuelRecords from './pages/FuelRecords';
 import History from './pages/History';
+import Home from './pages/Home';
 import Housing from './pages/Housing';
 import LiveTrips from './pages/LiveTrips';
 import Maintenance from './pages/Maintenance';
+import PassengerLogin from './pages/PassengerLogin';
 import PassengerTrips from './pages/PassengerTrips';
 import Purchases from './pages/Purchases';
+import ResponseHistory from './pages/ResponseHistory';
 import Students from './pages/Students';
 import Trips from './pages/Trips';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
-import ResponseHistory from './pages/ResponseHistory';
-import AdminLogin from './pages/AdminLogin';
-import DriverLogin from './pages/DriverLogin';
-import PassengerLogin from './pages/PassengerLogin';
-import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Accidents": Accidents,
+    "AdminLogin": AdminLogin,
     "DailyReports": DailyReports,
     "Dashboard": Dashboard,
     "DriverHistory": DriverHistory,
+    "DriverLogin": DriverLogin,
     "DriverRequests": DriverRequests,
     "DriverTrips": DriverTrips,
     "Drivers": Drivers,
     "FuelRecords": FuelRecords,
     "History": History,
+    "Home": Home,
     "Housing": Housing,
     "LiveTrips": LiveTrips,
     "Maintenance": Maintenance,
+    "PassengerLogin": PassengerLogin,
     "PassengerTrips": PassengerTrips,
     "Purchases": Purchases,
+    "ResponseHistory": ResponseHistory,
     "Students": Students,
     "Trips": Trips,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
-    "ResponseHistory": ResponseHistory,
-    "AdminLogin": AdminLogin,
-    "DriverLogin": DriverLogin,
-    "PassengerLogin": PassengerLogin,
-    "Home": Home,
 }
 
 export const pagesConfig = {
