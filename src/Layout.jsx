@@ -152,51 +152,16 @@ export default function Layout({ children, currentPageName }) {
   }
 
   if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
-        <div className="max-w-md w-full">
-          <div className="text-center mb-8">
-            <div className="w-32 h-32 mx-auto mb-6">
-              <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/303d16ba3_471231367_1006775134815986_8615529326532786364_n.jpg" 
-                alt="EDP University"
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <h1 className="text-3xl font-bold text-white mb-2">EDP Transport</h1>
-            <p className="text-slate-400">Sistema de Gestión de Transporte Estudiantil</p>
-          </div>
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/10">
-            <form onSubmit={handlePinLogin} className="space-y-4">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-teal-600/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Shield className="w-8 h-8 text-teal-400" />
-                </div>
-                <p className="text-sm text-slate-300 mb-4">Ingresa tu PIN (admin) o ID de estudiante</p>
-              </div>
-              <Input
-                type="text"
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                placeholder="PIN o ID estudiante"
-                className="text-center text-lg bg-white/10 border-white/20 text-white placeholder:text-slate-500"
-                autoFocus
-              />
-              {pinError && (
-                <p className="text-sm text-red-400 text-center">{pinError}</p>
-              )}
-              <Button 
-                type="submit"
-                disabled={pinLoading || !pin}
-                className="w-full bg-teal-600 hover:bg-teal-700 text-white h-12 rounded-xl"
-              >
-                {pinLoading ? 'Verificando...' : 'Entrar'}
-              </Button>
-            </form>
-          </div>
-        </div>
-      </div>
-    );
+    // Redirect to appropriate login page
+    const loginPages = ['AdminLogin', 'DriverLogin', 'PassengerLogin'];
+    if (!loginPages.includes(currentPageName)) {
+      // Default redirect to admin login
+      window.location.href = createPageUrl('AdminLogin');
+      return null;
+    }
+
+    // Allow login pages to render
+    return children;
   }
 
   return (

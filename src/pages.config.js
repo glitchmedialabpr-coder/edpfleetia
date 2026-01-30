@@ -66,6 +66,9 @@ import Trips from './pages/Trips';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
 import ResponseHistory from './pages/ResponseHistory';
+import AdminLogin from './pages/AdminLogin';
+import DriverLogin from './pages/DriverLogin';
+import PassengerLogin from './pages/PassengerLogin';
 import __Layout from './Layout.jsx';
 
 
@@ -89,6 +92,9 @@ export const PAGES = {
     "Vehicles": Vehicles,
     "Warnings": Warnings,
     "ResponseHistory": ResponseHistory,
+    "AdminLogin": AdminLogin,
+    "DriverLogin": DriverLogin,
+    "PassengerLogin": PassengerLogin,
 }
 
 export const pagesConfig = {

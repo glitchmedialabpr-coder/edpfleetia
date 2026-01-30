@@ -1,0 +1,131 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '../utils';
+import { base44 } from '@/api/base44Client';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Truck, Mail } from 'lucide-react';
+import { toast } from 'sonner';
+
+export default function DriverLogin() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Check if already logged in
+    const pinUser = localStorage.getItem('pin_user');
+    if (pinUser) {
+      try {
+        const user = JSON.parse(pinUser);
+        if (user.user_type === 'driver') {
+          navigate(createPageUrl('DriverRequests'));
+        }
+      } catch (e) {
+        localStorage.removeItem('pin_user');
+      }
+    }
+  }, [navigate]);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const drivers = await base44.entities.Driver.filter({ email: email.toLowerCase().trim() });
+      
+      if (drivers && drivers.length > 0) {
+        const driver = drivers[0];
+        const driverUser = {
+          id: driver.id,
+          email: driver.email,
+          full_name: driver.full_name,
+          phone: driver.phone,
+          role: 'user',
+          user_type: 'driver'
+        };
+        localStorage.setItem('pin_user', JSON.stringify(driverUser));
+        toast.success(`¡Bienvenido ${driver.full_name}!`);
+        navigate(createPageUrl('DriverRequests'));
+      } else {
+        toast.error('Conductor no encontrado');
+        setEmail('');
+      }
+    } catch (error) {
+      toast.error('Error al verificar conductor');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-teal-900 via-teal-800 to-emerald-900 flex items-center justify-center p-4">
+      <div className="max-w-md w-full">
+        <div className="text-center mb-8">
+          <div className="w-32 h-32 mx-auto mb-6">
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/303d16ba3_471231367_1006775134815986_8615529326532786364_n.jpg" 
+              alt="EDP University"
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-teal-600/20 rounded-full mb-4">
+            <Truck className="w-10 h-10 text-teal-400" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">Portal de Conductores</h1>
+          <p className="text-teal-200">EDP Transport - Acceso para Conductores</p>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/10 shadow-2xl">
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-teal-100 mb-2">
+                Correo Electrónico
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-teal-300" />
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="tu@email.com"
+                  className="pl-12 bg-white/10 border-white/20 text-white placeholder:text-teal-300/50 h-12"
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            <Button 
+              type="submit"
+              disabled={loading || !email}
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white h-12 text-lg rounded-xl shadow-lg"
+            >
+              {loading ? 'Verificando...' : 'Iniciar Sesión'}
+            </Button>
+          </form>
+
+          <div className="mt-6 pt-6 border-t border-white/10">
+            <div className="flex gap-2 text-sm text-teal-200">
+              <span>¿Acceso diferente?</span>
+            </div>
+            <div className="flex gap-2 mt-2">
+              <Button 
+                variant="ghost" 
+                className="flex-1 text-teal-200 hover:bg-white/10"
+                onClick={() => navigate(createPageUrl('AdminLogin'))}
+              >
+                Admin
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="flex-1 text-teal-200 hover:bg-white/10"
+                onClick={() => navigate(createPageUrl('PassengerLogin'))}
+              >
+                Estudiante
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
