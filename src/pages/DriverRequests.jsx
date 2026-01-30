@@ -482,70 +482,70 @@ export default function DriverRequests() {
             {pendingRequests.map(request => {
               const requestStatus = request.status && statusConfig[request.status] ? statusConfig[request.status] : statusConfig.pending;
               return (
-              <Card key={request.id} className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex justify-between items-start mb-4">
-                  <Badge className={requestStatus.color}>
-                    Nuevo viaje
-                  </Badge>
-                  <span className="text-xs text-slate-400">
-                    {new Date(request.created_date).toLocaleTimeString()}
-                  </span>
-                </div>
-
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-start gap-2">
-                    <Navigation className="w-5 h-5 text-teal-600 mt-0.5" />
-                    <div className="flex-1">
-                      <p className="text-sm text-slate-500">Origen</p>
-                      <p className="font-medium text-slate-800">{request.origin}</p>
-                    </div>
+                <Card key={request.id} className="p-6 hover:shadow-lg transition-shadow">
+                  <div className="flex justify-between items-start mb-4">
+                    <Badge className={requestStatus.color}>
+                      Nuevo viaje
+                    </Badge>
+                    <span className="text-xs text-slate-400">
+                      {new Date(request.created_date).toLocaleTimeString()}
+                    </span>
                   </div>
 
-                  <div className="flex items-start gap-2">
-                    <MapPin className="w-5 h-5 text-red-600 mt-0.5" />
-                    <div className="flex-1">
-                      <p className="text-sm text-slate-500">Destino</p>
-                      <p className="font-medium text-slate-800">{request.destination}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 text-sm text-slate-600">
-                    {request.pickup_time && (
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        <span>{request.pickup_time}</span>
+                  <div className="space-y-3 mb-4">
+                    <div className="flex items-start gap-2">
+                      <Navigation className="w-5 h-5 text-teal-600 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-sm text-slate-500">Origen</p>
+                        <p className="font-medium text-slate-800">{request.origin}</p>
                       </div>
-                    )}
-                    <div className="flex items-center gap-1">
-                      <User className="w-4 h-4" />
-                      <span>{request.passengers_count} pasajero(s)</span>
+                    </div>
+
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-5 h-5 text-red-600 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-sm text-slate-500">Destino</p>
+                        <p className="font-medium text-slate-800">{request.destination}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 text-sm text-slate-600">
+                      {request.pickup_time && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          <span>{request.pickup_time}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1">
+                        <User className="w-4 h-4" />
+                        <span>{request.passengers_count} pasajero(s)</span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={() => handleReject(request)}
-                    variant="outline"
-                    className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
-                  >
-                    Rechazar
-                  </Button>
-                  <Button 
-                    onClick={() => handleAccept(request)}
-                    disabled={!selectedVehicle}
-                    className="flex-1 bg-teal-600 hover:bg-teal-700"
-                  >
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Aceptar
-                  </Button>
-                </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={() => handleReject(request)}
+                      variant="outline"
+                      className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
+                    >
+                      Rechazar
+                    </Button>
+                    <Button 
+                      onClick={() => handleAccept(request)}
+                      disabled={!selectedVehicle}
+                      className="flex-1 bg-teal-600 hover:bg-teal-700"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Aceptar
+                    </Button>
+                  </div>
                 </Card>
-                );
-                })}
-                </div>
-                )}
-                </div>
-                </div>
-                );
+              );
+            })}
+          </div>
+          )}
+          </div>
+          </div>
+          );
                 }
