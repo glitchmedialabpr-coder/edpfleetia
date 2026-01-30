@@ -229,6 +229,27 @@ export default function Trips() {
         </AlertDialogContent>
       </AlertDialog>
 
+      <AlertDialog open={deleteAllConfirm} onOpenChange={setDeleteAllConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar todos los viajes completados?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Se eliminarán permanentemente {allCompletedTrips.length} viaje{allCompletedTrips.length !== 1 ? 's' : ''}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteAllMutation.mutate()}
+              disabled={deleteAllMutation.isPending}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {deleteAllMutation.isPending ? 'Eliminando...' : 'Eliminar Todo'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* All Completed Trips */}
       <div className="space-y-4 mt-8">
        <div className="flex items-center justify-between">
