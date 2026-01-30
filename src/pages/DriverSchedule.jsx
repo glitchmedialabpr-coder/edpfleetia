@@ -47,9 +47,27 @@ export default function DriverSchedule() {
   });
 
   const updateScheduleMutation = useMutation({
-    mutationFn: ({ driverId, data }) => base44.entities.Driver.update(driverId, data),
+    mutationFn: async ({ driverId, data }) => {
+      await base44.entities.Driver.update(driverId, data);
+      
+      // Crear notificación para admins
+      await base44.entities.Notification.create({
+        type: 'schedule_change',
+        title: 'Horario de Conductor Actualizado',
+        message: `Se actualizó el horario de ${editingDriver.full_name}`,
+        driver_id: editingDriver.driver_id,
+        driver_name: editingDriver.full_name,
+        priority: 'medium',
+        data: {
+          shift_duration: data.shift_duration,
+          shift_start_time: data.shift_start_time,
+          shift_days: data.shift_days
+        }
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['drivers'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
       toast.success('Horario actualizado exitosamente');
       handleCloseDialog();
     },
