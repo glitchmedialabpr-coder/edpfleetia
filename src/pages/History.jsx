@@ -45,10 +45,27 @@ export default function History() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [driverFilter, setDriverFilter] = useState('all');
+  const [user, setUser] = useState(null);
+
+  React.useEffect(() => {
+    const loadUser = async () => {
+      const pinUser = localStorage.getItem('pin_user');
+      if (pinUser) {
+        const userData = JSON.parse(pinUser);
+        if (userData.role !== 'admin') {
+          window.location.href = '/';
+          return;
+        }
+        setUser(userData);
+      }
+    };
+    loadUser();
+  }, []);
 
   const { data: trips = [] } = useQuery({
     queryKey: ['trips-history'],
-    queryFn: () => base44.entities.Trip.list('-scheduled_date', 200)
+    queryFn: () => base44.entities.Trip.list('-scheduled_date', 200),
+    enabled: !!user
   });
 
   const { data: drivers = [] } = useQuery({

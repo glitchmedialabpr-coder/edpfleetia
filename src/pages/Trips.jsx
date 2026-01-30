@@ -20,6 +20,22 @@ import EmptyState from '../components/common/EmptyState';
 export default function Trips() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [user, setUser] = useState(null);
+
+  React.useEffect(() => {
+    const loadUser = async () => {
+      const pinUser = localStorage.getItem('pin_user');
+      if (pinUser) {
+        const userData = JSON.parse(pinUser);
+        if (userData.role !== 'admin') {
+          window.location.href = '/';
+          return;
+        }
+        setUser(userData);
+      }
+    };
+    loadUser();
+  }, []);
 
   const formattedDate = format(selectedDate, 'yyyy-MM-dd');
 

@@ -24,9 +24,27 @@ const statusConfig = {
 };
 
 export default function LiveTrips() {
+  const [user, setUser] = React.useState(null);
+
+  React.useEffect(() => {
+    const loadUser = async () => {
+      const pinUser = localStorage.getItem('pin_user');
+      if (pinUser) {
+        const userData = JSON.parse(pinUser);
+        if (userData.role !== 'admin') {
+          window.location.href = '/';
+          return;
+        }
+        setUser(userData);
+      }
+    };
+    loadUser();
+  }, []);
+
   const { data: allRequests = [], refetch } = useQuery({
     queryKey: ['all-trip-requests'],
-    queryFn: () => base44.entities.TripRequest.list('-created_date')
+    queryFn: () => base44.entities.TripRequest.list('-created_date'),
+    enabled: !!user
   });
 
   useEffect(() => {

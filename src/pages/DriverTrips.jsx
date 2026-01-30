@@ -25,14 +25,17 @@ export default function DriverTrips() {
   }, []);
 
   const loadUser = async () => {
-    const userData = await base44.auth.me();
-    setUser(userData);
+    const pinUser = localStorage.getItem('pin_user');
+    if (pinUser) {
+      const userData = JSON.parse(pinUser);
+      setUser(userData);
+    }
   };
 
   const { data: trips = [], refetch } = useQuery({
-    queryKey: ['driver-trips', user?.id],
-    queryFn: () => base44.entities.Trip.filter({ driver_id: user?.id }, '-scheduled_date'),
-    enabled: !!user?.id
+    queryKey: ['driver-trips', user?.driver_id],
+    queryFn: () => base44.entities.Trip.filter({ driver_id: user?.driver_id }, '-scheduled_date'),
+    enabled: !!user?.driver_id
   });
 
   const todayTrips = trips.filter(t => t.scheduled_date === today);
