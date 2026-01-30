@@ -148,13 +148,15 @@ export default function LiveTrips() {
 }
 
 function TripRequestCard({ request }) {
+  const status = request.status && statusConfig[request.status] ? statusConfig[request.status] : statusConfig.pending;
+  
   return (
     <Card className="p-6">
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         <div className="flex-1 space-y-3">
           <div className="flex items-center gap-3">
-            <Badge className={statusConfig[request.status].color}>
-              {statusConfig[request.status].label}
+            <Badge className={status.color}>
+              {status.label}
             </Badge>
             <span className="text-sm text-slate-400">
               {new Date(request.created_date).toLocaleString()}
