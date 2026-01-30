@@ -39,6 +39,7 @@ const statusConfig = {
 export default function DriverRequests() {
   const [user, setUser] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState('');
+  const navigate = useNavigate();
   const [notificationSound] = useState(() => {
     const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUKnl87RiGwU7k9n0yHInBSh+zPLaizsKFF+28ud2URwMTKXh8bllHAU2jdTxy3ksiCV8zPDbjzsKEly18O2jUBsMSqPf8r1nHwU6kdnzxnErBSh+zvPaiTwKEV619Oy+aCAGL47V8tWTQwsVYLXp7JhPEAxMovTyvmsiBTaO1vLNdSYEJ4HO8tiJOAgZaLzu551NEQxPqOT0s2IcBTiQ2PPLeSgEKH7N8tmJPAoUXrXy77hVGApFnuHytW0hBSuCz/PaiDUHGWi78OWcTQ0OUKjk87NhHAU7k9jzy3krBCiAz/PaiD0GEly08uq5Vx0LRZP0yHMnBSh9zfDcjD4HEly18uq5V+0LPJrc8shzJwUng87y2Ik3CBpouPDmnk0PDlCo5fKzYhwFOpPZ88t5KwQogc7y2Yk3CBlopfHvnU0QDFGr5PK0YRsFO5TZ88p5LAUpgdDx14c5CBdltO3qnFENDlGp5fO0YRoFPJTY88p5TAUAAAAAAAA=');
     audio.volume = 0.5;
