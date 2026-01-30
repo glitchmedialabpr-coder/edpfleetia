@@ -360,7 +360,16 @@ export default function DriverRequests() {
           <p className="text-sm md:text-base text-slate-500 mt-1">Acepta y gestiona viajes disponibles</p>
         </div>
         <div className="w-full z-50">
-           <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
+           <Select value={selectedVehicle} onValueChange={(vehicleId) => {
+             setSelectedVehicle(vehicleId);
+             // Guardar con timestamp para 24 horas
+             if (user?.driver_id) {
+               localStorage.setItem(`driver_vehicle_${user.driver_id}`, JSON.stringify({
+                 vehicleId,
+                 timestamp: Date.now()
+               }));
+             }
+           }}>
              <SelectTrigger className="w-full">
                <SelectValue placeholder="Selecciona tu vehículo" />
              </SelectTrigger>
