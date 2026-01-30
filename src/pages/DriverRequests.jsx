@@ -358,15 +358,15 @@ export default function DriverRequests() {
               Comenzar Viaje
             </Button>
           </div>
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {acceptedRequests.map(req => (
               <Card key={req.id} className="p-4 border-l-4 border-orange-500">
                 <div className="flex items-center gap-2 mb-2">
                   <User className="w-4 h-4 text-slate-400" />
-                  <span className="font-medium text-slate-800">{req.passenger_name}</span>
+                  <span className="font-medium text-slate-800 truncate">{req.passenger_name}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-slate-600">
-                  <MapPin className="w-4 h-4 text-red-500" />
+                  <MapPin className="w-4 h-4 text-red-500 flex-shrink-0" />
                   <span className="truncate">{req.destination}</span>
                 </div>
               </Card>
