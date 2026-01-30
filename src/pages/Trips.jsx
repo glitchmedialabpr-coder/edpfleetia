@@ -231,7 +231,20 @@ export default function Trips() {
 
       {/* All Completed Trips */}
       <div className="space-y-4 mt-8">
-        <h2 className="text-xl font-bold text-slate-800">Todos los Viajes Completados</h2>
+       <div className="flex items-center justify-between">
+         <h2 className="text-xl font-bold text-slate-800">Todos los Viajes Completados</h2>
+         {allCompletedTrips.length > 0 && (
+           <Button
+             onClick={() => setDeleteAllConfirm(true)}
+             variant="destructive"
+             size="sm"
+             className="bg-red-600 hover:bg-red-700"
+           >
+             <Trash2 className="w-4 h-4 mr-2" />
+             DELETE ALL
+           </Button>
+         )}
+       </div>
         {allCompletedTrips.length === 0 ? (
           <Card className="border-0 shadow-sm">
             <EmptyState
