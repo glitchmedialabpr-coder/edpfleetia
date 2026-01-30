@@ -320,8 +320,8 @@ export default function Accidents() {
               </TableHeader>
               <TableBody>
                 {filteredAccidents.map(accident => {
-                  const severity = severityConfig[accident.severity] || severityConfig.minor;
-                  const status = statusConfig[accident.status] || statusConfig.reported;
+                  const severity = accident.severity && severityConfig[accident.severity] ? severityConfig[accident.severity] : severityConfig.minor;
+                  const status = accident.status && statusConfig[accident.status] ? statusConfig[accident.status] : statusConfig.reported;
                   
                   return (
                     <TableRow key={accident.id} className="hover:bg-slate-50">
