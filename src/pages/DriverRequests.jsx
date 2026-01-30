@@ -57,8 +57,11 @@ export default function DriverRequests() {
 
   const loadUser = async () => {
     try {
-      const currentUser = await base44.auth.me();
-      setUser(currentUser);
+      const pinUser = localStorage.getItem('pin_user');
+      if (pinUser) {
+        const userData = JSON.parse(pinUser);
+        setUser(userData);
+      }
     } catch (error) {
       console.error('Error loading user:', error);
     }
