@@ -19,7 +19,7 @@ export default function DriverLogin() {
       try {
         const user = JSON.parse(pinUser);
         if (user.user_type === 'driver') {
-          navigate(createPageUrl('DriverRequests'));
+          navigate(createPageUrl('DriverDashboard'));
         }
       } catch (e) {
         localStorage.removeItem('pin_user');
