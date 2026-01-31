@@ -59,12 +59,14 @@ export default function GeneralServicePurchases() {
 
   const { data: purchases = [], isLoading } = useQuery({
     queryKey: ['general-service-purchases'],
-    queryFn: () => base44.entities.GeneralServicePurchase.list('-date', 200)
+    queryFn: () => base44.entities.GeneralServicePurchase.list('-date', 200),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: jobs = [] } = useQuery({
     queryKey: ['general-service-jobs'],
-    queryFn: () => base44.entities.GeneralServiceJob.list('-created_date', 200)
+    queryFn: () => base44.entities.GeneralServiceJob.list('-created_date', 200),
+    staleTime: 1000 * 60 * 5
   });
 
   const createPurchaseMutation = useMutation({
@@ -74,6 +76,10 @@ export default function GeneralServicePurchases() {
       setShowModal(false);
       resetForm();
       toast.success('Compra registrada exitosamente');
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al registrar compra');
     }
   });
 
@@ -84,6 +90,10 @@ export default function GeneralServicePurchases() {
       setShowModal(false);
       resetForm();
       toast.success('Compra actualizada');
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al actualizar compra');
     }
   });
 
@@ -92,6 +102,10 @@ export default function GeneralServicePurchases() {
     onSuccess: () => {
       queryClient.invalidateQueries(['general-service-purchases']);
       toast.success('Compra eliminada');
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al eliminar compra');
     }
   });
 

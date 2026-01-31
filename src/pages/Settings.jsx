@@ -65,7 +65,8 @@ export default function Settings() {
 
   const { data: savedSettings = [] } = useQuery({
     queryKey: ['app-settings'],
-    queryFn: () => base44.entities.AppSettings.list()
+    queryFn: () => base44.entities.AppSettings.list(),
+    staleTime: 1000 * 60 * 5
   });
 
   useEffect(() => {
@@ -101,6 +102,10 @@ export default function Settings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['app-settings']);
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al guardar configuración');
     }
   });
 
@@ -143,6 +148,7 @@ export default function Settings() {
 
       toast.success('Configuración guardada exitosamente');
     } catch (error) {
+      console.error('Error:', error);
       toast.error('Error al guardar configuración');
     }
   };
@@ -175,6 +181,7 @@ export default function Settings() {
       
       toast.success('Datos exportados exitosamente');
     } catch (error) {
+      console.error('Error:', error);
       toast.error('Error al exportar datos');
     }
   };
@@ -211,6 +218,7 @@ export default function Settings() {
       queryClient.invalidateQueries(['app-settings']);
       toast.success('Video subido exitosamente');
     } catch (error) {
+      console.error('Error:', error);
       toast.error('Error al subir el video');
     }
     setUploading(false);

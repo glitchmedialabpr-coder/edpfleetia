@@ -76,12 +76,14 @@ export default function GeneralServiceJobs() {
 
   const { data: jobs = [], isLoading } = useQuery({
     queryKey: ['general-service-jobs'],
-    queryFn: () => base44.entities.GeneralServiceJob.list('-created_date', 200)
+    queryFn: () => base44.entities.GeneralServiceJob.list('-created_date', 200),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers'],
-    queryFn: () => base44.entities.Driver.list()
+    queryFn: () => base44.entities.Driver.list(),
+    staleTime: 1000 * 60 * 5
   });
 
   const createJobMutation = useMutation({
@@ -91,6 +93,10 @@ export default function GeneralServiceJobs() {
       setShowModal(false);
       resetForm();
       toast.success('Trabajo creado exitosamente');
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al crear trabajo');
     }
   });
 
@@ -101,6 +107,10 @@ export default function GeneralServiceJobs() {
       setShowModal(false);
       resetForm();
       toast.success('Trabajo actualizado');
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al actualizar trabajo');
     }
   });
 
@@ -109,6 +119,10 @@ export default function GeneralServiceJobs() {
     onSuccess: () => {
       queryClient.invalidateQueries(['general-service-jobs']);
       toast.success('Trabajo eliminado');
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al eliminar trabajo');
     }
   });
 
@@ -120,6 +134,10 @@ export default function GeneralServiceJobs() {
     onSuccess: () => {
       queryClient.invalidateQueries(['general-service-jobs']);
       toast.success('Trabajo iniciado');
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al iniciar trabajo');
     }
   });
 
@@ -134,6 +152,10 @@ export default function GeneralServiceJobs() {
     onSuccess: () => {
       queryClient.invalidateQueries(['general-service-jobs']);
       toast.success('Trabajo completado');
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al completar trabajo');
     }
   });
 

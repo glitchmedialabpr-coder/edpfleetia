@@ -57,12 +57,14 @@ export default function Purchases() {
 
   const { data: purchases = [], refetch } = useQuery({
     queryKey: ['purchases'],
-    queryFn: () => base44.entities.Purchase.list('-date')
+    queryFn: () => base44.entities.Purchase.list('-date'),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: vehicles = [] } = useQuery({
     queryKey: ['vehicles'],
-    queryFn: () => base44.entities.Vehicle.list()
+    queryFn: () => base44.entities.Vehicle.list(),
+    staleTime: 1000 * 60 * 5
   });
 
   // Filter purchases
@@ -138,18 +140,23 @@ export default function Purchases() {
     e.preventDefault();
     setLoading(true);
 
-    const vehicle = formData.vehicle_id ? vehicles.find(v => v.id === formData.vehicle_id) : null;
-    
-    await base44.entities.Purchase.create({
-      ...formData,
-      vehicle_plate: vehicle?.plate || null,
-      amount: parseFloat(formData.amount),
-      quantity: parseInt(formData.quantity) || 1
-    });
+    try {
+      const vehicle = formData.vehicle_id ? vehicles.find(v => v.id === formData.vehicle_id) : null;
+      
+      await base44.entities.Purchase.create({
+        ...formData,
+        vehicle_plate: vehicle?.plate || null,
+        amount: parseFloat(formData.amount),
+        quantity: parseInt(formData.quantity) || 1
+      });
 
-    setModalOpen(false);
-    refetch();
-    setLoading(false);
+      setModalOpen(false);
+      refetch();
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

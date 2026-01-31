@@ -36,12 +36,14 @@ export default function ResponseHistory() {
 
   const { data: responses = [] } = useQuery({
     queryKey: ['trip-responses'],
-    queryFn: () => base44.entities.TripRequestResponse.list('-created_date', 200)
+    queryFn: () => base44.entities.TripRequestResponse.list('-created_date', 200),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers'],
-    queryFn: () => base44.entities.Driver.list()
+    queryFn: () => base44.entities.Driver.list(),
+    staleTime: 1000 * 60 * 5
   });
 
   const filteredResponses = responses.filter(response => {
@@ -58,12 +60,14 @@ export default function ResponseHistory() {
 
   const { data: allTrips = [] } = useQuery({
     queryKey: ['all-trips'],
-    queryFn: () => base44.entities.Trip.list('-created_date', 200)
+    queryFn: () => base44.entities.Trip.list('-created_date', 200),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: allTripRequests = [] } = useQuery({
     queryKey: ['all-trip-requests'],
-    queryFn: () => base44.entities.TripRequest.list('-created_date', 500)
+    queryFn: () => base44.entities.TripRequest.list('-created_date', 500),
+    staleTime: 1000 * 60 * 5
   });
 
   // Calculate time statistics
