@@ -186,9 +186,17 @@ export default function DriverRequests() {
       }
     });
 
+    // Auto-refresh cada 2 segundos para mantener datos actualizados en tiempo real
+    const interval = setInterval(() => {
+      refetchPending();
+      refetchAccepted();
+      refetchActiveTrips();
+    }, 2000);
+
     return () => {
       unsubscribeRequest();
       unsubscribeTrip();
+      clearInterval(interval);
     };
   }, [refetchPending, refetchAccepted, refetchActiveTrips, user?.driver_id, selectedVehicle, notificationSound]);
 
@@ -267,7 +275,7 @@ export default function DriverRequests() {
         destination: request.destination
       });
 
-      toast.info('Viaje rechazado');
+      toast.info('Rechazado. Quedará disponible para otros conductores.');
       refetchPending();
     } catch (error) {
       toast.error('Error al rechazar viaje');
