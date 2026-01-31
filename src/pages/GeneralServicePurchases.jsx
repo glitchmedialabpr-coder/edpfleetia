@@ -460,18 +460,6 @@ export default function GeneralServicePurchases() {
 
             <div>
               <label className="text-sm font-medium text-slate-700 mb-1 block">
-                Artículo/Producto *
-              </label>
-              <Input
-                value={formData.item}
-                onChange={(e) => setFormData({...formData, item: e.target.value})}
-                placeholder="ej. Pintura blanca 5 galones"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-slate-700 mb-1 block">
                 Tienda/Proveedor *
               </label>
               <Input
@@ -482,46 +470,93 @@ export default function GeneralServicePurchases() {
               />
             </div>
 
-            <div className="grid md:grid-cols-3 gap-4">
-              <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">
-                  Cantidad
-                </label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formData.quantity}
-                  onChange={(e) => setFormData({...formData, quantity: e.target.value})}
-                  onBlur={calculateTotalCost}
-                />
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">
+                Productos *
+              </label>
+              <div className="space-y-3 mb-3 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                {formData.items.map((product, idx) => (
+                  <div key={idx} className="space-y-3 pb-3 border-b last:border-b-0">
+                    <div className="grid md:grid-cols-2 gap-3">
+                      <Input
+                        placeholder="Nombre del producto"
+                        value={product.item}
+                        onChange={(e) => updateProduct(idx, 'item', e.target.value)}
+                        required
+                      />
+                      <Select 
+                        value={product.category} 
+                        onValueChange={(val) => updateProduct(idx, 'category', val)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(categoryConfig).map(([key, config]) => (
+                            <SelectItem key={key} value={key}>{config.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-3">
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="Cantidad"
+                        value={product.quantity}
+                        onChange={(e) => updateProduct(idx, 'quantity', e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="Costo unitario"
+                        value={product.unit_cost}
+                        onChange={(e) => updateProduct(idx, 'unit_cost', e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="Total"
+                        value={product.total_amount}
+                        onChange={(e) => updateProduct(idx, 'total_amount', e.target.value)}
+                        readOnly
+                        className="bg-slate-100"
+                      />
+                    </div>
+
+                    {formData.items.length > 1 && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => removeProduct(idx)}
+                        className="text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-3 h-3 mr-1" /> Quitar
+                      </Button>
+                    )}
+                  </div>
+                ))}
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">
-                  Costo Unitario
-                </label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formData.unit_cost}
-                  onChange={(e) => setFormData({...formData, unit_cost: e.target.value})}
-                  onBlur={calculateTotalCost}
-                  placeholder="0.00"
-                />
-              </div>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addProduct}
+                className="w-full"
+              >
+                <Plus className="w-3 h-3 mr-1" /> Agregar Producto
+              </Button>
+            </div>
 
-              <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">
-                  Total *
-                </label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={formData.total_amount}
-                  onChange={(e) => setFormData({...formData, total_amount: e.target.value})}
-                  placeholder="0.00"
-                  required
-                />
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <div className="text-sm text-blue-700">
+                <strong>Total de la compra:</strong>
+                <div className="text-2xl font-bold text-blue-600 mt-1">
+                  ${formData.items.reduce((sum, it) => sum + (parseFloat(it.total_amount) || 0), 0).toFixed(2)}
+                </div>
               </div>
             </div>
 
