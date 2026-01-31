@@ -215,6 +215,12 @@ export default function Layout({ children, currentPageName }) {
     return null;
   }
 
+  // Route guard: Protect NotificationSettings (admin + drivers only)
+  if (currentPageName === 'NotificationSettings' && user.role !== 'admin' && user.user_type !== 'driver') {
+    window.location.href = createPageUrl('Home');
+    return null;
+  }
+
   // Route guard: Protect driver pages
   const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverAcceptedStudents', 'DriverTrips', 'DriverHistory', 'NotificationSettings'];
   if (driverPages.includes(currentPageName) && user.user_type !== 'driver') {
