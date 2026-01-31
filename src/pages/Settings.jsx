@@ -133,7 +133,8 @@ export default function Settings() {
         // System
         { key: 'backup_frequency_days', value: settings.backup_frequency_days, category: 'system', description: 'Frecuencia de respaldo (días)' },
         { key: 'data_retention_days', value: settings.data_retention_days, category: 'system', description: 'Retención de datos (días)' },
-        { key: 'enable_analytics', value: settings.enable_analytics, category: 'system', description: 'Habilitar analíticas' }
+        { key: 'enable_analytics', value: settings.enable_analytics, category: 'system', description: 'Habilitar analíticas' },
+        { key: 'enable_splash_video', value: settings.enable_splash_video, category: 'general', description: 'Habilitar video de inicio' }
       ];
 
       for (const setting of settingsToSave) {
