@@ -25,6 +25,7 @@ import {
   Users
 } from 'lucide-react';
 import { toast } from 'sonner';
+import moment from 'moment';
 import EmptyState from '../components/common/EmptyState';
 
 const statusConfig = {
@@ -133,7 +134,7 @@ export default function DriverRequests() {
 
   const { data: pendingRequests = [], refetch: refetchPending } = useQuery({
     queryKey: ['pending-requests'],
-    queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' }, '-created_date')
+    queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' })
   });
 
   const { data: acceptedRequests = [], refetch: refetchAccepted } = useQuery({
@@ -392,6 +393,20 @@ export default function DriverRequests() {
     }
   };
 
+  // Ordenar y calcular tiempo de espera
+  const sortedPendingRequests = pendingRequests
+    .sort((a, b) => new Date(a.created_date).getTime() - new Date(b.created_date).getTime())
+    .map(request => {
+      const createdDate = moment(request.created_date);
+      const now = moment();
+      const duration = moment.duration(now.diff(createdDate));
+      const hours = Math.floor(duration.asHours());
+      const minutes = duration.minutes();
+      const waitingTime = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+      
+      return { ...request, waitingTime };
+    });
+
   return (
     <div className="w-full space-y-4 md:space-y-6">
       <div className="flex flex-col gap-4">
@@ -544,7 +559,7 @@ export default function DriverRequests() {
           </Card>
         )}
 
-        {pendingRequests.length === 0 ? (
+        {sortedPendingRequests.length === 0 ? (
           <Card className="p-8">
             <EmptyState
               icon={Car}
@@ -554,7 +569,7 @@ export default function DriverRequests() {
           </Card>
         ) : (
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-            {pendingRequests.map(request => {
+            {sortedPendingRequests.map(request => {
               const requestStatus = request.status && statusConfig[request.status] ? statusConfig[request.status] : statusConfig.pending;
               return (
                 <Card key={request.id} className="p-4 sm:p-6 hover:shadow-lg transition-shadow">
@@ -562,9 +577,10 @@ export default function DriverRequests() {
                     <Badge className={requestStatus.color}>
                       Nuevo
                     </Badge>
-                    <span className="text-xs text-slate-400 flex-shrink-0">
-                      {new Date(request.created_date).toLocaleTimeString()}
-                    </span>
+                    <div className="flex items-center gap-1 text-xs text-slate-500 flex-shrink-0">
+                      <Clock className="w-3 h-3" />
+                      <span>{request.waitingTime}</span>
+                    </div>
                   </div>
 
                   <div className="space-y-3 mb-4">
@@ -618,9 +634,9 @@ export default function DriverRequests() {
                 </Card>
               );
             })}
-            </div>
-            )}
-            </div>
-            </div>
-            );
-            }
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -59,6 +59,8 @@ import DriverSchedule from './pages/DriverSchedule';
 import DriverTrips from './pages/DriverTrips';
 import Drivers from './pages/Drivers';
 import FuelRecords from './pages/FuelRecords';
+import GeneralServiceJobs from './pages/GeneralServiceJobs';
+import GeneralServicePurchases from './pages/GeneralServicePurchases';
 import History from './pages/History';
 import Home from './pages/Home';
 import Housing from './pages/Housing';
@@ -68,17 +70,15 @@ import Notifications from './pages/Notifications';
 import PassengerLogin from './pages/PassengerLogin';
 import PassengerTrips from './pages/PassengerTrips';
 import Purchases from './pages/Purchases';
+import Reports from './pages/Reports';
 import ResponseHistory from './pages/ResponseHistory';
+import Settings from './pages/Settings';
 import ShareLinks from './pages/ShareLinks';
 import Students from './pages/Students';
 import Trips from './pages/Trips';
+import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
-import Reports from './pages/Reports';
-import GeneralServiceJobs from './pages/GeneralServiceJobs';
-import GeneralServicePurchases from './pages/GeneralServicePurchases';
-import Settings from './pages/Settings';
-import VehicleManagement from './pages/VehicleManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -95,6 +95,8 @@ export const PAGES = {
     "DriverTrips": DriverTrips,
     "Drivers": Drivers,
     "FuelRecords": FuelRecords,
+    "GeneralServiceJobs": GeneralServiceJobs,
+    "GeneralServicePurchases": GeneralServicePurchases,
     "History": History,
     "Home": Home,
     "Housing": Housing,
@@ -104,17 +106,15 @@ export const PAGES = {
     "PassengerLogin": PassengerLogin,
     "PassengerTrips": PassengerTrips,
     "Purchases": Purchases,
+    "Reports": Reports,
     "ResponseHistory": ResponseHistory,
+    "Settings": Settings,
     "ShareLinks": ShareLinks,
     "Students": Students,
     "Trips": Trips,
+    "VehicleManagement": VehicleManagement,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
-    "Reports": Reports,
-    "GeneralServiceJobs": GeneralServiceJobs,
-    "GeneralServicePurchases": GeneralServicePurchases,
-    "Settings": Settings,
-    "VehicleManagement": VehicleManagement,
 }
 
 export const pagesConfig = {
