@@ -3,48 +3,48 @@ import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
 
 export default function VideoSplash() {
-  const [videoUrl, setVideoUrl] = useState(null);
+  const [videoUrl, setVideoUrl] = useState('loading');
 
-  useEffect(() => {
-    loadVideo();
-  }, []);
+    useEffect(() => {
+      loadVideo();
+    }, []);
 
-  const loadVideo = async () => {
-    const pinUser = localStorage.getItem('pin_user');
-    
-    if (!pinUser) {
-      window.location.href = createPageUrl('Home');
-      return;
-    }
+    const loadVideo = async () => {
+      const pinUser = localStorage.getItem('pin_user');
 
-    let user;
-    try {
-      user = JSON.parse(pinUser);
-    } catch (e) {
-      window.location.href = createPageUrl('Home');
-      return;
-    }
-
-    try {
-      const settings = await base44.entities.AppSettings.filter({ setting_key: 'splash_video_url' });
-      
-      if (settings && settings.length > 0 && settings[0].setting_value) {
-        console.log('Video URL:', settings[0].setting_value);
-        setVideoUrl(settings[0].setting_value);
-        
-        // Redirect after 4.5 seconds
-        setTimeout(() => {
-          redirect(user);
-        }, 4500);
+      if (!pinUser) {
+        window.location.href = createPageUrl('Home');
         return;
       }
-    } catch (error) {
-      console.error('Error loading video:', error);
-    }
 
-    // No video found, redirect immediately
-    redirect(user);
-  };
+      let user;
+      try {
+        user = JSON.parse(pinUser);
+      } catch (e) {
+        window.location.href = createPageUrl('Home');
+        return;
+      }
+
+      try {
+        const settings = await base44.entities.AppSettings.filter({ setting_key: 'splash_video_url' });
+
+        if (settings && settings.length > 0 && settings[0].setting_value) {
+          console.log('Video URL:', settings[0].setting_value);
+          setVideoUrl(settings[0].setting_value);
+
+          // Redirect after 4.5 seconds
+          setTimeout(() => {
+            redirect(user);
+          }, 4500);
+          return;
+        }
+      } catch (error) {
+        console.error('Error loading video:', error);
+      }
+
+      // No video found, redirect immediately
+      redirect(user);
+    };
 
   const redirect = (user) => {
     let destination = 'Home';
