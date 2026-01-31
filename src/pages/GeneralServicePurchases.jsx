@@ -110,17 +110,14 @@ export default function GeneralServicePurchases() {
     setFormData({
       date: new Date().toISOString().split('T')[0],
       store: '',
-      item: '',
-      category: 'otros',
-      quantity: 1,
-      unit_cost: '',
-      total_amount: '',
+      items: [{ item: '', category: 'otros', quantity: 1, unit_cost: '', total_amount: '' }],
       job_id: '',
       job_title: '',
       purchased_by: '',
       receipt_url: '',
       notes: ''
     });
+    setTotalPurchaseAmount('');
     setEditingPurchase(null);
   };
 
