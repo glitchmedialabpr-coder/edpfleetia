@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
@@ -23,6 +23,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import EmptyState from '@/components/common/EmptyState';
+import AdvancedFilters from '@/components/common/AdvancedFilters';
+import useFilterPreferences from '@/components/common/useFilterPreferences';
 
 const categoryConfig = {
   materiales_construccion: { label: 'Materiales de Construcción', color: 'bg-orange-100 text-orange-700' },
