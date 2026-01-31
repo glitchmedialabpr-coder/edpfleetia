@@ -34,36 +34,44 @@ export default function VideoSplash() {
       const settings = await base44.entities.AppSettings.filter({ setting_key: 'splash_video_url' });
       if (settings && settings.length > 0) {
         setVideoUrl(settings[0].setting_value);
+        setLoading(false);
+        return;
       }
     } catch (error) {
       console.error('Error loading video:', error);
     }
 
+    // No video, redirect immediately
     setLoading(false);
-
-    const handleRedirect = () => {
-      setRedirecting(true);
-      
-      let destination = 'Home';
-      
-      if (user.role === 'admin') {
-        destination = 'Dashboard';
-      } else if (user.user_type === 'driver') {
-        destination = 'DriverRequests';
-      } else if (user.user_type === 'passenger') {
-        destination = 'PassengerTrips';
-      }
-      
-      setTimeout(() => {
-        window.location.href = createPageUrl(destination);
-      }, 300);
-    };
-
-    // Auto-redirect after video duration or 10 seconds
-    const timer = setTimeout(handleRedirect, 10000);
-    
-    return () => clearTimeout(timer);
+    let destination = 'Home';
+    if (user.role === 'admin') {
+      destination = 'Dashboard';
+    } else if (user.user_type === 'driver') {
+      destination = 'DriverRequests';
+    } else if (user.user_type === 'passenger') {
+      destination = 'PassengerTrips';
+    }
+    window.location.href = createPageUrl(destination);
   };
+
+  useEffect(() => {
+    if (videoUrl) {
+      // Auto-redirect after 10 seconds
+      const timer = setTimeout(() => {
+        const pinUser = localStorage.getItem('pin_user');
+        if (pinUser) {
+          const user = JSON.parse(pinUser);
+          let destination = 'Home';
+          if (user.role === 'admin') destination = 'Dashboard';
+          else if (user.user_type === 'driver') destination = 'DriverRequests';
+          else if (user.user_type === 'passenger') destination = 'PassengerTrips';
+          window.location.href = createPageUrl(destination);
+        }
+      }, 10000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [videoUrl]);
 
   if (loading) {
     return (
@@ -74,17 +82,11 @@ export default function VideoSplash() {
   }
 
   if (!videoUrl) {
-    // No video configured, redirect immediately
-    const pinUser = localStorage.getItem('pin_user');
-    if (pinUser) {
-      const user = JSON.parse(pinUser);
-      let destination = 'Home';
-      if (user.role === 'admin') destination = 'Dashboard';
-      else if (user.user_type === 'driver') destination = 'DriverRequests';
-      else if (user.user_type === 'passenger') destination = 'PassengerTrips';
-      window.location.href = createPageUrl(destination);
-    }
-    return null;
+    return (
+      <div className="fixed inset-0 bg-black flex items-center justify-center z-[9999]">
+        <Loader2 className="w-12 h-12 text-white animate-spin" />
+      </div>
+    );
   }
 
   return (
