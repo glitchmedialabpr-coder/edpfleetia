@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -157,8 +158,9 @@ export default function MaintenanceForm({ open, onClose, vehicle, onCreated }) {
         performed_by: '',
         notes: ''
       });
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Error al registrar mantenimiento');
     }
     setLoading(false);
   };
