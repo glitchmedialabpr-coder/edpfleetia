@@ -56,6 +56,86 @@ export default function ResponseHistory() {
     return matchesSearch && matchesResponse && matchesDriver;
   });
 
+  const { data: allTrips = [] } = useQuery({
+    queryKey: ['all-trips'],
+    queryFn: () => base44.entities.Trip.list('-created_date', 200)
+  });
+
+  const { data: allTripRequests = [] } = useQuery({
+    queryKey: ['all-trip-requests'],
+    queryFn: () => base44.entities.TripRequest.list('-created_date', 500)
+  });
+
+  // Calculate time statistics
+  const calculateTimeStats = () => {
+    // Tiempo de respuesta (aceptar/rechazar)
+    const responseTimes = [];
+    allTripRequests.forEach(req => {
+      if (req.pickup_time && req.accepted_at) {
+        const [pickupH, pickupM] = req.pickup_time.split(':').map(Number);
+        const [acceptH, acceptM] = req.accepted_at.split(':').map(Number);
+        const diff = (acceptH * 60 + acceptM) - (pickupH * 60 + pickupM);
+        if (diff >= 0 && diff < 120) { // Solo si es razonable (menos de 2 horas)
+          responseTimes.push(diff);
+        }
+      }
+    });
+
+    // Tiempo de entrega (desde salida hasta entregar estudiantes)
+    const deliveryTimes = [];
+    allTrips.forEach(trip => {
+      if (trip.departure_time && trip.students) {
+        trip.students.forEach(student => {
+          if (student.delivery_time) {
+            const [deptH, deptM] = trip.departure_time.split(':').map(Number);
+            const [delivH, delivM] = student.delivery_time.split(':').map(Number);
+            const diff = (delivH * 60 + delivM) - (deptH * 60 + deptM);
+            if (diff >= 0 && diff < 300) { // Menos de 5 horas
+              deliveryTimes.push(diff);
+            }
+          }
+        });
+      }
+    });
+
+    // Tiempo de regreso a base (desde última entrega hasta completar viaje)
+    const returnTimes = [];
+    allTrips.forEach(trip => {
+      if (trip.arrival_time && trip.students && trip.students.length > 0) {
+        const lastDelivery = trip.students
+          .filter(s => s.delivery_time)
+          .map(s => s.delivery_time)
+          .sort()
+          .pop();
+        
+        if (lastDelivery) {
+          const [lastH, lastM] = lastDelivery.split(':').map(Number);
+          const [arrH, arrM] = trip.arrival_time.split(':').map(Number);
+          const diff = (arrH * 60 + arrM) - (lastH * 60 + lastM);
+          if (diff >= 0 && diff < 180) { // Menos de 3 horas
+            returnTimes.push(diff);
+          }
+        }
+      }
+    });
+
+    const avgResponse = responseTimes.length > 0 
+      ? Math.round(responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length)
+      : 0;
+    
+    const avgDelivery = deliveryTimes.length > 0
+      ? Math.round(deliveryTimes.reduce((a, b) => a + b, 0) / deliveryTimes.length)
+      : 0;
+    
+    const avgReturn = returnTimes.length > 0
+      ? Math.round(returnTimes.reduce((a, b) => a + b, 0) / returnTimes.length)
+      : 0;
+
+    return { avgResponse, avgDelivery, avgReturn };
+  };
+
+  const timeStats = calculateTimeStats();
+
   // Statistics
   const stats = {
     total: responses.length,
@@ -90,6 +170,37 @@ export default function ResponseHistory() {
           <div className="text-sm text-slate-500">Sin Respuesta</div>
         </Card>
       </div>
+
+      {/* Time Statistics */}
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <Clock className="w-5 h-5 text-teal-600" />
+          Estadísticas de Tiempo Promedio
+        </h3>
+        <div className="grid md:grid-cols-3 gap-6">
+          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="text-3xl font-bold text-blue-600 mb-1">
+              {timeStats.avgResponse} min
+            </div>
+            <div className="text-sm text-blue-700 font-medium">Tiempo de Respuesta</div>
+            <div className="text-xs text-blue-600 mt-1">Desde solicitud hasta aceptar/rechazar</div>
+          </div>
+          <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+            <div className="text-3xl font-bold text-purple-600 mb-1">
+              {timeStats.avgDelivery} min
+            </div>
+            <div className="text-sm text-purple-700 font-medium">Tiempo de Entrega</div>
+            <div className="text-xs text-purple-600 mt-1">Desde salida hasta entregar estudiantes</div>
+          </div>
+          <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+            <div className="text-3xl font-bold text-orange-600 mb-1">
+              {timeStats.avgReturn} min
+            </div>
+            <div className="text-sm text-orange-700 font-medium">Tiempo de Regreso</div>
+            <div className="text-xs text-orange-600 mt-1">Desde última entrega hasta regresar a base</div>
+          </div>
+        </div>
+      </Card>
 
       {/* Filters */}
       <Card className="p-4">
