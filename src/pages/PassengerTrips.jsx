@@ -295,13 +295,13 @@ export default function PassengerTrips() {
                   <SelectValue placeholder="¿A dónde vas?" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="hospedaje">Hospedaje</SelectItem>
-                  <SelectItem value="farmacia">Farmacia</SelectItem>
-                  <SelectItem value="hospital">Hospital</SelectItem>
-                  <SelectItem value="supermercado">Supermercado</SelectItem>
                   <SelectItem value="biblioteca">Biblioteca</SelectItem>
                   <SelectItem value="edp_university">EDP University</SelectItem>
+                  <SelectItem value="farmacia">Farmacia</SelectItem>
+                  <SelectItem value="hospital">Hospital</SelectItem>
+                  <SelectItem value="hospedaje">Hospedaje</SelectItem>
                   <SelectItem value="piedras_blancas">Piedras Blancas</SelectItem>
+                  <SelectItem value="supermercado">Supermercado</SelectItem>
                   <SelectItem value="wellness_edp">Wellness EDP</SelectItem>
                   <SelectItem value="otros">Otros</SelectItem>
                 </SelectContent>
