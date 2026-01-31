@@ -32,10 +32,10 @@ export default function VideoSplash() {
         console.log('Video URL:', settings[0].setting_value);
         setVideoUrl(settings[0].setting_value);
         
-        // Redirect after 3.5 seconds
+        // Redirect after 4.5 seconds
         setTimeout(() => {
           redirect(user);
-        }, 3500);
+        }, 4500);
         return;
       }
     } catch (error) {
