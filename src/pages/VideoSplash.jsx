@@ -39,37 +39,23 @@ export default function VideoSplash() {
       }, 300);
     };
 
-    // Listen for video end
-    const video = document.getElementById('splash-video');
-    if (video) {
-      video.addEventListener('ended', handleRedirect);
-      
-      // Fallback: redirect after 10 seconds if video doesn't trigger
-      const fallback = setTimeout(handleRedirect, 10000);
-      
-      return () => {
-        video.removeEventListener('ended', handleRedirect);
-        clearTimeout(fallback);
-      };
-    } else {
-      // If no video element, redirect after 5 seconds
-      const timer = setTimeout(handleRedirect, 5000);
-      return () => clearTimeout(timer);
-    }
+    // Redirect after video duration (adjust based on your video length)
+    const timer = setTimeout(handleRedirect, 8000); // 8 seconds for video
+    
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-black flex items-center justify-center z-[9999] overflow-hidden">
+    <div className="fixed inset-0 bg-black z-[9999]">
       <iframe 
-        id="splash-video"
         src="https://drive.google.com/file/d/1VeEsl5KCVoN6nFYEM9qjMBtDsEWK5JYu/preview"
         className="w-full h-full border-0"
-        allow="autoplay"
-        allowFullScreen
+        allow="autoplay; fullscreen"
+        style={{ display: 'block' }}
       />
       
       {redirecting && (
-        <div className="absolute inset-0 bg-black/80 flex items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
           <div className="animate-pulse text-white text-xl">Cargando...</div>
         </div>
       )}
