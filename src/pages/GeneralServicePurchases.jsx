@@ -251,11 +251,35 @@ export default function GeneralServicePurchases() {
     setTotalPurchaseAmount(total.toFixed(2));
   };
 
-  const filteredPurchases = purchases.filter(purchase => {
-    const matchesCategory = filterCategory === 'all' || purchase.category === filterCategory;
-    const matchesJob = filterJob === 'all' || purchase.job_id === filterJob;
-    return matchesCategory && matchesJob;
-  });
+  // Advanced filtering with search and multiple criteria
+  const filteredPurchases = useMemo(() => {
+    return purchases.filter(purchase => {
+      // Search in multiple fields
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch = !searchQuery || 
+        purchase.item?.toLowerCase().includes(searchLower) ||
+        purchase.store?.toLowerCase().includes(searchLower) ||
+        purchase.job_title?.toLowerCase().includes(searchLower) ||
+        purchase.purchased_by?.toLowerCase().includes(searchLower) ||
+        purchase.notes?.toLowerCase().includes(searchLower);
+
+      // Apply saved filters
+      const matchesCategory = !filters.category || filters.category === 'all' || purchase.category === filters.category;
+      const matchesJob = !filters.job || filters.job === 'all' || purchase.job_id === filters.job;
+      const matchesSupplier = !filters.supplier || filters.supplier === 'all' || purchase.store === filters.supplier;
+
+      // Date range filters
+      let matchesDateRange = true;
+      if (filters.dateFrom) {
+        matchesDateRange = matchesDateRange && new Date(purchase.date) >= new Date(filters.dateFrom);
+      }
+      if (filters.dateTo) {
+        matchesDateRange = matchesDateRange && new Date(purchase.date) <= new Date(filters.dateTo);
+      }
+
+      return matchesSearch && matchesCategory && matchesJob && matchesSupplier && matchesDateRange;
+    });
+  }, [purchases, searchQuery, filters]);
 
   const totalSpent = filteredPurchases.reduce((sum, p) => sum + (p.total_amount || 0), 0);
   const totalItems = filteredPurchases.length;
