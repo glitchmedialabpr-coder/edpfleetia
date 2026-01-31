@@ -341,12 +341,29 @@ export default function Settings() {
                     </div>
 
                     <div className="pt-6 border-t space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label>Habilitar Video de Inicio</Label>
+                        <p className="text-sm text-slate-500">
+                          Reproducir video después de iniciar sesión
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settings.enable_splash_video === 'true'}
+                        onCheckedChange={(checked) => 
+                          setSettings({...settings, enable_splash_video: checked ? 'true' : 'false'})
+                        }
+                      />
+                    </div>
+
+                    {settings.enable_splash_video === 'true' && (
                     <div className="space-y-2">
-                    <Label>Video de Inicio de Sesión</Label>
+                    <Label>Configurar Video</Label>
                     <p className="text-sm text-slate-500">
                     Video que se reproduce después de iniciar sesión
                     </p>
                     </div>
+                    )}
 
                     <div className="border-2 border-dashed border-slate-300 rounded-lg p-6">
                     <input
