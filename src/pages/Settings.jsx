@@ -24,9 +24,11 @@ import {
   AlertTriangle,
   Video,
   Loader2,
-  CheckCircle
+  CheckCircle,
+  Volume2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import SoundSelector from '../components/notifications/SoundSelector';
 
 export default function Settings() {
   const queryClient = useQueryClient();
@@ -488,6 +490,23 @@ export default function Settings() {
                   }
                 />
               </div>
+
+              {settings.notification_sound === 'true' && (
+                <div className="pt-4 border-t">
+                  <SoundSelector
+                    value={settings.default_notification_sound || 'default'}
+                    onChange={(sound) => {
+                      setSettings({...settings, default_notification_sound: sound});
+                      saveSettingMutation.mutate({
+                        key: 'default_notification_sound',
+                        value: sound,
+                        category: 'notifications',
+                        description: 'Sonido de notificación predeterminado'
+                      });
+                    }}
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
