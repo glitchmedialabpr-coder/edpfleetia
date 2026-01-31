@@ -321,12 +321,11 @@ export default function PassengerTrips() {
             )}
 
             <div className="space-y-2">
-              <Label>Pueblo/Ciudad *</Label>
+              <Label>Pueblo/Ciudad</Label>
               <Input
                 placeholder="Ej: San Juan, Bayamón..."
                 value={formData.destination_town}
                 onChange={(e) => setFormData({ ...formData, destination_town: e.target.value })}
-                required
               />
             </div>
 
