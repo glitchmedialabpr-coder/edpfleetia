@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Volume2, Play } from 'lucide-react';
 
-// Función para generar sonidos cortos con Web Audio API
+// Función para generar sonidos de notificación con Web Audio API
 const generateNotificationSound = (type) => {
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
   const now = audioContext.currentTime;
@@ -13,30 +13,49 @@ const generateNotificationSound = (type) => {
   gain.connect(audioContext.destination);
   
   gain.gain.setValueAtTime(0.3, now);
-  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+  
+  let duration = 3;
+  let frequency = 800;
   
   switch(type) {
     case 'default':
-      osc.frequency.setValueAtTime(800, now);
+      duration = 3;
+      frequency = 800;
+      gain.gain.linearRampToValueAtTime(0.2, now + 0.5);
+      gain.gain.linearRampToValueAtTime(0.05, now + duration);
       break;
     case 'bell':
-      osc.frequency.setValueAtTime(1047, now);
+      duration = 4;
+      frequency = 1047;
+      gain.gain.linearRampToValueAtTime(0.25, now + 0.6);
+      gain.gain.exponentialRampToValueAtTime(0.05, now + duration);
       break;
     case 'chime':
-      osc.frequency.setValueAtTime(1319, now);
+      duration = 3.5;
+      frequency = 1319;
+      gain.gain.linearRampToValueAtTime(0.2, now + 0.7);
+      gain.gain.exponentialRampToValueAtTime(0.03, now + duration);
       break;
     case 'notification':
-      osc.frequency.setValueAtTime(900, now);
+      duration = 3;
+      frequency = 900;
+      gain.gain.linearRampToValueAtTime(0.25, now + 0.4);
+      gain.gain.linearRampToValueAtTime(0.08, now + duration);
       break;
     case 'alert':
-      osc.frequency.setValueAtTime(1200, now);
+      duration = 4.5;
+      frequency = 1200;
+      gain.gain.linearRampToValueAtTime(0.3, now + 0.5);
+      gain.gain.exponentialRampToValueAtTime(0.05, now + duration);
       break;
     default:
-      osc.frequency.setValueAtTime(800, now);
+      duration = 3;
+      frequency = 800;
   }
   
+  osc.frequency.setValueAtTime(frequency, now);
   osc.start(now);
-  osc.stop(now + 0.1);
+  osc.stop(now + duration);
 };
 
 const SOUNDS = {
