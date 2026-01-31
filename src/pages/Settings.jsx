@@ -21,12 +21,17 @@ import {
   Database,
   Clock,
   MessageSquare,
-  AlertTriangle
+  AlertTriangle,
+  Video,
+  Loader2,
+  CheckCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Settings() {
   const queryClient = useQueryClient();
+  const [uploading, setUploading] = useState(false);
+  const [videoUrl, setVideoUrl] = useState(null);
   const [settings, setSettings] = useState({
     // General
     app_name: 'EDP Transport',
@@ -67,6 +72,9 @@ export default function Settings() {
       const settingsObj = {};
       savedSettings.forEach(setting => {
         settingsObj[setting.setting_key] = setting.setting_value;
+        if (setting.setting_key === 'splash_video_url') {
+          setVideoUrl(setting.setting_value);
+        }
       });
       setSettings(prev => ({ ...prev, ...settingsObj }));
     }
@@ -167,6 +175,43 @@ export default function Settings() {
     } catch (error) {
       toast.error('Error al exportar datos');
     }
+  };
+
+  const handleVideoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('video/')) {
+      toast.error('Por favor selecciona un archivo de video');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      
+      const existingSetting = savedSettings.find(s => s.setting_key === 'splash_video_url');
+      
+      if (existingSetting) {
+        await base44.entities.AppSettings.update(existingSetting.id, {
+          setting_value: file_url
+        });
+      } else {
+        await base44.entities.AppSettings.create({
+          setting_key: 'splash_video_url',
+          setting_value: file_url,
+          category: 'general',
+          description: 'URL del video splash de bienvenida'
+        });
+      }
+
+      setVideoUrl(file_url);
+      queryClient.invalidateQueries(['app-settings']);
+      toast.success('Video subido exitosamente');
+    } catch (error) {
+      toast.error('Error al subir el video');
+    }
+    setUploading(false);
   };
 
   const handleResetToDefaults = () => {
@@ -289,12 +334,63 @@ export default function Settings() {
                   checked={settings.enable_auto_assign === 'true'}
                   onCheckedChange={(checked) => 
                     setSettings({...settings, enable_auto_assign: checked ? 'true' : 'false'})
-                  }
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                    }
+                    />
+                    </div>
+
+                    <div className="pt-6 border-t space-y-4">
+                    <div className="space-y-2">
+                    <Label>Video de Inicio de Sesión</Label>
+                    <p className="text-sm text-slate-500">
+                    Video que se reproduce después de iniciar sesión
+                    </p>
+                    </div>
+
+                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6">
+                    <input
+                    type="file"
+                    accept="video/*"
+                    onChange={handleVideoUpload}
+                    className="hidden"
+                    id="video-upload"
+                    disabled={uploading}
+                    />
+                    <label 
+                    htmlFor="video-upload"
+                    className="cursor-pointer flex flex-col items-center gap-3"
+                    >
+                    {uploading ? (
+                      <Loader2 className="w-10 h-10 text-slate-400 animate-spin" />
+                    ) : videoUrl ? (
+                      <CheckCircle className="w-10 h-10 text-green-500" />
+                    ) : (
+                      <Video className="w-10 h-10 text-slate-400" />
+                    )}
+                    <div className="text-center">
+                      <p className="font-medium text-slate-700">
+                        {uploading ? 'Subiendo...' : videoUrl ? 'Video Configurado' : 'Subir Video'}
+                      </p>
+                      <p className="text-sm text-slate-500 mt-1">
+                        {videoUrl ? 'Haz clic para cambiar el video' : 'Formatos: MP4, MOV, AVI'}
+                      </p>
+                    </div>
+                    </label>
+                    </div>
+
+                    {videoUrl && (
+                    <div className="space-y-2">
+                    <p className="text-sm font-medium text-slate-700">Vista previa:</p>
+                    <video
+                      src={videoUrl}
+                      controls
+                      className="w-full rounded-lg max-h-48"
+                    />
+                    </div>
+                    )}
+                    </div>
+                    </CardContent>
+                    </Card>
+                    </TabsContent>
 
         {/* Notifications Settings */}
         <TabsContent value="notifications">
