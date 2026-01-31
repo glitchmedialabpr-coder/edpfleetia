@@ -32,42 +32,62 @@ export default function NotificationSettings() {
     queryFn: () => base44.entities.Vehicle.list()
   });
 
+  // Función para determinar la etapa y severidad
+  const getAlertStage = (days) => {
+    if (days <= 1) return { stage: 3, severity: 'critical', label: 'CRÍTICO - 1 día' };
+    if (days <= 15) return { stage: 2, severity: 'high', label: 'ALERTA - 15 días' };
+    if (days <= 30) return { stage: 1, severity: 'medium', label: 'AVISO - 1 mes' };
+    return null;
+  };
+
   // Calcular alertas del sistema
   const systemAlerts = React.useMemo(() => {
     const alerts = [];
 
-    // Licencias de choferes vencidas o próximas a vencer
+    // Licencias de choferes
     drivers.forEach(driver => {
       if (driver.license_expiry) {
         const days = differenceInDays(parseISO(driver.license_expiry), new Date());
-        if (days <= 30) {
+        const stageInfo = getAlertStage(days);
+        if (stageInfo && days <= 30) {
           alerts.push({
             id: `license-${driver.id}`,
             type: 'license_expiry',
             title: `Licencia de ${driver.full_name}`,
+            description: `Número: ${driver.license_number} | Categoría: ${driver.license_category}`,
             message: days <= 0 ? 'Licencia vencida' : `Vence en ${days} días`,
-            severity: days <= 0 ? 'critical' : days <= 7 ? 'high' : 'medium',
+            stage: stageInfo.stage,
+            stageLabel: stageInfo.label,
+            severity: stageInfo.severity,
             date: driver.license_expiry,
-            entity: driver.full_name
+            entity: driver.full_name,
+            entityId: driver.id,
+            actionType: 'license'
           });
         }
       }
     });
 
-    // Documentos de choferes vencidos
+    // Documentos de choferes (Marbete)
     drivers.forEach(driver => {
       driver.documents?.forEach(doc => {
-        if (doc.expiry_date) {
+        if (doc.type === 'license' && doc.expiry_date) {
           const days = differenceInDays(parseISO(doc.expiry_date), new Date());
-          if (days <= 30) {
+          const stageInfo = getAlertStage(days);
+          if (stageInfo && days <= 30) {
             alerts.push({
-              id: `doc-${driver.id}-${doc.name}`,
-              type: 'driver_document',
+              id: `marbete-${driver.id}-${doc.name}`,
+              type: 'marbete',
               title: `${doc.name} de ${driver.full_name}`,
-              message: days <= 0 ? 'Documento vencido' : `Vence en ${days} días`,
-              severity: days <= 0 ? 'critical' : days <= 7 ? 'high' : 'medium',
+              description: `Documento ID`,
+              message: days <= 0 ? 'Marbete vencido' : `Vence en ${days} días`,
+              stage: stageInfo.stage,
+              stageLabel: stageInfo.label,
+              severity: stageInfo.severity,
               date: doc.expiry_date,
-              entity: driver.full_name
+              entity: driver.full_name,
+              entityId: driver.id,
+              actionType: 'marbete'
             });
           }
         }
@@ -78,15 +98,21 @@ export default function NotificationSettings() {
     vehicles.forEach(vehicle => {
       if (vehicle.insurance_expiry) {
         const days = differenceInDays(parseISO(vehicle.insurance_expiry), new Date());
-        if (days <= 30) {
+        const stageInfo = getAlertStage(days);
+        if (stageInfo && days <= 30) {
           alerts.push({
             id: `insurance-${vehicle.id}`,
             type: 'vehicle_insurance',
             title: `Seguro ${vehicle.plate}`,
+            description: `Vehículo: ${vehicle.brand} ${vehicle.model}`,
             message: days <= 0 ? 'Seguro vencido' : `Vence en ${days} días`,
-            severity: days <= 0 ? 'critical' : days <= 7 ? 'high' : 'medium',
+            stage: stageInfo.stage,
+            stageLabel: stageInfo.label,
+            severity: stageInfo.severity,
             date: vehicle.insurance_expiry,
-            entity: vehicle.plate
+            entity: vehicle.plate,
+            entityId: vehicle.id,
+            actionType: 'insurance'
           });
         }
       }
@@ -96,15 +122,21 @@ export default function NotificationSettings() {
     vehicles.forEach(vehicle => {
       if (vehicle.next_service_date) {
         const days = differenceInDays(parseISO(vehicle.next_service_date), new Date());
-        if (days <= 30 && days >= 0) {
+        const stageInfo = getAlertStage(days);
+        if (stageInfo && days <= 30 && days >= 0) {
           alerts.push({
             id: `maintenance-${vehicle.id}`,
             type: 'vehicle_maintenance',
             title: `Mantenimiento ${vehicle.plate}`,
-            message: `Próximo servicio en ${days} días`,
-            severity: days <= 7 ? 'high' : 'medium',
+            description: `Vehículo: ${vehicle.brand} ${vehicle.model} | Placa: ${vehicle.plate}`,
+            message: days === 0 ? 'Mantenimiento hoy' : `Próximo servicio en ${days} días`,
+            stage: stageInfo.stage,
+            stageLabel: stageInfo.label,
+            severity: stageInfo.severity,
             date: vehicle.next_service_date,
-            entity: vehicle.plate
+            entity: vehicle.plate,
+            entityId: vehicle.id,
+            actionType: 'maintenance'
           });
         }
       }
@@ -119,6 +151,65 @@ export default function NotificationSettings() {
       return new Date(a.date) - new Date(b.date);
     });
   }, [drivers, vehicles]);
+
+  // Mutación para actualizar fechas
+  const updateDateMutation = useMutation({
+    mutationFn: async (data) => {
+      const { entityType, entityId, fieldName, newDate } = data;
+      
+      if (entityType === 'driver') {
+        await base44.entities.Driver.update(entityId, { [fieldName]: newDate });
+      } else if (entityType === 'vehicle') {
+        await base44.entities.Vehicle.update(entityId, { [fieldName]: newDate });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['drivers'] });
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] });
+      toast.success('Fecha actualizada correctamente');
+      setCompleteDialog(null);
+      setNewDate('');
+    },
+    onError: () => {
+      toast.error('Error al actualizar fecha');
+    }
+  });
+
+  const handleCompleteAlert = (alert) => {
+    setCompleteDialog(alert);
+    setNewDate('');
+  };
+
+  const handleSaveNewDate = () => {
+    if (!newDate) {
+      toast.error('Por favor ingresa una fecha');
+      return;
+    }
+
+    let fieldName = '';
+    let entityType = '';
+
+    if (completeDialog.actionType === 'license') {
+      fieldName = 'license_expiry';
+      entityType = 'driver';
+    } else if (completeDialog.actionType === 'marbete') {
+      fieldName = 'marbete_expiry';
+      entityType = 'driver';
+    } else if (completeDialog.actionType === 'insurance') {
+      fieldName = 'insurance_expiry';
+      entityType = 'vehicle';
+    } else if (completeDialog.actionType === 'maintenance') {
+      fieldName = 'next_service_date';
+      entityType = 'vehicle';
+    }
+
+    updateDateMutation.mutate({
+      entityType,
+      entityId: completeDialog.entityId,
+      fieldName,
+      newDate
+    });
+  };
 
   const createNotificationMutation = useMutation({
     mutationFn: (data) =>
