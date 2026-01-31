@@ -34,13 +34,21 @@ export default function SoundSelector({ value, onChange }) {
 
   const playSound = (soundKey) => {
     const sound = SOUNDS[soundKey];
-    if (!sound.url) return;
+    if (!sound.url || soundKey === 'silent') return;
 
     const audio = new Audio(sound.url);
     audio.volume = 0.5;
     audio.play().catch(e => console.log('Audio play failed:', e));
     setPlaying(soundKey);
     setTimeout(() => setPlaying(null), 1000);
+  };
+
+  const handleSoundChange = (key) => {
+    onChange(key);
+    // Auto-reproduce when selecting a sound
+    if (key !== 'silent') {
+      setTimeout(() => playSound(key), 100);
+    }
   };
 
   return (
@@ -60,7 +68,7 @@ export default function SoundSelector({ value, onChange }) {
               name="notification_sound"
               value={key}
               checked={value === key}
-              onChange={() => onChange(key)}
+              onChange={() => handleSoundChange(key)}
               className="w-5 h-5 accent-indigo-600"
             />
             <span className="flex-1 text-sm font-medium text-slate-700">{sound.label}</span>
