@@ -62,13 +62,14 @@ export default function VideoSplash() {
     <div className="fixed inset-0 bg-black flex items-center justify-center z-[9999] overflow-hidden">
       <video
         id="splash-video"
-        className="w-full h-full object-contain"
+        className="w-full h-full object-cover"
         autoPlay
         muted
         playsInline
+        preload="auto"
       >
-        {/* Sube tu video MP4 a Base44 y reemplaza esta URL */}
-        <source src="TU_VIDEO_URL.mp4" type="video/mp4" />
+        <source src="https://drive.google.com/uc?export=download&id=1VeEsl5KCVoN6nFYEM9qjMBtDsEWK5JYu" type="video/mp4" />
+        Tu navegador no soporta videos HTML5.
       </video>
       
       <div className="absolute inset-0 pointer-events-none">
