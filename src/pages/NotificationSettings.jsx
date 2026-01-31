@@ -19,6 +19,8 @@ export default function NotificationSettings() {
   const [message, setMessage] = useState('');
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [completeDialog, setCompleteDialog] = useState(null);
+  const [newDate, setNewDate] = useState('');
 
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers'],
