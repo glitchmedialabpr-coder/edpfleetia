@@ -40,6 +40,7 @@ export default function GeneralServicePurchases() {
   const [editingPurchase, setEditingPurchase] = useState(null);
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterJob, setFilterJob] = useState('all');
+  const [purchasedByType, setPurchasedByType] = useState('driver'); // 'driver' or 'custom'
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     store: '',

@@ -57,6 +57,7 @@ import DriverLogin from './pages/DriverLogin';
 import DriverRequests from './pages/DriverRequests';
 import DriverSchedule from './pages/DriverSchedule';
 import DriverTrips from './pages/DriverTrips';
+import DriverVehicleSelection from './pages/DriverVehicleSelection';
 import Drivers from './pages/Drivers';
 import FuelRecords from './pages/FuelRecords';
 import GeneralServiceJobs from './pages/GeneralServiceJobs';
@@ -80,7 +81,6 @@ import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import VideoSplash from './pages/VideoSplash';
 import Warnings from './pages/Warnings';
-import DriverVehicleSelection from './pages/DriverVehicleSelection';
 import __Layout from './Layout.jsx';
 
 
@@ -95,6 +95,7 @@ export const PAGES = {
     "DriverRequests": DriverRequests,
     "DriverSchedule": DriverSchedule,
     "DriverTrips": DriverTrips,
+    "DriverVehicleSelection": DriverVehicleSelection,
     "Drivers": Drivers,
     "FuelRecords": FuelRecords,
     "GeneralServiceJobs": GeneralServiceJobs,
@@ -118,7 +119,6 @@ export const PAGES = {
     "Vehicles": Vehicles,
     "VideoSplash": VideoSplash,
     "Warnings": Warnings,
-    "DriverVehicleSelection": DriverVehicleSelection,
 }
 
 export const pagesConfig = {
