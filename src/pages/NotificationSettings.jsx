@@ -59,6 +59,11 @@ export default function NotificationSettings() {
     }
   }, []);
 
+  const getBackPage = () => {
+    if (user?.role === 'admin') return 'Dashboard';
+    return 'DriverDashboard';
+  };
+
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ['notification-settings', user?.id || user?.driver_id],
     queryFn: async () => {
