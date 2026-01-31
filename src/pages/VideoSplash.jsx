@@ -1,23 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
 import { Loader2 } from 'lucide-react';
 
 export default function VideoSplash() {
-  const [redirecting, setRedirecting] = useState(false);
   const [videoUrl, setVideoUrl] = useState(null);
   const [loading, setLoading] = useState(true);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     loadVideo();
   }, []);
 
   const loadVideo = async () => {
-    // Get user info from localStorage
     const pinUser = localStorage.getItem('pin_user');
     
     if (!pinUser) {
-      window.location.href = createPageUrl('Home');
+      redirectToDestination(null);
       return;
     }
 
@@ -25,14 +24,15 @@ export default function VideoSplash() {
     try {
       user = JSON.parse(pinUser);
     } catch (e) {
-      window.location.href = createPageUrl('Home');
+      redirectToDestination(null);
       return;
     }
 
-    // Get video URL from settings
     try {
       const settings = await base44.entities.AppSettings.filter({ setting_key: 'splash_video_url' });
-      if (settings && settings.length > 0) {
+      
+      if (settings && settings.length > 0 && settings[0].setting_value) {
+        console.log('Video URL found:', settings[0].setting_value);
         setVideoUrl(settings[0].setting_value);
         setLoading(false);
         return;
@@ -41,32 +41,30 @@ export default function VideoSplash() {
       console.error('Error loading video:', error);
     }
 
-    // No video, redirect immediately
-    setLoading(false);
+    redirectToDestination(user);
+  };
+
+  const redirectToDestination = (user) => {
+    const pinUser = user || (localStorage.getItem('pin_user') ? JSON.parse(localStorage.getItem('pin_user')) : null);
+    
     let destination = 'Home';
-    if (user.role === 'admin') {
-      destination = 'Dashboard';
-    } else if (user.user_type === 'driver') {
-      destination = 'DriverRequests';
-    } else if (user.user_type === 'passenger') {
-      destination = 'PassengerTrips';
+    if (pinUser) {
+      if (pinUser.role === 'admin') destination = 'Dashboard';
+      else if (pinUser.user_type === 'driver') destination = 'DriverRequests';
+      else if (pinUser.user_type === 'passenger') destination = 'PassengerTrips';
     }
+    
     window.location.href = createPageUrl(destination);
   };
 
   useEffect(() => {
-    if (videoUrl) {
-      // Auto-redirect after 10 seconds
+    if (videoUrl && videoRef.current) {
+      videoRef.current.play().catch(err => {
+        console.error('Error playing video:', err);
+      });
+      
       const timer = setTimeout(() => {
-        const pinUser = localStorage.getItem('pin_user');
-        if (pinUser) {
-          const user = JSON.parse(pinUser);
-          let destination = 'Home';
-          if (user.role === 'admin') destination = 'Dashboard';
-          else if (user.user_type === 'driver') destination = 'DriverRequests';
-          else if (user.user_type === 'passenger') destination = 'PassengerTrips';
-          window.location.href = createPageUrl(destination);
-        }
+        redirectToDestination();
       }, 10000);
       
       return () => clearTimeout(timer);
@@ -92,45 +90,20 @@ export default function VideoSplash() {
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center z-[9999]">
       <video
-        key={videoUrl}
+        ref={videoRef}
         autoPlay
         muted
         playsInline
-        controls
         className="w-full h-full object-contain"
-        onEnded={() => {
-          const pinUser = localStorage.getItem('pin_user');
-          if (pinUser) {
-            const user = JSON.parse(pinUser);
-            let destination = 'Home';
-            if (user.role === 'admin') destination = 'Dashboard';
-            else if (user.user_type === 'driver') destination = 'DriverRequests';
-            else if (user.user_type === 'passenger') destination = 'PassengerTrips';
-            window.location.href = createPageUrl(destination);
-          }
-        }}
+        onEnded={redirectToDestination}
         onError={(e) => {
-          console.error('Error loading video:', e);
-          const pinUser = localStorage.getItem('pin_user');
-          if (pinUser) {
-            const user = JSON.parse(pinUser);
-            let destination = 'Home';
-            if (user.role === 'admin') destination = 'Dashboard';
-            else if (user.user_type === 'driver') destination = 'DriverRequests';
-            else if (user.user_type === 'passenger') destination = 'PassengerTrips';
-            window.location.href = createPageUrl(destination);
-          }
+          console.error('Video error:', e);
+          redirectToDestination();
         }}
+        onLoadedData={() => console.log('Video loaded')}
       >
         <source src={videoUrl} type="video/mp4" />
-        Tu navegador no soporta videos.
       </video>
-      
-      {redirecting && (
-        <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-          <div className="animate-pulse text-white text-xl">Cargando...</div>
-        </div>
-      )}
     </div>
   );
 }
