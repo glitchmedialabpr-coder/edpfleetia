@@ -22,7 +22,7 @@ import {
   Car,
   Search,
   Filter,
-  Bell,
+  AlertTriangle,
   Check,
   Trash2
 } from 'lucide-react';
@@ -183,7 +183,7 @@ export default function ResponseHistory() {
             Respuestas
           </TabsTrigger>
           <TabsTrigger value="notifications">
-            <Bell className="w-4 h-4 mr-2" />
+            <AlertTriangle className="w-4 h-4 mr-2" />
             Notificaciones
           </TabsTrigger>
         </TabsList>
@@ -384,7 +384,7 @@ export default function ResponseHistory() {
           {notifications.length === 0 ? (
             <Card className="p-8">
               <EmptyState
-                icon={Bell}
+                icon={AlertTriangle}
                 title="No hay notificaciones"
                 description="No se han registrado notificaciones"
               />
@@ -404,7 +404,7 @@ export default function ResponseHistory() {
                     <div className="flex flex-col lg:flex-row lg:items-start gap-4">
                       <div className="flex gap-3 flex-1">
                         <div className={`p-2 rounded-full ${!notification.read ? 'bg-blue-200' : 'bg-slate-200'}`}>
-                          <Bell className={`w-5 h-5 ${!notification.read ? 'text-blue-600' : 'text-slate-600'}`} />
+                          <AlertTriangle className={`w-5 h-5 ${!notification.read ? 'text-blue-600' : 'text-slate-600'}`} />
                         </div>
                         <div className="flex-1">
                           <div className="flex gap-2 items-center mb-2">

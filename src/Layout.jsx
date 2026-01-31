@@ -157,7 +157,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Servicio General', page: 'GeneralServiceJobs', icon: Wrench },
     { name: 'Estudiantes', page: 'Students', icon: GraduationCap },
     { name: 'Reportes', page: 'ConsolidatedReports', icon: ClipboardList },
-    { name: 'Respuestas y Notificaciones', page: 'ResponseHistory', icon: Bell },
+    { name: 'Respuestas y Notificaciones', page: 'ResponseHistory', icon: AlertTriangle },
     { name: 'Historial', page: 'History', icon: History },
     { name: 'Configuración', page: 'Settings', icon: Shield },
   ];
