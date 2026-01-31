@@ -37,7 +37,7 @@ export default function AdminLogin() {
       if (response.data.success) {
         localStorage.setItem('pin_user', JSON.stringify(response.data.user));
         toast.success('Acceso autorizado');
-        navigate(createPageUrl('VideoSplash'));
+        window.location.href = createPageUrl('VideoSplash');
       } else {
         toast.error(response.data.error || 'PIN incorrecto');
         setPin('');
