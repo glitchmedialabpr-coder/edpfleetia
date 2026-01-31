@@ -210,7 +210,7 @@ export default function Layout({ children, currentPageName }) {
   }
 
   // Route guard: Protect admin pages
-  const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Warnings', 'Reports', 'DailyReports', 'DriverSchedule', 'GeneralServiceJobs', 'GeneralServicePurchases', 'Housing', 'History', 'ResponseHistory', 'Notifications', 'Settings', 'FuelRecords', 'Purchases', 'Maintenance'];
+  const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Warnings', 'Reports', 'DailyReports', 'DriverSchedule', 'GeneralServiceJobs', 'GeneralServicePurchases', 'Housing', 'History', 'ResponseHistory', 'Notifications', 'Settings', 'FuelRecords', 'Purchases', 'Maintenance', 'LiveTrips'];
   if (adminPages.includes(currentPageName) && user.role !== 'admin') {
     window.location.href = createPageUrl('Dashboard');
     return null;
