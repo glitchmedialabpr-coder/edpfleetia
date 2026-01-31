@@ -43,17 +43,14 @@ export default function GeneralServicePurchases() {
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     store: '',
-    item: '',
-    category: 'otros',
-    quantity: 1,
-    unit_cost: '',
-    total_amount: '',
+    items: [{ item: '', category: 'otros', quantity: 1, unit_cost: '', total_amount: '' }],
     job_id: '',
     job_title: '',
     purchased_by: '',
     receipt_url: '',
     notes: ''
   });
+  const [totalPurchaseAmount, setTotalPurchaseAmount] = useState('');
 
   const queryClient = useQueryClient();
 
