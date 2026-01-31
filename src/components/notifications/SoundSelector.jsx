@@ -5,23 +5,23 @@ import { Volume2, Play } from 'lucide-react';
 const SOUNDS = {
   default: {
     label: 'Predeterminado',
-    url: 'https://cdn.pixabay.com/download/audio/2022/03/10/audio_3840df62eb.mp3'
+    url: 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'
   },
   bell: {
     label: 'Campana',
-    url: 'https://cdn.pixabay.com/download/audio/2021/08/04/audio_ce3d2c8b06.mp3'
+    url: 'https://assets.mixkit.co/active_storage/sfx/2870/2870-preview.mp3'
   },
   chime: {
     label: 'Timbre',
-    url: 'https://cdn.pixabay.com/download/audio/2021/08/04/audio_3fb67345fc.mp3'
+    url: 'https://assets.mixkit.co/active_storage/sfx/2914/2914-preview.mp3'
   },
   notification: {
     label: 'Notificación',
-    url: 'https://cdn.pixabay.com/download/audio/2021/08/04/audio_fbc3f738c8.mp3'
+    url: 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'
   },
   alert: {
     label: 'Alerta',
-    url: 'https://cdn.pixabay.com/download/audio/2021/08/04/audio_d45934c8e0.mp3'
+    url: 'https://assets.mixkit.co/active_storage/sfx/2859/2859-preview.mp3'
   },
   silent: {
     label: 'Silencioso',
