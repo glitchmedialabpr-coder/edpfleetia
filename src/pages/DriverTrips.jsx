@@ -40,7 +40,8 @@ export default function DriverTrips() {
       }
       return base44.entities.Trip.filter({ driver_id: user?.driver_id }, '-scheduled_date');
     },
-    enabled: !!user?.driver_id || user?.role === 'admin'
+    enabled: !!user?.driver_id || user?.role === 'admin',
+    staleTime: 1000 * 60 * 5
   });
 
   const todayTrips = trips.filter(t => t.scheduled_date === today);
@@ -49,21 +50,29 @@ export default function DriverTrips() {
   const completedToday = todayTrips.filter(t => t.status === 'completed');
 
   const handleStartTrip = async (trip) => {
-    const now = format(new Date(), 'HH:mm');
-    await base44.entities.Trip.update(trip.id, {
-      status: 'in_progress',
-      departure_time: now
-    });
-    refetch();
+    try {
+      const now = format(new Date(), 'HH:mm');
+      await base44.entities.Trip.update(trip.id, {
+        status: 'in_progress',
+        departure_time: now
+      });
+      refetch();
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const handleCompleteTrip = async (trip) => {
-    const now = format(new Date(), 'HH:mm');
-    await base44.entities.Trip.update(trip.id, {
-      status: 'completed',
-      arrival_time: now
-    });
-    refetch();
+    try {
+      const now = format(new Date(), 'HH:mm');
+      await base44.entities.Trip.update(trip.id, {
+        status: 'completed',
+        arrival_time: now
+      });
+      refetch();
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (

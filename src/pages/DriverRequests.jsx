@@ -129,12 +129,14 @@ export default function DriverRequests() {
 
   const { data: vehicles = [] } = useQuery({
     queryKey: ['vehicles'],
-    queryFn: () => base44.entities.Vehicle.filter({ status: 'available' })
+    queryFn: () => base44.entities.Vehicle.filter({ status: 'available' }),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: pendingRequests = [], refetch: refetchPending } = useQuery({
     queryKey: ['pending-requests'],
-    queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' })
+    queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' }),
+    staleTime: 1000 * 30
   });
 
   const { data: acceptedRequests = [], refetch: refetchAccepted } = useQuery({
@@ -143,7 +145,8 @@ export default function DriverRequests() {
       driver_id: user?.driver_id,
       status: 'accepted_by_driver'
     }, '-created_date'),
-    enabled: !!user?.driver_id
+    enabled: !!user?.driver_id,
+    staleTime: 1000 * 30
   });
 
   const { data: activeTrips = [], refetch: refetchActiveTrips } = useQuery({
@@ -152,7 +155,8 @@ export default function DriverRequests() {
       driver_id: user?.driver_id,
       status: 'in_progress'
     }, '-created_date'),
-    enabled: !!user?.driver_id
+    enabled: !!user?.driver_id,
+    staleTime: 1000 * 30
   });
 
   useEffect(() => {

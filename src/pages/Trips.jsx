@@ -81,12 +81,14 @@ export default function Trips() {
 
   const { data: trips = [], refetch } = useQuery({
     queryKey: ['trips', formattedDate],
-    queryFn: () => base44.entities.Trip.filter({ scheduled_date: formattedDate }, '-scheduled_time')
+    queryFn: () => base44.entities.Trip.filter({ scheduled_date: formattedDate }, '-scheduled_time'),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: allCompletedTrips = [] } = useQuery({
     queryKey: ['all-completed-trips'],
-    queryFn: () => base44.entities.Trip.filter({ status: 'completed' }, '-scheduled_date', 100)
+    queryFn: () => base44.entities.Trip.filter({ status: 'completed' }, '-scheduled_date', 100),
+    staleTime: 1000 * 60 * 5
   });
 
   const handlePrevDay = () => setSelectedDate(subDays(selectedDate, 1));
@@ -94,21 +96,29 @@ export default function Trips() {
   const handleToday = () => setSelectedDate(new Date());
 
   const handleStartTrip = async (trip) => {
-    const now = format(new Date(), 'HH:mm');
-    await base44.entities.Trip.update(trip.id, {
-      status: 'in_progress',
-      departure_time: now
-    });
-    refetch();
+    try {
+      const now = format(new Date(), 'HH:mm');
+      await base44.entities.Trip.update(trip.id, {
+        status: 'in_progress',
+        departure_time: now
+      });
+      refetch();
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const handleCompleteTrip = async (trip) => {
-    const now = format(new Date(), 'HH:mm');
-    await base44.entities.Trip.update(trip.id, {
-      status: 'completed',
-      arrival_time: now
-    });
-    refetch();
+    try {
+      const now = format(new Date(), 'HH:mm');
+      await base44.entities.Trip.update(trip.id, {
+        status: 'completed',
+        arrival_time: now
+      });
+      refetch();
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const handleDeleteTrip = async () => {
