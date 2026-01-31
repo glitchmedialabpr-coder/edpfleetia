@@ -2,26 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { 
-        Bus, 
-        LayoutDashboard, 
-        Users, 
-        GraduationCap, 
-        Building2, 
-        History, 
-        Menu, 
-        X,
-        LogOut,
-        ChevronRight,
-        User,
-        Car,
-        Wrench,
-        AlertTriangle,
-        ClipboardList,
-        ShoppingCart,
-        Shield,
-        Clock,
-        Settings
-      } from 'lucide-react';
+              Bus, 
+              LayoutDashboard, 
+              Users, 
+              GraduationCap, 
+              Building2, 
+              History, 
+              Menu, 
+              X,
+              LogOut,
+              ChevronRight,
+              User,
+              Car,
+              Wrench,
+              AlertTriangle,
+              ClipboardList,
+              ShoppingCart,
+              Shield,
+              Clock,
+              Settings,
+              Bell
+            } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';

@@ -49,6 +49,7 @@
  */
 import Accidents from './pages/Accidents';
 import AdminLogin from './pages/AdminLogin';
+import ConsolidatedReports from './pages/ConsolidatedReports';
 import DailyReports from './pages/DailyReports';
 import Dashboard from './pages/Dashboard';
 import DriverAcceptedStudents from './pages/DriverAcceptedStudents';
@@ -69,6 +70,7 @@ import Home from './pages/Home';
 import Housing from './pages/Housing';
 import LiveTrips from './pages/LiveTrips';
 import Maintenance from './pages/Maintenance';
+import NotificationSettings from './pages/NotificationSettings';
 import PassengerLogin from './pages/PassengerLogin';
 import PassengerTrips from './pages/PassengerTrips';
 import PurchaseReports from './pages/PurchaseReports';
@@ -83,14 +85,13 @@ import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import VideoSplash from './pages/VideoSplash';
 import Warnings from './pages/Warnings';
-import ConsolidatedReports from './pages/ConsolidatedReports';
-import NotificationSettings from './pages/NotificationSettings';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Accidents": Accidents,
     "AdminLogin": AdminLogin,
+    "ConsolidatedReports": ConsolidatedReports,
     "DailyReports": DailyReports,
     "Dashboard": Dashboard,
     "DriverAcceptedStudents": DriverAcceptedStudents,
@@ -111,6 +112,7 @@ export const PAGES = {
     "Housing": Housing,
     "LiveTrips": LiveTrips,
     "Maintenance": Maintenance,
+    "NotificationSettings": NotificationSettings,
     "PassengerLogin": PassengerLogin,
     "PassengerTrips": PassengerTrips,
     "PurchaseReports": PurchaseReports,
@@ -125,8 +127,6 @@ export const PAGES = {
     "Vehicles": Vehicles,
     "VideoSplash": VideoSplash,
     "Warnings": Warnings,
-    "ConsolidatedReports": ConsolidatedReports,
-    "NotificationSettings": NotificationSettings,
 }
 
 export const pagesConfig = {
