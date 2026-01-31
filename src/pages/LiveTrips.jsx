@@ -37,10 +37,12 @@ export default function LiveTrips() {
       if (pinUser) {
         const userData = JSON.parse(pinUser);
         if (userData.role !== 'admin') {
-          window.location.href = '/';
+          window.location.href = createPageUrl('Dashboard');
           return;
         }
         setUser(userData);
+      } else {
+        window.location.href = createPageUrl('Home');
       }
     };
     loadUser();
@@ -49,7 +51,8 @@ export default function LiveTrips() {
   const { data: allRequests = [], refetch } = useQuery({
     queryKey: ['all-trip-requests'],
     queryFn: () => base44.entities.TripRequest.list('-created_date'),
-    enabled: !!user
+    enabled: !!user,
+    staleTime: 1000 * 30
   });
 
   const deleteMutation = useMutation({
@@ -59,18 +62,28 @@ export default function LiveTrips() {
       toast.success('Viaje eliminado');
       refetch();
     },
-    onError: () => toast.error('Error al eliminar viaje')
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al eliminar viaje');
+    }
   });
 
   const deleteAllMutation = useMutation({
     mutationFn: async () => {
+      if (!recentRequests || recentRequests.length === 0) {
+        throw new Error('No hay viajes para eliminar');
+      }
+      
       const now = new Date();
-      const created = new Date(recentRequests[0]?.created_date);
-      const diffMs = now - created;
       const diff48Hours = 48 * 60 * 60 * 1000;
       
-      for (const request of recentRequests.filter(r => diffMs <= diff48Hours)) {
-        await base44.entities.TripRequest.delete(request.id);
+      for (const request of recentRequests) {
+        const created = new Date(request.created_date);
+        const diffMs = now - created;
+        
+        if (diffMs <= diff48Hours) {
+          await base44.entities.TripRequest.delete(request.id);
+        }
       }
     },
     onSuccess: () => {
@@ -78,15 +91,25 @@ export default function LiveTrips() {
       toast.success('Todos los viajes eliminados');
       refetch();
     },
-    onError: () => toast.error('Error al eliminar viajes')
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al eliminar viajes');
+    }
   });
 
   useEffect(() => {
-    const unsubscribe = base44.entities.TripRequest.subscribe(() => {
-      refetch();
-    });
+    let unsubscribe;
+    try {
+      unsubscribe = base44.entities.TripRequest.subscribe(() => {
+        refetch();
+      });
+    } catch (error) {
+      console.error('Error setting up subscription:', error);
+    }
 
-    return unsubscribe;
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [refetch]);
 
   const is48HoursOld = (createdDate) => {

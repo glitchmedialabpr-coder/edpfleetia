@@ -36,70 +36,78 @@ export default function Dashboard() {
 
   const { data: trips = [], refetch: refetchTrips } = useQuery({
     queryKey: ['trips'],
-    queryFn: () => base44.entities.Trip.list('-scheduled_date', 100)
+    queryFn: () => base44.entities.Trip.list('-scheduled_date', 100),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: students = [] } = useQuery({
     queryKey: ['students'],
-    queryFn: () => base44.entities.Student.filter({ status: 'active' })
+    queryFn: () => base44.entities.Student.filter({ status: 'active' }),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers'],
-    queryFn: () => base44.entities.Driver.list()
+    queryFn: () => base44.entities.Driver.list(),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: vehicles = [] } = useQuery({
     queryKey: ['vehicles'],
-    queryFn: () => base44.entities.Vehicle.list()
+    queryFn: () => base44.entities.Vehicle.list(),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: tripRequests = [] } = useQuery({
     queryKey: ['trip-requests'],
-    queryFn: () => base44.entities.TripRequest.list('-created_date', 200)
+    queryFn: () => base44.entities.TripRequest.list('-created_date', 200),
+    staleTime: 1000 * 60 * 5
   });
 
-  const todayTrips = trips.filter(t => t.scheduled_date === today);
-  const scheduledToday = todayTrips.filter(t => t.status === 'scheduled').length;
-  const inProgressToday = todayTrips.filter(t => t.status === 'in_progress').length;
-  const completedToday = todayTrips.filter(t => t.status === 'completed').length;
+  const todayTrips = React.useMemo(() => trips.filter(t => t.scheduled_date === today), [trips, today]);
+  const scheduledToday = React.useMemo(() => todayTrips.filter(t => t.status === 'scheduled').length, [todayTrips]);
+  const inProgressToday = React.useMemo(() => todayTrips.filter(t => t.status === 'in_progress').length, [todayTrips]);
+  const completedToday = React.useMemo(() => todayTrips.filter(t => t.status === 'completed').length, [todayTrips]);
 
-  // Check for expiring documents
-  const expiringDocuments = [];
-  
-  drivers.forEach(driver => {
-    if (driver.license_expiry) {
-      const days = differenceInDays(parseISO(driver.license_expiry), new Date());
-      if (days <= 30 && days >= 0) {
-        expiringDocuments.push({ type: 'Licencia', name: driver.full_name, days, entity: 'driver' });
-      }
-    }
-    driver.documents?.forEach(doc => {
-      if (doc.expiry_date) {
-        const days = differenceInDays(parseISO(doc.expiry_date), new Date());
+  const expiringDocuments = React.useMemo(() => {
+    const docs = [];
+    
+    drivers.forEach(driver => {
+      if (driver.license_expiry) {
+        const days = differenceInDays(parseISO(driver.license_expiry), new Date());
         if (days <= 30 && days >= 0) {
-          expiringDocuments.push({ type: doc.name, name: driver.full_name, days, entity: 'driver' });
+          docs.push({ type: 'Licencia', name: driver.full_name, days, entity: 'driver' });
         }
       }
+      driver.documents?.forEach(doc => {
+        if (doc.expiry_date) {
+          const days = differenceInDays(parseISO(doc.expiry_date), new Date());
+          if (days <= 30 && days >= 0) {
+            docs.push({ type: doc.name, name: driver.full_name, days, entity: 'driver' });
+          }
+        }
+      });
     });
-  });
 
-  vehicles.forEach(vehicle => {
-    if (vehicle.insurance_expiry) {
-      const days = differenceInDays(parseISO(vehicle.insurance_expiry), new Date());
-      if (days <= 30 && days >= 0) {
-        expiringDocuments.push({ type: 'Seguro', name: vehicle.plate, days, entity: 'vehicle' });
-      }
-    }
-    vehicle.documents?.forEach(doc => {
-      if (doc.expiry_date) {
-        const days = differenceInDays(parseISO(doc.expiry_date), new Date());
+    vehicles.forEach(vehicle => {
+      if (vehicle.insurance_expiry) {
+        const days = differenceInDays(parseISO(vehicle.insurance_expiry), new Date());
         if (days <= 30 && days >= 0) {
-          expiringDocuments.push({ type: doc.name, name: vehicle.plate, days, entity: 'vehicle' });
+          docs.push({ type: 'Seguro', name: vehicle.plate, days, entity: 'vehicle' });
         }
       }
+      vehicle.documents?.forEach(doc => {
+        if (doc.expiry_date) {
+          const days = differenceInDays(parseISO(doc.expiry_date), new Date());
+          if (days <= 30 && days >= 0) {
+            docs.push({ type: doc.name, name: vehicle.plate, days, entity: 'vehicle' });
+          }
+        }
+      });
     });
-  });
+
+    return docs;
+  }, [drivers, vehicles]);
 
   const handleStartTrip = (trip) => {
     setPendingAction({ type: 'start', trip });
@@ -114,22 +122,27 @@ export default function Dashboard() {
   const executeAction = async () => {
     if (!pendingAction) return;
 
-    const now = format(new Date(), 'HH:mm');
-    
-    if (pendingAction.type === 'start') {
-      await base44.entities.Trip.update(pendingAction.trip.id, {
-        status: 'in_progress',
-        departure_time: now
-      });
-    } else if (pendingAction.type === 'complete') {
-      await base44.entities.Trip.update(pendingAction.trip.id, {
-        status: 'completed',
-        arrival_time: now
-      });
-    }
+    try {
+      const now = format(new Date(), 'HH:mm');
+      
+      if (pendingAction.type === 'start') {
+        await base44.entities.Trip.update(pendingAction.trip.id, {
+          status: 'in_progress',
+          departure_time: now
+        });
+      } else if (pendingAction.type === 'complete') {
+        await base44.entities.Trip.update(pendingAction.trip.id, {
+          status: 'completed',
+          arrival_time: now
+        });
+      }
 
-    refetchTrips();
-    setPendingAction(null);
+      refetchTrips();
+      setPendingAction(null);
+    } catch (error) {
+      console.error('Error:', error);
+      setPendingAction(null);
+    }
   };
 
   return (

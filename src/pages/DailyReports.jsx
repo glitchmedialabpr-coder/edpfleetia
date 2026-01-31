@@ -65,17 +65,20 @@ export default function DailyReports() {
 
   const { data: reports = [] } = useQuery({
     queryKey: ['daily-reports'],
-    queryFn: () => base44.entities.DailyWorkReport.list('-date', 200)
+    queryFn: () => base44.entities.DailyWorkReport.list('-date', 200),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers'],
-    queryFn: () => base44.entities.Driver.list()
+    queryFn: () => base44.entities.Driver.list(),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: allTrips = [] } = useQuery({
     queryKey: ['all-trips'],
-    queryFn: () => base44.entities.Trip.list('-scheduled_date', 500)
+    queryFn: () => base44.entities.Trip.list('-scheduled_date', 500),
+    staleTime: 1000 * 60 * 5
   });
 
   const filteredTrips = useMemo(() => {
@@ -105,12 +108,18 @@ export default function DailyReports() {
       queryClient.invalidateQueries(['daily-reports']);
       setModalOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      console.error('Error:', error);
     }
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.DailyWorkReport.delete(id),
-    onSuccess: () => queryClient.invalidateQueries(['daily-reports'])
+    onSuccess: () => queryClient.invalidateQueries(['daily-reports']),
+    onError: (error) => {
+      console.error('Error:', error);
+    }
   });
 
   const resetForm = () => {
