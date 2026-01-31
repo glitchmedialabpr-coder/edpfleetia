@@ -159,6 +159,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Reportes', page: 'ConsolidatedReports', icon: ClipboardList },
     { name: 'Respuestas y Notificaciones', page: 'ResponseHistory', icon: AlertTriangle },
     { name: 'Historial', page: 'History', icon: History },
+    { name: 'Centro de Notificaciones', page: 'NotificationSettings', icon: Bell },
     { name: 'Configuración', page: 'Settings', icon: Shield },
   ];
 
