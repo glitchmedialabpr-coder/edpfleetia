@@ -124,24 +124,35 @@ export default function GeneralServicePurchases() {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    if (!formData.store || !formData.item || !formData.total_amount) {
+    if (!formData.store || !formData.items.length || !formData.items.some(it => it.item) || !totalPurchaseAmount) {
       toast.error('Complete los campos requeridos');
       return;
     }
 
     const selectedJob = jobs.find(j => j.id === formData.job_id);
-    const dataToSave = {
-      ...formData,
-      job_title: selectedJob?.title || '',
-      quantity: parseFloat(formData.quantity) || 1,
-      unit_cost: formData.unit_cost ? parseFloat(formData.unit_cost) : 0,
-      total_amount: parseFloat(formData.total_amount)
-    };
+    
+    // Crear un registro por cada producto
+    const purchasesToCreate = formData.items
+      .filter(it => it.item)
+      .map(it => ({
+        date: formData.date,
+        store: formData.store,
+        item: it.item,
+        category: it.category,
+        quantity: parseFloat(it.quantity) || 1,
+        unit_cost: it.unit_cost ? parseFloat(it.unit_cost) : 0,
+        total_amount: parseFloat(it.total_amount) || 0,
+        job_id: formData.job_id,
+        job_title: selectedJob?.title || '',
+        purchased_by: formData.purchased_by,
+        receipt_url: formData.receipt_url,
+        notes: formData.notes
+      }));
 
     if (editingPurchase) {
-      updatePurchaseMutation.mutate({ id: editingPurchase.id, data: dataToSave });
+      updatePurchaseMutation.mutate({ id: editingPurchase.id, data: purchasesToCreate[0] });
     } else {
-      createPurchaseMutation.mutate(dataToSave);
+      purchasesToCreate.forEach(purchase => createPurchaseMutation.mutate(purchase));
     }
   };
 
