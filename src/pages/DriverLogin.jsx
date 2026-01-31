@@ -47,16 +47,21 @@ export default function DriverLogin() {
         user.session_expiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 días
         localStorage.setItem('pin_user', JSON.stringify(user));
         toast.success(`¡Bienvenido ${user.full_name}!`);
-        navigate(createPageUrl('DriverDashboard'));
+        setLoading(false);
+        // Usar setTimeout para asegurar que se procese el estado antes de navegar
+        setTimeout(() => {
+          window.location.href = createPageUrl('DriverDashboard');
+        }, 500);
       } else {
         toast.error(response.data.error || 'Conductor no encontrado');
         setDriverId('');
+        setLoading(false);
       }
     } catch (error) {
       toast.error('Error al verificar conductor');
       setDriverId('');
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
