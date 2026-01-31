@@ -26,24 +26,29 @@ export default function VideoSplash() {
       }
 
       try {
-        const settings = await base44.entities.AppSettings.filter({ setting_key: 'splash_video_url' });
+          const [videoSettings, enableSettings] = await Promise.all([
+            base44.entities.AppSettings.filter({ setting_key: 'splash_video_url' }),
+            base44.entities.AppSettings.filter({ setting_key: 'enable_splash_video' })
+          ]);
 
-        if (settings && settings.length > 0 && settings[0].setting_value) {
-          console.log('Video URL:', settings[0].setting_value);
-          setVideoUrl(settings[0].setting_value);
+          const videoEnabled = enableSettings && enableSettings.length > 0 ? enableSettings[0].setting_value === 'true' : true;
 
-          // Redirect after 4.5 seconds
-          setTimeout(() => {
-            redirect(user);
-          }, 4500);
-          return;
+          if (videoEnabled && videoSettings && videoSettings.length > 0 && videoSettings[0].setting_value) {
+            console.log('Video URL:', videoSettings[0].setting_value);
+            setVideoUrl(videoSettings[0].setting_value);
+
+            // Redirect after 4.5 seconds
+            setTimeout(() => {
+              redirect(user);
+            }, 4500);
+            return;
+          }
+        } catch (error) {
+          console.error('Error loading video:', error);
         }
-      } catch (error) {
-        console.error('Error loading video:', error);
-      }
 
-      // No video found, redirect immediately
-      redirect(user);
+        // No video found or disabled, redirect immediately
+        redirect(user);
     };
 
   const redirect = (user) => {
