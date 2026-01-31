@@ -22,7 +22,13 @@ import {
   Trash2,
   Image as ImageIcon,
   DollarSign,
-  AlertCircle
+  AlertCircle,
+  ShoppingCart,
+  Store,
+  Package,
+  FileText,
+  Download,
+  TrendingUp
 } from 'lucide-react';
 import { toast } from 'sonner';
 import EmptyState from '@/components/common/EmptyState';
@@ -52,10 +58,37 @@ const priorityConfig = {
   urgente: { label: 'Urgente', color: 'bg-red-100 text-red-700' }
 };
 
+const categoryConfig = {
+  materiales_construccion: { label: 'Materiales de Construcción', color: 'bg-orange-100 text-orange-700' },
+  herramientas: { label: 'Herramientas', color: 'bg-blue-100 text-blue-700' },
+  pintura: { label: 'Pintura', color: 'bg-purple-100 text-purple-700' },
+  limpieza: { label: 'Limpieza', color: 'bg-green-100 text-green-700' },
+  electricidad: { label: 'Electricidad', color: 'bg-yellow-100 text-yellow-700' },
+  fontaneria: { label: 'Fontanería', color: 'bg-cyan-100 text-cyan-700' },
+  ferreteria: { label: 'Ferretería', color: 'bg-red-100 text-red-700' },
+  otros: { label: 'Otros', color: 'bg-gray-100 text-gray-700' }
+};
+
 export default function GeneralServiceJobs() {
   const [showModal, setShowModal] = useState(false);
   const [editingJob, setEditingJob] = useState(null);
   const [activeTab, setActiveTab] = useState('pendiente');
+  const [mainTab, setMainTab] = useState('jobs');
+  const [purchaseModal, setPurchaseModal] = useState(false);
+  const [editingPurchase, setEditingPurchase] = useState(null);
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterJob, setFilterJob] = useState('all');
+  const [purchasedByType, setPurchasedByType] = useState('driver');
+  const [purchaseFormData, setPurchaseFormData] = useState({
+    date: new Date().toISOString().split('T')[0],
+    store: '',
+    items: [{ item: '', category: 'otros', quantity: 1, unit_cost: '', total_amount: '' }],
+    job_id: '',
+    job_title: '',
+    purchased_by: '',
+    receipt_url: '',
+    notes: ''
+  });
   const [formData, setFormData] = useState({
     job_type: 'limpieza',
     title: '',
@@ -83,6 +116,18 @@ export default function GeneralServiceJobs() {
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers'],
     queryFn: () => base44.entities.Driver.list(),
+    staleTime: 1000 * 60 * 5
+  });
+
+  const { data: purchases = [] } = useQuery({
+    queryKey: ['general-service-purchases'],
+    queryFn: () => base44.entities.GeneralServicePurchase.list('-date', 200),
+    staleTime: 1000 * 60 * 5
+  });
+
+  const { data: suppliers = [] } = useQuery({
+    queryKey: ['suppliers'],
+    queryFn: () => base44.entities.Supplier.list('-created_date', 200),
     staleTime: 1000 * 60 * 5
   });
 
@@ -159,6 +204,46 @@ export default function GeneralServiceJobs() {
     }
   });
 
+  const createPurchaseMutation = useMutation({
+    mutationFn: (data) => base44.entities.GeneralServicePurchase.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['general-service-purchases']);
+      setPurchaseModal(false);
+      resetPurchaseForm();
+      toast.success('Compra registrada exitosamente');
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al registrar compra');
+    }
+  });
+
+  const updatePurchaseMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.GeneralServicePurchase.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['general-service-purchases']);
+      setPurchaseModal(false);
+      resetPurchaseForm();
+      toast.success('Compra actualizada');
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al actualizar compra');
+    }
+  });
+
+  const deletePurchaseMutation = useMutation({
+    mutationFn: (id) => base44.entities.GeneralServicePurchase.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['general-service-purchases']);
+      toast.success('Compra eliminada');
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al eliminar compra');
+    }
+  });
+
   const resetForm = () => {
     setFormData({
       job_type: 'limpieza',
@@ -177,6 +262,133 @@ export default function GeneralServiceJobs() {
     });
     setEditingJob(null);
   };
+
+  const resetPurchaseForm = () => {
+    setPurchaseFormData({
+      date: new Date().toISOString().split('T')[0],
+      store: '',
+      items: [{ item: '', category: 'otros', quantity: 1, unit_cost: '', total_amount: '' }],
+      job_id: '',
+      job_title: '',
+      purchased_by: '',
+      receipt_url: '',
+      notes: ''
+    });
+    setEditingPurchase(null);
+    setPurchasedByType('driver');
+  };
+
+  const handlePurchaseSubmit = (e) => {
+    e.preventDefault();
+    
+    if (!purchaseFormData.store || !purchaseFormData.items.length || !purchaseFormData.items.some(it => it.item)) {
+      toast.error('Complete los campos requeridos');
+      return;
+    }
+
+    const selectedJob = jobs.find(j => j.id === purchaseFormData.job_id);
+    
+    const purchasesToCreate = purchaseFormData.items
+      .filter(it => it.item)
+      .map(it => ({
+        date: purchaseFormData.date,
+        store: purchaseFormData.store,
+        item: it.item,
+        category: it.category,
+        quantity: parseFloat(it.quantity) || 1,
+        unit_cost: it.unit_cost ? parseFloat(it.unit_cost) : 0,
+        total_amount: parseFloat(it.total_amount) || 0,
+        job_id: purchaseFormData.job_id,
+        job_title: selectedJob?.title || '',
+        purchased_by: purchaseFormData.purchased_by,
+        receipt_url: purchaseFormData.receipt_url,
+        notes: purchaseFormData.notes
+      }));
+
+    if (editingPurchase) {
+      updatePurchaseMutation.mutate({ id: editingPurchase.id, data: purchasesToCreate[0] });
+    } else {
+      purchasesToCreate.forEach(purchase => createPurchaseMutation.mutate(purchase));
+    }
+  };
+
+  const handleEditPurchase = (purchase) => {
+    setEditingPurchase(purchase);
+    const driver = drivers.find(d => d.full_name === purchase.purchased_by);
+    setPurchaseFormData({
+      date: purchase.date,
+      store: purchase.store,
+      items: [{ 
+        item: purchase.item,
+        category: purchase.category,
+        quantity: purchase.quantity || 1,
+        unit_cost: purchase.unit_cost || '',
+        total_amount: purchase.total_amount
+      }],
+      job_id: purchase.job_id || '',
+      job_title: purchase.job_title || '',
+      purchased_by: purchase.purchased_by || '',
+      receipt_url: purchase.receipt_url || '',
+      notes: purchase.notes || ''
+    });
+    setPurchasedByType(driver ? 'driver' : 'custom');
+    setPurchaseModal(true);
+  };
+
+  const handleDeletePurchase = (id) => {
+    if (confirm('¿Está seguro de eliminar esta compra?')) {
+      deletePurchaseMutation.mutate(id);
+    }
+  };
+
+  const handleFileUploadPurchase = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setPurchaseFormData({...purchaseFormData, receipt_url: file_url});
+      toast.success('Recibo cargado');
+    } catch (error) {
+      toast.error('Error al cargar el archivo');
+    }
+  };
+
+  const addPurchaseProduct = () => {
+    setPurchaseFormData({
+      ...purchaseFormData,
+      items: [...purchaseFormData.items, { item: '', category: 'otros', quantity: 1, unit_cost: '', total_amount: '' }]
+    });
+  };
+
+  const removePurchaseProduct = (index) => {
+    const updatedItems = purchaseFormData.items.filter((_, i) => i !== index);
+    setPurchaseFormData({ ...purchaseFormData, items: updatedItems });
+  };
+
+  const updatePurchaseProduct = (index, field, value) => {
+    const updatedItems = [...purchaseFormData.items];
+    updatedItems[index] = { ...updatedItems[index], [field]: value };
+    
+    if (field === 'quantity' || field === 'unit_cost') {
+      const qty = parseFloat(updatedItems[index].quantity) || 0;
+      const unit = parseFloat(updatedItems[index].unit_cost) || 0;
+      if (qty > 0 && unit > 0) {
+        updatedItems[index].total_amount = (qty * unit).toFixed(2);
+      }
+    }
+    
+    setPurchaseFormData({ ...purchaseFormData, items: updatedItems });
+  };
+
+  const filteredPurchases = purchases.filter(purchase => {
+    const matchesCategory = filterCategory === 'all' || purchase.category === filterCategory;
+    const matchesJob = filterJob === 'all' || purchase.job_id === filterJob;
+    return matchesCategory && matchesJob;
+  });
+
+  const totalSpent = filteredPurchases.reduce((sum, p) => sum + (p.total_amount || 0), 0);
+  const totalItems = filteredPurchases.length;
 
   const handleSubmit = (e) => {
     e.preventDefault();
