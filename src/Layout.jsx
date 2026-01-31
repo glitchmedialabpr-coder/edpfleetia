@@ -215,7 +215,7 @@ export default function Layout({ children, currentPageName }) {
   }
 
   // Route guard: Protect driver pages
-  const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverAcceptedStudents', 'DriverTrips', 'DriverHistory'];
+  const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverAcceptedStudents', 'DriverTrips', 'DriverHistory', 'NotificationSettings'];
   if (driverPages.includes(currentPageName) && user.user_type !== 'driver') {
     window.location.href = createPageUrl('Home');
     return null;
