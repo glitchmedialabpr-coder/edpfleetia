@@ -59,7 +59,8 @@ export default function PassengerTrips() {
   const { data: requests = [], refetch } = useQuery({
     queryKey: ['trip-requests', user?.student_id],
     queryFn: () => base44.entities.TripRequest.filter({ passenger_id: user?.student_id }, '-created_date'),
-    enabled: !!user?.student_id
+    enabled: !!user?.student_id,
+    staleTime: 1000 * 30
   });
 
   useEffect(() => {
