@@ -84,6 +84,7 @@ import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import VideoSplash from './pages/VideoSplash';
 import Warnings from './pages/Warnings';
+import ConsolidatedReports from './pages/ConsolidatedReports';
 import __Layout from './Layout.jsx';
 
 
@@ -125,6 +126,7 @@ export const PAGES = {
     "Vehicles": Vehicles,
     "VideoSplash": VideoSplash,
     "Warnings": Warnings,
+    "ConsolidatedReports": ConsolidatedReports,
 }
 
 export const pagesConfig = {

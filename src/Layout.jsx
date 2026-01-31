@@ -155,14 +155,11 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Horarios', page: 'DriverSchedule', icon: Clock },
     { name: 'Vehículos', page: 'VehicleManagement', icon: Car },
     { name: 'Choferes', page: 'Drivers', icon: Users },
-    { name: 'Reportes Diarios', page: 'DailyReports', icon: ClipboardList },
     { name: 'Advertencias', page: 'Warnings', icon: AlertTriangle },
     { name: 'Trabajos Servicio', page: 'GeneralServiceJobs', icon: Wrench },
     { name: 'Compras Servicio', page: 'GeneralServicePurchases', icon: ShoppingCart },
-    { name: 'Reportes Compras', page: 'PurchaseReports', icon: ClipboardList },
     { name: 'Estudiantes', page: 'Students', icon: GraduationCap },
-    { name: 'Hospedajes', page: 'Housing', icon: Building2 },
-    { name: 'Reportes', page: 'Reports', icon: ClipboardList },
+    { name: 'Reportes', page: 'ConsolidatedReports', icon: ClipboardList },
     { name: 'Respuestas', page: 'ResponseHistory', icon: ClipboardList },
     { name: 'Historial', page: 'History', icon: History },
     { name: 'Notificaciones', page: 'Notifications', icon: AlertTriangle },
@@ -215,7 +212,7 @@ export default function Layout({ children, currentPageName }) {
   }
 
   // Route guard: Protect admin pages
-  const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Warnings', 'Reports', 'DailyReports', 'DriverSchedule', 'GeneralServiceJobs', 'GeneralServicePurchases', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Notifications', 'Settings', 'FuelRecords', 'Purchases', 'Maintenance', 'LiveTrips'];
+  const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Warnings', 'Reports', 'DailyReports', 'DriverSchedule', 'GeneralServiceJobs', 'GeneralServicePurchases', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Notifications', 'Settings', 'FuelRecords', 'Purchases', 'Maintenance', 'LiveTrips', 'ConsolidatedReports'];
   if (adminPages.includes(currentPageName) && user.role !== 'admin') {
     window.location.href = createPageUrl('Dashboard');
     return null;
