@@ -46,13 +46,17 @@ export default function VideoSplash() {
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-black z-[9999]">
-      <iframe 
-        src="https://drive.google.com/file/d/1VeEsl5KCVoN6nFYEM9qjMBtDsEWK5JYu/preview"
-        className="w-full h-full border-0"
-        allow="autoplay; fullscreen"
-        style={{ display: 'block' }}
-      />
+    <div className="fixed inset-0 bg-black flex items-center justify-center z-[9999]">
+      <video
+        className="w-full h-full object-cover"
+        autoPlay
+        muted
+        playsInline
+        controls={false}
+        onError={(e) => console.error('Error loading video:', e)}
+      >
+        <source src="https://drive.google.com/uc?export=download&id=1VeEsl5KCVoN6nFYEM9qjMBtDsEWK5JYu" type="video/mp4" />
+      </video>
       
       {redirecting && (
         <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
