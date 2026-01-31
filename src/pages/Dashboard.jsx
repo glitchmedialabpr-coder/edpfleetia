@@ -347,6 +347,65 @@ export default function Dashboard() {
         </Tabs>
       </div>
 
+      {/* Purchase Stats and Charts */}
+      {purchases.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-slate-800">Análisis de Compras y Gastos</h2>
+            <Link 
+              to={createPageUrl('PurchaseReports')}
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+            >
+              Ver reportes completos <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Total Spending Card */}
+            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 p-6">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm text-blue-600 font-medium">Total Gastado (Este Mes)</p>
+                  <p className="text-3xl font-bold text-blue-900 mt-2">
+                    ${purchases.reduce((sum, p) => sum + (p.total_amount || 0), 0).toFixed(2)}
+                  </p>
+                  <p className="text-xs text-blue-700 mt-1">{purchases.length} compras registradas</p>
+                </div>
+                <TrendingUp className="w-8 h-8 text-blue-500 opacity-50" />
+              </div>
+            </Card>
+
+            {/* Purchase Trend Chart */}
+            <Card className="p-6">
+              <p className="text-sm font-medium text-slate-700 mb-4">Compras Últimos 7 Días</p>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={React.useMemo(() => {
+                  const daily = {};
+                  for (let i = 6; i >= 0; i--) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    const key = d.toISOString().split('T')[0];
+                    daily[key] = 0;
+                  }
+                  purchases.forEach(p => {
+                    if (daily.hasOwnProperty(p.date)) {
+                      daily[p.date] += p.total_amount || 0;
+                    }
+                  });
+                  return Object.entries(daily).map(([date, amount]) => ({ date: new Date(date).toLocaleDateString('es-ES', { month: 'short', day: 'numeric' }), amount }));
+                }, [purchases])}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" fontSize={12} />
+                  <YAxis fontSize={12} />
+                  <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                  <Bar dataKey="amount" fill="#3b82f6" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </div>
+        </div>
+      )}
+
       {/* Driver Statistics */}
       <DriverStats drivers={drivers} trips={tripRequests} />
 
