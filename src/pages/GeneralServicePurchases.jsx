@@ -478,12 +478,16 @@ export default function GeneralServicePurchases() {
               <label className="text-sm font-medium text-slate-700 mb-1 block">
                 Tienda/Proveedor *
               </label>
-              <Input
-                value={formData.store}
-                onChange={(e) => setFormData({...formData, store: e.target.value})}
-                placeholder="ej. Home Depot"
-                required
-              />
+              <Select value={formData.store} onValueChange={(val) => setFormData({...formData, store: val})}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar proveedor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {suppliers.map(supplier => (
+                    <SelectItem key={supplier.id} value={supplier.name}>{supplier.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
