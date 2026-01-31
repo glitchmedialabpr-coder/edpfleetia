@@ -17,173 +17,111 @@ export default function NotificationSettings() {
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-pulse">Cargando configuración...</div>
-      </div>
-    );
-  }
+  const { data: drivers = [] } = useQuery({
+    queryKey: ['drivers'],
+    queryFn: () => base44.entities.Driver.list()
+  });
+
+  const createNotificationMutation = useMutation({
+    mutationFn: (data) =>
+      base44.entities.Notification.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      toast.success('Notificación enviada');
+      setTitle('');
+      setMessage('');
+      setSelectedDriver(null);
+    },
+    onError: () => {
+      toast.error('Error al enviar notificación');
+    }
+  });
+
+  const handleSendNotification = async (e) => {
+    e.preventDefault();
+    if (!selectedDriver || !title || !message) {
+      toast.error('Completa todos los campos');
+      return;
+    }
+
+    setIsLoading(true);
+    createNotificationMutation.mutate({
+      type: 'admin_message',
+      title,
+      message,
+      driver_id: selectedDriver,
+      driver_name: drivers.find(d => d.id === selectedDriver)?.full_name || 'Conductor',
+      priority: 'high'
+    });
+    setIsLoading(false);
+  };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => navigate(createPageUrl(getBackPage()))}
+          onClick={() => navigate(createPageUrl('Dashboard'))}
         >
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Centro de Notificaciones</h1>
-          <p className="text-slate-500 text-sm mt-1">Configura cada tipo de notificación</p>
+          <p className="text-slate-500 text-sm mt-1">Enviar notificaciones a choferes</p>
         </div>
       </div>
 
-      <div className="space-y-4">
-        {notifications.map((notification) => {
-          const notifType = NOTIFICATION_TYPES[notification.notification_type];
-          const isExpanded = expandedType === notification.id;
-
-          return (
-            <Card
-              key={notification.id}
-              className={`p-6 border-l-4 transition-all ${
-                notifType.color === 'blue'
-                  ? 'border-blue-600'
-                  : notifType.color === 'orange'
-                  ? 'border-orange-600'
-                  : notifType.color === 'purple'
-                  ? 'border-purple-600'
-                  : notifType.color === 'red'
-                  ? 'border-red-600'
-                  : notifType.color === 'yellow'
-                  ? 'border-yellow-600'
-                  : 'border-green-600'
-              }`}
+      <Card className="p-6 border-l-4 border-teal-600">
+        <form onSubmit={handleSendNotification} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Seleccionar Chofer</label>
+            <select
+              value={selectedDriver || ''}
+              onChange={(e) => setSelectedDriver(e.target.value)}
+              className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600"
             >
-              {/* Header */}
-              <div className="flex items-start justify-between gap-4 cursor-pointer"
-                onClick={() => setExpandedType(isExpanded ? null : notification.id)}>
-                <div className="flex gap-3 flex-1">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                    notifType.color === 'blue' ? 'bg-blue-50' :
-                    notifType.color === 'orange' ? 'bg-orange-50' :
-                    notifType.color === 'purple' ? 'bg-purple-50' :
-                    notifType.color === 'red' ? 'bg-red-50' :
-                    notifType.color === 'yellow' ? 'bg-yellow-50' :
-                    'bg-green-50'
-                  }`}>
-                    <Bell className={`w-5 h-5 ${
-                      notifType.color === 'blue' ? 'text-blue-600' :
-                      notifType.color === 'orange' ? 'text-orange-600' :
-                      notifType.color === 'purple' ? 'text-purple-600' :
-                      notifType.color === 'red' ? 'text-red-600' :
-                      notifType.color === 'yellow' ? 'text-yellow-600' :
-                      'text-green-600'
-                    }`} />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-800">{notifType.label}</h3>
-                  </div>
-                </div>
-                <Switch
-                  checked={notification.enabled || false}
-                  onCheckedChange={() => handleUpdateField(notification, 'enabled', !notification.enabled)}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </div>
+              <option value="">-- Selecciona un chofer --</option>
+              {drivers.map(driver => (
+                <option key={driver.id} value={driver.id}>
+                  {driver.full_name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-              {/* Expandable Settings */}
-              {isExpanded && (
-                <div className="mt-6 space-y-4 pt-4 border-t border-slate-100">
-                  {/* Sonido */}
-                  <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                    <Volume2 className="w-4 h-4 text-slate-600" />
-                    <label className="flex items-center gap-2 flex-1 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={notification.sound_enabled || false}
-                        onChange={(e) => handleUpdateField(notification, 'sound_enabled', e.target.checked)}
-                        className="w-4 h-4 rounded"
-                      />
-                      <span className="text-sm text-slate-700">Reproducir sonido</span>
-                    </label>
-                  </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Título</label>
+            <Input
+              type="text"
+              placeholder="Ej: Actualización importante"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </div>
 
-                  {/* Anticipación */}
-                  <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                    <Clock className="w-4 h-4 text-slate-600" />
-                    <label className="flex items-center gap-2 flex-1">
-                      <span className="text-sm text-slate-700">Anticipación:</span>
-                      <Input
-                        type="number"
-                        min="0"
-                        max="120"
-                        value={notification.advance_minutes || 0}
-                        onChange={(e) => handleUpdateField(notification, 'advance_minutes', parseInt(e.target.value))}
-                        className="w-20 h-8"
-                      />
-                      <span className="text-sm text-slate-600">minutos</span>
-                    </label>
-                  </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Mensaje</label>
+            <textarea
+              placeholder="Escribe el mensaje..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600 h-32"
+              required
+            />
+          </div>
 
-                  {/* Hora */}
-                  <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                    <Clock className="w-4 h-4 text-slate-600" />
-                    <label className="flex items-center gap-2 flex-1">
-                      <span className="text-sm text-slate-700">Hora:</span>
-                      <Input
-                        type="time"
-                        value={notification.scheduled_time || '09:00'}
-                        onChange={(e) => handleUpdateField(notification, 'scheduled_time', e.target.value)}
-                        className="w-32 h-8"
-                      />
-                    </label>
-                  </div>
-
-                  {/* Meses */}
-                  <div className="p-3 bg-slate-50 rounded-lg">
-                    <label className="text-sm font-medium text-slate-700 block mb-3">Meses:</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {MONTHS.map(month => (
-                        <label key={month.id} className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={(notification.scheduled_months || []).includes(month.id)}
-                            onChange={() => toggleScheduleMonth(notification, month.id)}
-                            className="w-4 h-4 rounded"
-                          />
-                          <span className="text-xs text-slate-700">{month.label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Días de la semana */}
-                  <div className="p-3 bg-slate-50 rounded-lg">
-                    <label className="text-sm font-medium text-slate-700 block mb-3">Días de la semana:</label>
-                    <div className="grid grid-cols-4 gap-2">
-                      {DAYS_OF_WEEK.map(day => (
-                        <label key={day.id} className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={(notification.scheduled_days || []).includes(day.id)}
-                            onChange={() => toggleScheduleDay(notification, day.id)}
-                            className="w-4 h-4 rounded"
-                          />
-                          <span className="text-xs text-slate-700">{day.label.substring(0, 3)}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </Card>
-          );
-        })}
-      </div>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-teal-600 hover:bg-teal-700 gap-2"
+          >
+            <Send className="w-4 h-4" />
+            {isLoading ? 'Enviando...' : 'Enviar Notificación'}
+          </Button>
+        </form>
+      </Card>
     </div>
   );
 }
