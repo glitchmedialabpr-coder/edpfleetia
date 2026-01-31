@@ -73,6 +73,12 @@ export default function GeneralServicePurchases() {
     staleTime: 1000 * 60 * 5
   });
 
+  const { data: suppliers = [] } = useQuery({
+    queryKey: ['suppliers'],
+    queryFn: () => base44.entities.Supplier.list('-created_date', 200),
+    staleTime: 1000 * 60 * 5
+  });
+
   const createPurchaseMutation = useMutation({
     mutationFn: (data) => base44.entities.GeneralServicePurchase.create(data),
     onSuccess: () => {
