@@ -154,8 +154,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Viajes en Vivo', page: 'LiveTrips', icon: Bus },
     { name: 'Vehículos', page: 'VehicleManagement', icon: Car },
     { name: 'Choferes', page: 'Drivers', icon: Users },
-    { name: 'Trabajos Servicio', page: 'GeneralServiceJobs', icon: Wrench },
-    { name: 'Compras Servicio', page: 'GeneralServicePurchases', icon: ShoppingCart },
+    { name: 'Servicio General', page: 'GeneralServiceJobs', icon: Wrench },
     { name: 'Estudiantes', page: 'Students', icon: GraduationCap },
     { name: 'Reportes', page: 'ConsolidatedReports', icon: ClipboardList },
     { name: 'Respuestas', page: 'ResponseHistory', icon: ClipboardList },
@@ -210,7 +209,7 @@ export default function Layout({ children, currentPageName }) {
   }
 
   // Route guard: Protect admin pages
-  const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'GeneralServicePurchases', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Notifications', 'Settings', 'FuelRecords', 'Purchases', 'Maintenance', 'LiveTrips', 'ConsolidatedReports'];
+  const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Notifications', 'Settings', 'FuelRecords', 'Purchases', 'Maintenance', 'LiveTrips', 'ConsolidatedReports'];
   if (adminPages.includes(currentPageName) && user.role !== 'admin') {
     window.location.href = createPageUrl('Dashboard');
     return null;
