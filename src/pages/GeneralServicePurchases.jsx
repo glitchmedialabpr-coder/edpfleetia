@@ -348,40 +348,38 @@ export default function GeneralServicePurchases() {
         </Card>
       </div>
 
-      {/* Filters */}
-      <Card className="p-4">
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="text-xs text-slate-500 mb-1 block">Categoría</label>
-            <Select value={filterCategory} onValueChange={setFilterCategory}>
-              <SelectTrigger>
-                <SelectValue placeholder="Categoría" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas las Categorías</SelectItem>
-                {Object.entries(categoryConfig).map(([key, config]) => (
-                  <SelectItem key={key} value={key}>{config.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <label className="text-xs text-slate-500 mb-1 block">Trabajo Asociado</label>
-            <Select value={filterJob} onValueChange={setFilterJob}>
-              <SelectTrigger>
-                <SelectValue placeholder="Trabajo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos los Trabajos</SelectItem>
-                {jobs.map(job => (
-                  <SelectItem key={job.id} value={job.id}>{job.title}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </Card>
+      {/* Advanced Filters */}
+      <AdvancedFilters
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        filters={filters}
+        onFiltersChange={updateFilters}
+        isExpanded={filtersExpanded}
+        onToggleExpanded={() => setFiltersExpanded(!filtersExpanded)}
+        onClearAll={() => {
+          setSearchQuery('');
+          clearFilters();
+        }}
+        filterOptions={{
+          category: {
+            label: 'Categoría',
+            options: Object.entries(categoryConfig).map(([key, config]) => ({
+              value: key,
+              label: config.label
+            }))
+          },
+          supplier: {
+            label: 'Proveedor',
+            options: suppliers.map(s => ({ value: s.name, label: s.name }))
+          },
+          job: {
+            label: 'Trabajo Asociado',
+            options: jobs.map(j => ({ value: j.id, label: j.title }))
+          },
+          dateFrom: true,
+          dateTo: true
+        }}
+      />
 
       {/* Purchases List */}
       {filteredPurchases.length === 0 ? (
