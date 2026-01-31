@@ -24,6 +24,99 @@ export default function NotificationSettings() {
     queryFn: () => base44.entities.Driver.list()
   });
 
+  const { data: vehicles = [] } = useQuery({
+    queryKey: ['vehicles'],
+    queryFn: () => base44.entities.Vehicle.list()
+  });
+
+  // Calcular alertas del sistema
+  const systemAlerts = React.useMemo(() => {
+    const alerts = [];
+
+    // Licencias de choferes vencidas o próximas a vencer
+    drivers.forEach(driver => {
+      if (driver.license_expiry) {
+        const days = differenceInDays(parseISO(driver.license_expiry), new Date());
+        if (days <= 30) {
+          alerts.push({
+            id: `license-${driver.id}`,
+            type: 'license_expiry',
+            title: `Licencia de ${driver.full_name}`,
+            message: days <= 0 ? 'Licencia vencida' : `Vence en ${days} días`,
+            severity: days <= 0 ? 'critical' : days <= 7 ? 'high' : 'medium',
+            date: driver.license_expiry,
+            entity: driver.full_name
+          });
+        }
+      }
+    });
+
+    // Documentos de choferes vencidos
+    drivers.forEach(driver => {
+      driver.documents?.forEach(doc => {
+        if (doc.expiry_date) {
+          const days = differenceInDays(parseISO(doc.expiry_date), new Date());
+          if (days <= 30) {
+            alerts.push({
+              id: `doc-${driver.id}-${doc.name}`,
+              type: 'driver_document',
+              title: `${doc.name} de ${driver.full_name}`,
+              message: days <= 0 ? 'Documento vencido' : `Vence en ${days} días`,
+              severity: days <= 0 ? 'critical' : days <= 7 ? 'high' : 'medium',
+              date: doc.expiry_date,
+              entity: driver.full_name
+            });
+          }
+        }
+      });
+    });
+
+    // Seguro de vehículos
+    vehicles.forEach(vehicle => {
+      if (vehicle.insurance_expiry) {
+        const days = differenceInDays(parseISO(vehicle.insurance_expiry), new Date());
+        if (days <= 30) {
+          alerts.push({
+            id: `insurance-${vehicle.id}`,
+            type: 'vehicle_insurance',
+            title: `Seguro ${vehicle.plate}`,
+            message: days <= 0 ? 'Seguro vencido' : `Vence en ${days} días`,
+            severity: days <= 0 ? 'critical' : days <= 7 ? 'high' : 'medium',
+            date: vehicle.insurance_expiry,
+            entity: vehicle.plate
+          });
+        }
+      }
+    });
+
+    // Mantenimiento próximo de vehículos
+    vehicles.forEach(vehicle => {
+      if (vehicle.next_service_date) {
+        const days = differenceInDays(parseISO(vehicle.next_service_date), new Date());
+        if (days <= 30 && days >= 0) {
+          alerts.push({
+            id: `maintenance-${vehicle.id}`,
+            type: 'vehicle_maintenance',
+            title: `Mantenimiento ${vehicle.plate}`,
+            message: `Próximo servicio en ${days} días`,
+            severity: days <= 7 ? 'high' : 'medium',
+            date: vehicle.next_service_date,
+            entity: vehicle.plate
+          });
+        }
+      }
+    });
+
+    // Ordenar por severidad y fecha
+    return alerts.sort((a, b) => {
+      const severityOrder = { critical: 0, high: 1, medium: 2 };
+      if (severityOrder[a.severity] !== severityOrder[b.severity]) {
+        return severityOrder[a.severity] - severityOrder[b.severity];
+      }
+      return new Date(a.date) - new Date(b.date);
+    });
+  }, [drivers, vehicles]);
+
   const createNotificationMutation = useMutation({
     mutationFn: (data) =>
       base44.entities.Notification.create(data),
