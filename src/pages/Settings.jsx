@@ -365,6 +365,7 @@ export default function Settings() {
                     </div>
                     )}
 
+                    {settings.enable_splash_video === 'true' && (
                     <div className="border-2 border-dashed border-slate-300 rounded-lg p-6">
                     <input
                     type="file"
@@ -395,8 +396,9 @@ export default function Settings() {
                     </div>
                     </label>
                     </div>
+                    )}
 
-                    {videoUrl && (
+                    {videoUrl && settings.enable_splash_video === 'true' && (
                     <div className="space-y-2">
                     <p className="text-sm font-medium text-slate-700">Vista previa:</p>
                     <video
