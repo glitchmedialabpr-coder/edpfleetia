@@ -54,11 +54,7 @@ export default function VideoSplash() {
     window.location.href = createPageUrl(destination);
   };
 
-  if (!videoUrl) {
-    return (
-      <div className="fixed inset-0 bg-black z-[9999]" />
-    );
-  }
+
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center z-[9999]">
