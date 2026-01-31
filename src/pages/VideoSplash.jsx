@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { createPageUrl } from '../utils';
+import { Button } from '@/components/ui/button';
 
 export default function VideoSplash() {
   const [redirecting, setRedirecting] = useState(false);
+  const [showButton, setShowButton] = useState(true);
 
   useEffect(() => {
     // Get user info from localStorage
@@ -39,20 +41,35 @@ export default function VideoSplash() {
       }, 300);
     };
 
-    // Redirect after video duration (adjust based on your video length)
-    const timer = setTimeout(handleRedirect, 8000); // 8 seconds for video
+    // Auto-redirect after 10 seconds
+    const timer = setTimeout(handleRedirect, 10000);
     
     return () => clearTimeout(timer);
   }, []);
 
+  const handlePlay = () => {
+    setShowButton(false);
+  };
+
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center z-[9999]">
       <iframe
-        src="https://drive.google.com/file/d/1VeEsl5KCVoN6nFYEM9qjMBtDsEWK5JYu/preview"
+        src="https://drive.google.com/file/d/1VeEsl5KCVoN6nFYEM9qjMBtDsEWK5JYu/preview?autoplay=1"
         className="w-full h-full border-0"
-        allow="autoplay"
+        allow="autoplay; fullscreen"
         allowFullScreen
       />
+      
+      {showButton && (
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+          <Button 
+            onClick={handlePlay}
+            className="bg-white text-black hover:bg-gray-200 text-xl px-8 py-6"
+          >
+            ▶ Ver Video
+          </Button>
+        </div>
+      )}
       
       {redirecting && (
         <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
