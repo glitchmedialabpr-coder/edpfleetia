@@ -316,7 +316,7 @@ export default function Layout({ children, currentPageName }) {
           </div>
         </div>
 
-        <nav className="p-4 space-y-1 pb-32 lg:pb-4">
+        <nav className="p-4 space-y-1 pb-32 lg:pb-4 max-h-[calc(100vh-180px)] overflow-y-auto">
           {navItems.map((item) => {
             const isActive = currentPageName === item.page;
             return (
