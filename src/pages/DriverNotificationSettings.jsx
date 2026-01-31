@@ -8,6 +8,7 @@ import { ArrowLeft, Bell, Volume2, Radio } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { toast } from 'sonner';
+import SoundSelector from '../components/notifications/SoundSelector';
 
 export default function DriverNotificationSettings() {
   const navigate = useNavigate();
@@ -43,7 +44,8 @@ export default function DriverNotificationSettings() {
         status_change_enabled: true,
         admin_message_enabled: true,
         admin_message_sound: true,
-        push_notifications_enabled: true
+        push_notifications_enabled: true,
+        notification_sound: 'default'
       });
       return newSettings;
     },
@@ -202,6 +204,17 @@ export default function DriverNotificationSettings() {
             onCheckedChange={() => handleToggle('push_notifications_enabled')}
           />
         </div>
+      </Card>
+
+      {/* Sound Selection */}
+      <Card className="p-6 border-l-4 border-indigo-600">
+        <SoundSelector
+          value={currentSettings?.notification_sound || 'default'}
+          onChange={(sound) => {
+            setSettings({ ...currentSettings, notification_sound: sound });
+            updateMutation.mutate({ notification_sound: sound });
+          }}
+        />
       </Card>
     </div>
   );
