@@ -84,6 +84,7 @@ import Vehicles from './pages/Vehicles';
 import VideoSplash from './pages/VideoSplash';
 import Warnings from './pages/Warnings';
 import ConsolidatedReports from './pages/ConsolidatedReports';
+import NotificationSettings from './pages/NotificationSettings';
 import __Layout from './Layout.jsx';
 
 
@@ -125,6 +126,7 @@ export const PAGES = {
     "VideoSplash": VideoSplash,
     "Warnings": Warnings,
     "ConsolidatedReports": ConsolidatedReports,
+    "NotificationSettings": NotificationSettings,
 }
 
 export const pagesConfig = {
