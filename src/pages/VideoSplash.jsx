@@ -33,10 +33,6 @@ export default function VideoSplash() {
       if (settings && settings.length > 0 && settings[0].setting_value) {
         setVideoUrl(settings[0].setting_value);
         setLoading(false);
-        
-        setTimeout(() => {
-          redirect(user);
-        }, 10000);
         return;
       }
     } catch (error) {
