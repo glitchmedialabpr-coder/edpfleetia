@@ -166,6 +166,7 @@ export default function GeneralServicePurchases() {
 
   const handleEdit = (purchase) => {
     setEditingPurchase(purchase);
+    const driver = drivers.find(d => d.full_name === purchase.purchased_by);
     setFormData({
       date: purchase.date,
       store: purchase.store,
@@ -182,6 +183,7 @@ export default function GeneralServicePurchases() {
       receipt_url: purchase.receipt_url || '',
       notes: purchase.notes || ''
     });
+    setPurchasedByType(driver ? 'driver' : 'custom');
     setTotalPurchaseAmount(purchase.total_amount || '');
     setShowModal(true);
   };
