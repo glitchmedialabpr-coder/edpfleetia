@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
-import { Loader2 } from 'lucide-react';
 
 export default function VideoSplash() {
   const [videoUrl, setVideoUrl] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadVideoAndRedirect();
+    loadVideo();
   }, []);
 
-  const loadVideoAndRedirect = async () => {
+  const loadVideo = async () => {
     const pinUser = localStorage.getItem('pin_user');
     
     if (!pinUser) {
@@ -31,14 +29,20 @@ export default function VideoSplash() {
       const settings = await base44.entities.AppSettings.filter({ setting_key: 'splash_video_url' });
       
       if (settings && settings.length > 0 && settings[0].setting_value) {
+        console.log('Video URL:', settings[0].setting_value);
         setVideoUrl(settings[0].setting_value);
-        setLoading(false);
+        
+        // Redirect after 10 seconds
+        setTimeout(() => {
+          redirect(user);
+        }, 10000);
         return;
       }
     } catch (error) {
       console.error('Error loading video:', error);
     }
 
+    // No video found, redirect immediately
     redirect(user);
   };
 
@@ -50,27 +54,22 @@ export default function VideoSplash() {
     window.location.href = createPageUrl(destination);
   };
 
-  if (loading) {
+  if (!videoUrl) {
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center z-[9999]">
-        <Loader2 className="w-12 h-12 text-white animate-spin" />
+      <div className="fixed inset-0 bg-red-500 flex items-center justify-center z-[9999]">
+        <p className="text-white text-2xl">Cargando video...</p>
       </div>
     );
-  }
-
-  if (!videoUrl) {
-    return null;
   }
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center z-[9999]">
       <video
-        src={videoUrl}
+        key={videoUrl}
         autoPlay
         muted
         playsInline
-        controls={false}
-        className="max-w-full max-h-full"
+        className="w-full h-full object-contain"
         onEnded={() => {
           const pinUser = localStorage.getItem('pin_user');
           if (pinUser) {
@@ -78,13 +77,16 @@ export default function VideoSplash() {
           }
         }}
         onError={(e) => {
-          console.error('Error al cargar video:', e);
+          console.error('Error en video:', e);
           const pinUser = localStorage.getItem('pin_user');
           if (pinUser) {
             redirect(JSON.parse(pinUser));
           }
         }}
-      />
+        onLoadedData={() => console.log('Video cargado correctamente')}
+      >
+        <source src={videoUrl} type="video/mp4" />
+      </video>
     </div>
   );
 }
