@@ -572,38 +572,83 @@ export default function GeneralServicePurchases() {
 
 
 
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">
-                  Comprado por *
-                </label>
-                <Input
-                  value={formData.purchased_by}
-                  onChange={(e) => setFormData({...formData, purchased_by: e.target.value})}
-                  placeholder="Nombre de quien compró"
-                  required
-                />
-              </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1 block">
+                Comprado por *
+              </label>
+              <div className="space-y-2">
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      value="driver"
+                      checked={purchasedByType === 'driver'}
+                      onChange={(e) => {
+                        setPurchasedByType(e.target.value);
+                        setFormData({...formData, purchased_by: ''});
+                      }}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm text-slate-600">Chofer</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      value="custom"
+                      checked={purchasedByType === 'custom'}
+                      onChange={(e) => {
+                        setPurchasedByType(e.target.value);
+                        setFormData({...formData, purchased_by: ''});
+                      }}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm text-slate-600">Otro</span>
+                  </label>
+                </div>
 
-              <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">
-                  Trabajo Asociado
-                </label>
-                <Select 
-                  value={formData.job_id} 
-                  onValueChange={(val) => setFormData({...formData, job_id: val})}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar trabajo (opcional)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={null}>Sin trabajo asociado</SelectItem>
-                    {jobs.map(job => (
-                      <SelectItem key={job.id} value={job.id}>{job.title}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {purchasedByType === 'driver' ? (
+                  <Select 
+                    value={formData.purchased_by} 
+                    onValueChange={(val) => setFormData({...formData, purchased_by: val})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar chofer" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {drivers.map(driver => (
+                        <SelectItem key={driver.id} value={driver.full_name}>{driver.full_name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    value={formData.purchased_by}
+                    onChange={(e) => setFormData({...formData, purchased_by: e.target.value})}
+                    placeholder="Nombre de quien compró"
+                    required
+                  />
+                )}
               </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1 block">
+                Trabajo Asociado
+              </label>
+              <Select 
+                value={formData.job_id} 
+                onValueChange={(val) => setFormData({...formData, job_id: val})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar trabajo (opcional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={null}>Sin trabajo asociado</SelectItem>
+                  {jobs.map(job => (
+                    <SelectItem key={job.id} value={job.id}>{job.title}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
