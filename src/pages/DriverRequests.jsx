@@ -156,50 +156,59 @@ export default function DriverRequests() {
   });
 
   useEffect(() => {
-    const unsubscribeRequest = base44.entities.TripRequest.subscribe((event) => {
-      if (event.type === 'create' && event.data?.status === 'pending' && selectedVehicle) {
-        notificationSound.play().catch(e => console.log('Audio play failed:', e));
-        setHasNewRequest(true);
-        setTimeout(() => setHasNewRequest(false), 3000);
-        
-        if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('🚗 Nueva Solicitud de Viaje', {
-            body: `${event.data.passenger_name} necesita ir a ${event.data.destination}`,
-            icon: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/303d16ba3_471231367_1006775134815986_8615529326532786364_n.jpg',
-            vibrate: [200, 100, 200],
-            requireInteraction: true
+    if (!user?.driver_id) return;
+
+    let unsubscribeRequest;
+    let unsubscribeTrip;
+    let interval;
+
+    try {
+      unsubscribeRequest = base44.entities.TripRequest.subscribe((event) => {
+        if (event.type === 'create' && event.data?.status === 'pending' && selectedVehicle) {
+          notificationSound.play().catch(e => console.log('Audio play failed:', e));
+          setHasNewRequest(true);
+          setTimeout(() => setHasNewRequest(false), 3000);
+          
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('🚗 Nueva Solicitud de Viaje', {
+              body: `${event.data.passenger_name} necesita ir a ${event.data.destination}`,
+              icon: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/303d16ba3_471231367_1006775134815986_8615529326532786364_n.jpg',
+              vibrate: [200, 100, 200],
+              requireInteraction: true
+            });
+          }
+          
+          toast.success('🔔 Nueva solicitud de viaje disponible!', {
+            duration: 5000,
           });
+          refetchPending();
+        } else if (event.type === 'update') {
+          refetchPending();
+          refetchAccepted();
         }
-        
-        toast.success('🔔 Nueva solicitud de viaje disponible!', {
-          duration: 5000,
-        });
-        refetchPending();
-      } else if (event.type === 'update') {
+      });
+
+      unsubscribeTrip = base44.entities.Trip.subscribe((event) => {
+        if (event.type === 'update' && event.data?.driver_id === user.driver_id) {
+          refetchActiveTrips();
+        }
+      });
+
+      interval = setInterval(() => {
         refetchPending();
         refetchAccepted();
-      }
-    });
-
-    const unsubscribeTrip = base44.entities.Trip.subscribe((event) => {
-      if (event.type === 'update' && user?.driver_id && event.data?.driver_id === user.driver_id) {
         refetchActiveTrips();
-      }
-    });
-
-    // Auto-refresh cada 30 segundos para reducir carga en BD
-    const interval = setInterval(() => {
-      refetchPending();
-      refetchAccepted();
-      refetchActiveTrips();
-    }, 30000);
+      }, 30000);
+    } catch (error) {
+      console.error('Error setting up subscriptions:', error);
+    }
 
     return () => {
-      unsubscribeRequest();
-      unsubscribeTrip();
-      clearInterval(interval);
+      if (unsubscribeRequest) unsubscribeRequest();
+      if (unsubscribeTrip) unsubscribeTrip();
+      if (interval) clearInterval(interval);
     };
-  }, [refetchPending, refetchAccepted, refetchActiveTrips, user?.driver_id, selectedVehicle, notificationSound]);
+  }, [user?.driver_id, selectedVehicle, notificationSound, refetchPending, refetchAccepted, refetchActiveTrips]);
 
   const handleAccept = async (request) => {
     if (!selectedVehicle) {
@@ -290,47 +299,16 @@ export default function DriverRequests() {
     }
 
     try {
-      const now = new Date();
-      const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-      const vehicle = vehicles.find(v => v.id === selectedVehicle);
-
-      // Create Trip with all accepted students
-      const studentsData = acceptedRequests.map(req => ({
-        request_id: req.id,
-        student_id: req.passenger_id,
-        student_name: req.passenger_name,
-        housing_name: req.destination,
-        destination: req.destination,
-        destination_town: req.destination_town,
-        delivery_status: 'pending',
-        delivery_time: null
-      }));
-
-      const trip = await base44.entities.Trip.create({
-        driver_id: user.driver_id,
-        driver_name: user.full_name || user.email,
-        vehicle_id: selectedVehicle,
-        vehicle_info: vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '',
-        scheduled_date: new Date().toISOString().split('T')[0],
-        scheduled_time: timeString,
-        departure_time: timeString,
-        students: studentsData,
-        origin: 'EDP University',
-        status: 'in_progress'
+      const res = await base44.functions.invoke('createTripFromRequests', {
+        acceptedRequests,
+        selectedVehicle
       });
 
-      // Update all accepted requests to in_trip status
-      for (const req of acceptedRequests) {
-        await base44.entities.TripRequest.update(req.id, {
-          status: 'in_trip',
-          started_at: timeString,
-          trip_id: trip.id
-        });
+      if (res.data.success) {
+        toast.success(`Viaje iniciado con ${acceptedRequests.length} estudiante(s)`);
+        refetchAccepted();
+        refetchActiveTrips();
       }
-
-      toast.success(`Viaje iniciado con ${acceptedRequests.length} estudiante(s)`);
-      refetchAccepted();
-      refetchActiveTrips();
     } catch (error) {
       toast.error('Error al iniciar viaje');
       console.error(error);

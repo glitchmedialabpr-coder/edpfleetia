@@ -65,16 +65,23 @@ export default function PassengerTrips() {
   useEffect(() => {
     if (!user?.student_id) return;
 
-    const unsubscribe = base44.entities.TripRequest.subscribe((event) => {
-      if (event.data?.passenger_id === user.student_id) {
-        refetch();
-        if (event.type === 'update' && event.data.status === 'accepted') {
-          toast.success('¡Un conductor aceptó tu viaje!');
+    let unsubscribe;
+    try {
+      unsubscribe = base44.entities.TripRequest.subscribe((event) => {
+        if (event.data?.passenger_id === user.student_id) {
+          refetch();
+          if (event.type === 'update' && event.data.status === 'accepted') {
+            toast.success('¡Un conductor aceptó tu viaje!');
+          }
         }
-      }
-    });
+      });
+    } catch (error) {
+      console.error('Error setting up subscription:', error);
+    }
 
-    return unsubscribe;
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [user?.student_id, refetch]);
 
   const handleSubmit = async (e) => {
@@ -90,36 +97,23 @@ export default function PassengerTrips() {
     }
 
     try {
-      const now = new Date();
-      const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-      
-      const destination = formData.destination_type === 'otros' 
-        ? formData.destination_other
-        : formData.destination_type;
-      
-      await base44.entities.TripRequest.create({
-        passenger_id: user.student_id,
-        passenger_name: user.full_name,
-        passenger_phone: user.phone || '',
-        origin: 'EDP University',
-        destination: destination,
+      const res = await base44.functions.invoke('createTripRequest', {
         destination_type: formData.destination_type,
-        destination_other: formData.destination_other,
-        passengers_count: 1,
-        pickup_time: timeString,
-        status: 'pending'
+        destination_other: formData.destination_other
       });
 
-      toast.success('Solicitud enviada');
-      setModalOpen(false);
-      setFormData({
-        destination_type: '',
-        destination_other: ''
-      });
-      refetch();
+      if (res.data.success) {
+        toast.success('Solicitud enviada');
+        setModalOpen(false);
+        setFormData({
+          destination_type: '',
+          destination_other: ''
+        });
+        refetch();
+      }
     } catch (error) {
       console.error('Error al crear solicitud:', error);
-      toast.error(`Error: ${error.message || 'No se pudo crear la solicitud'}`);
+      toast.error('Error al crear solicitud');
     }
   };
 
@@ -131,6 +125,7 @@ export default function PassengerTrips() {
       toast.success('Solicitud cancelada');
       refetch();
     } catch (error) {
+      console.error('Error:', error);
       toast.error('Error al cancelar');
     }
   };
