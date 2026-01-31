@@ -39,7 +39,8 @@ export default function Housing() {
 
   const { data: housings = [], refetch } = useQuery({
     queryKey: ['housings'],
-    queryFn: () => base44.entities.Housing.list('-created_date')
+    queryFn: () => base44.entities.Housing.list('-created_date'),
+    staleTime: 1000 * 60 * 5
   });
 
   const filteredHousings = housings.filter(h => 
@@ -76,21 +77,29 @@ export default function Housing() {
     e.preventDefault();
     setLoading(true);
 
-    if (editingHousing) {
-      await base44.entities.Housing.update(editingHousing.id, formData);
-    } else {
-      await base44.entities.Housing.create(formData);
+    try {
+      if (editingHousing) {
+        await base44.entities.Housing.update(editingHousing.id, formData);
+      } else {
+        await base44.entities.Housing.create(formData);
+      }
+      setModalOpen(false);
+      refetch();
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
     }
-
-    setModalOpen(false);
-    refetch();
-    setLoading(false);
   };
 
   const handleDelete = async (housing) => {
     if (confirm(`¿Eliminar ${housing.name}?`)) {
-      await base44.entities.Housing.delete(housing.id);
-      refetch();
+      try {
+        await base44.entities.Housing.delete(housing.id);
+        refetch();
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
   };
 

@@ -91,17 +91,20 @@ export default function Accidents() {
 
   const { data: accidents = [], refetch } = useQuery({
     queryKey: ['vehicle-accidents'],
-    queryFn: () => base44.entities.VehicleAccident.list('-accident_date')
+    queryFn: () => base44.entities.VehicleAccident.list('-accident_date'),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers'],
-    queryFn: () => base44.entities.Driver.list()
+    queryFn: () => base44.entities.Driver.list(),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: vehicles = [] } = useQuery({
     queryKey: ['vehicles'],
-    queryFn: () => base44.entities.Vehicle.list()
+    queryFn: () => base44.entities.Vehicle.list(),
+    staleTime: 1000 * 60 * 5
   });
 
   const filteredAccidents = accidents.filter(a => 
@@ -223,15 +226,19 @@ export default function Accidents() {
     e.preventDefault();
     setLoading(true);
 
-    if (editingAccident) {
-      await base44.entities.VehicleAccident.update(editingAccident.id, formData);
-    } else {
-      await base44.entities.VehicleAccident.create(formData);
+    try {
+      if (editingAccident) {
+        await base44.entities.VehicleAccident.update(editingAccident.id, formData);
+      } else {
+        await base44.entities.VehicleAccident.create(formData);
+      }
+      setModalOpen(false);
+      refetch();
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
     }
-
-    setModalOpen(false);
-    refetch();
-    setLoading(false);
   };
 
   return (
