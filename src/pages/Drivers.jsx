@@ -151,15 +151,19 @@ export default function Drivers() {
     e.preventDefault();
     setLoading(true);
 
-    if (editingDriver) {
-      await base44.entities.Driver.update(editingDriver.id, formData);
-    } else {
-      await base44.entities.Driver.create(formData);
+    try {
+      if (editingDriver) {
+        await base44.entities.Driver.update(editingDriver.id, formData);
+      } else {
+        await base44.entities.Driver.create(formData);
+      }
+      setModalOpen(false);
+      refetch();
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
     }
-
-    setModalOpen(false);
-    refetch();
-    setLoading(false);
   };
 
   const getLicenseAlert = (driver) => {
@@ -190,13 +194,7 @@ export default function Drivers() {
             <Plus className="w-4 h-4 mr-2" />
             Agregar Chofer
           </Button>
-          <Button 
-            variant="outline"
-            className="border-teal-600 text-teal-600 hover:bg-teal-50"
-          >
-            <FileSpreadsheet className="w-4 h-4 mr-2" />
-            Añadir Choferes Via .csv
-          </Button>
+
         </div>
       </div>
 

@@ -144,15 +144,19 @@ export default function Vehicles() {
     e.preventDefault();
     setLoading(true);
 
-    if (editingVehicle) {
-      await base44.entities.Vehicle.update(editingVehicle.id, formData);
-    } else {
-      await base44.entities.Vehicle.create(formData);
+    try {
+      if (editingVehicle) {
+        await base44.entities.Vehicle.update(editingVehicle.id, formData);
+      } else {
+        await base44.entities.Vehicle.create(formData);
+      }
+      setModalOpen(false);
+      refetch();
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
     }
-
-    setModalOpen(false);
-    refetch();
-    setLoading(false);
   };
 
   return (
@@ -171,13 +175,7 @@ export default function Vehicles() {
             <Plus className="w-4 h-4 mr-2" />
             Agregar Vehículo
           </Button>
-          <Button 
-            variant="outline"
-            className="border-teal-600 text-teal-600 hover:bg-teal-50"
-          >
-            <FileSpreadsheet className="w-4 h-4 mr-2" />
-            Añadir Vehículos Via .csv
-          </Button>
+
         </div>
       </div>
 

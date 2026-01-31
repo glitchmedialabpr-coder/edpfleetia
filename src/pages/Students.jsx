@@ -113,21 +113,29 @@ export default function Students() {
     e.preventDefault();
     setLoading(true);
 
-    if (editingStudent) {
-      await base44.entities.Student.update(editingStudent.id, formData);
-    } else {
-      await base44.entities.Student.create(formData);
+    try {
+      if (editingStudent) {
+        await base44.entities.Student.update(editingStudent.id, formData);
+      } else {
+        await base44.entities.Student.create(formData);
+      }
+      setModalOpen(false);
+      refetch();
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
     }
-
-    setModalOpen(false);
-    refetch();
-    setLoading(false);
   };
 
   const handleDelete = async (student) => {
     if (confirm(`¿Eliminar a ${student.full_name}?`)) {
-      await base44.entities.Student.delete(student.id);
-      refetch();
+      try {
+        await base44.entities.Student.delete(student.id);
+        refetch();
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
   };
 
@@ -147,13 +155,7 @@ export default function Students() {
             <Plus className="w-4 h-4 mr-2" />
             Agregar Estudiante
           </Button>
-          <Button 
-            variant="outline"
-            className="border-teal-600 text-teal-600 hover:bg-teal-50"
-          >
-            <FileSpreadsheet className="w-4 h-4 mr-2" />
-            Añadir Estudiantes Via .csv
-          </Button>
+
         </div>
       </div>
 
