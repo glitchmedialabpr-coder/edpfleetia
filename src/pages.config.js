@@ -52,8 +52,10 @@ import AdminLogin from './pages/AdminLogin';
 import DailyReports from './pages/DailyReports';
 import Dashboard from './pages/Dashboard';
 import DriverAcceptedStudents from './pages/DriverAcceptedStudents';
+import DriverDashboard from './pages/DriverDashboard';
 import DriverHistory from './pages/DriverHistory';
 import DriverLogin from './pages/DriverLogin';
+import DriverNotificationSettings from './pages/DriverNotificationSettings';
 import DriverRequests from './pages/DriverRequests';
 import DriverSchedule from './pages/DriverSchedule';
 import DriverTrips from './pages/DriverTrips';
@@ -61,6 +63,7 @@ import DriverVehicleSelection from './pages/DriverVehicleSelection';
 import Drivers from './pages/Drivers';
 import FuelRecords from './pages/FuelRecords';
 import GeneralServiceJobs from './pages/GeneralServiceJobs';
+import GeneralServicePurchases from './pages/GeneralServicePurchases';
 import History from './pages/History';
 import Home from './pages/Home';
 import Housing from './pages/Housing';
@@ -81,9 +84,6 @@ import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import VideoSplash from './pages/VideoSplash';
 import Warnings from './pages/Warnings';
-import GeneralServicePurchases from './pages/GeneralServicePurchases';
-import DriverDashboard from './pages/DriverDashboard';
-import DriverNotificationSettings from './pages/DriverNotificationSettings';
 import __Layout from './Layout.jsx';
 
 
@@ -93,8 +93,10 @@ export const PAGES = {
     "DailyReports": DailyReports,
     "Dashboard": Dashboard,
     "DriverAcceptedStudents": DriverAcceptedStudents,
+    "DriverDashboard": DriverDashboard,
     "DriverHistory": DriverHistory,
     "DriverLogin": DriverLogin,
+    "DriverNotificationSettings": DriverNotificationSettings,
     "DriverRequests": DriverRequests,
     "DriverSchedule": DriverSchedule,
     "DriverTrips": DriverTrips,
@@ -102,6 +104,7 @@ export const PAGES = {
     "Drivers": Drivers,
     "FuelRecords": FuelRecords,
     "GeneralServiceJobs": GeneralServiceJobs,
+    "GeneralServicePurchases": GeneralServicePurchases,
     "History": History,
     "Home": Home,
     "Housing": Housing,
@@ -122,9 +125,6 @@ export const PAGES = {
     "Vehicles": Vehicles,
     "VideoSplash": VideoSplash,
     "Warnings": Warnings,
-    "GeneralServicePurchases": GeneralServicePurchases,
-    "DriverDashboard": DriverDashboard,
-    "DriverNotificationSettings": DriverNotificationSettings,
 }
 
 export const pagesConfig = {

@@ -297,10 +297,10 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-0 left-0 h-screen w-72 bg-white border-r border-slate-200 z-50 transform transition-transform duration-300 lg:translate-x-0 flex flex-col",
+        "fixed top-16 left-0 bottom-0 w-72 bg-white border-r border-slate-200 z-50 transform transition-transform duration-300 lg:top-0 lg:translate-x-0 flex flex-col",
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="p-6 border-b border-slate-100 flex-shrink-0">
+        <div className="hidden lg:block p-6 border-b border-slate-100 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl overflow-hidden">
               <img 
@@ -342,7 +342,7 @@ export default function Layout({ children, currentPageName }) {
           })}
         </nav>
 
-        <div className="lg:hidden p-4 border-t border-slate-100 bg-white flex-shrink-0">
+        <div className="lg:hidden p-4 border-t border-slate-100 bg-white">
           <div className="flex items-center gap-3 px-3 py-2 mb-3 bg-slate-50 rounded-lg">
             <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center flex-shrink-0">
               <User className="w-5 h-5 text-slate-500" />
