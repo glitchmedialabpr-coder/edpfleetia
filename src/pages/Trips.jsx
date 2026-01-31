@@ -66,10 +66,12 @@ export default function Trips() {
       if (pinUser) {
         const userData = JSON.parse(pinUser);
         if (userData.role !== 'admin') {
-          window.location.href = '/';
+          window.location.href = createPageUrl('Dashboard');
           return;
         }
         setUser(userData);
+      } else {
+        window.location.href = createPageUrl('Home');
       }
     };
     loadUser();

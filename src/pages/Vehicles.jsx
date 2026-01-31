@@ -61,7 +61,11 @@ export default function Vehicles() {
 
   const { data: vehicles = [], refetch } = useQuery({
     queryKey: ['vehicles'],
-    queryFn: () => base44.entities.Vehicle.list('-created_date')
+    queryFn: async () => {
+      const res = await base44.functions.invoke('getSecureVehicles');
+      return res.data.vehicles || [];
+    },
+    staleTime: 1000 * 60 * 5
   });
 
   const filteredVehicles = vehicles.filter(v => 

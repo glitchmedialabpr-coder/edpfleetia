@@ -187,12 +187,12 @@ export default function DriverRequests() {
       }
     });
 
-    // Auto-refresh cada 2 segundos para mantener datos actualizados en tiempo real
+    // Auto-refresh cada 30 segundos para reducir carga en BD
     const interval = setInterval(() => {
       refetchPending();
       refetchAccepted();
       refetchActiveTrips();
-    }, 2000);
+    }, 30000);
 
     return () => {
       unsubscribeRequest();

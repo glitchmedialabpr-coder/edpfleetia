@@ -83,7 +83,8 @@ export default function Drivers() {
     queryFn: async () => {
       const res = await base44.functions.invoke('getSecureDrivers');
       return res.data.drivers || [];
-    }
+    },
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: allAccidents = [] } = useQuery({

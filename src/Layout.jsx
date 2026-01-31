@@ -209,6 +209,27 @@ export default function Layout({ children, currentPageName }) {
     return children;
   }
 
+  // Route guard: Protect admin pages
+  const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Warnings', 'Reports', 'DailyReports', 'DriverSchedule', 'GeneralServiceJobs', 'GeneralServicePurchases', 'Housing', 'History', 'ResponseHistory', 'Notifications', 'Settings', 'FuelRecords', 'Purchases', 'Maintenance'];
+  if (adminPages.includes(currentPageName) && user.role !== 'admin') {
+    window.location.href = createPageUrl('Dashboard');
+    return null;
+  }
+
+  // Route guard: Protect driver pages
+  const driverPages = ['DriverRequests', 'DriverAcceptedStudents', 'DriverTrips', 'DriverHistory'];
+  if (driverPages.includes(currentPageName) && user.user_type !== 'driver') {
+    window.location.href = createPageUrl('Dashboard');
+    return null;
+  }
+
+  // Route guard: Protect passenger pages
+  const passengerPages = ['PassengerTrips'];
+  if (passengerPages.includes(currentPageName) && user.user_type !== 'passenger') {
+    window.location.href = createPageUrl('Dashboard');
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Desktop Header */}
