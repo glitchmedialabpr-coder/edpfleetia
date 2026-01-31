@@ -35,12 +35,14 @@ export default function FuelRecords() {
 
   const { data: records = [], refetch } = useQuery({
     queryKey: ['fuel-records'],
-    queryFn: () => base44.entities.FuelRecord.list('-date')
+    queryFn: () => base44.entities.FuelRecord.list('-date'),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: vehicles = [] } = useQuery({
     queryKey: ['vehicles'],
-    queryFn: () => base44.entities.Vehicle.list()
+    queryFn: () => base44.entities.Vehicle.list(),
+    staleTime: 1000 * 60 * 5
   });
 
   // Filter records
@@ -114,18 +116,22 @@ export default function FuelRecords() {
     e.preventDefault();
     setLoading(true);
 
-    const vehicle = vehicles.find(v => v.id === formData.vehicle_id);
-    await base44.entities.FuelRecord.create({
-      ...formData,
-      vehicle_plate: vehicle?.plate,
-      amount: parseFloat(formData.amount),
-      gallons: formData.gallons ? parseFloat(formData.gallons) : null,
-      odometer: formData.odometer ? parseFloat(formData.odometer) : null
-    });
-
-    setModalOpen(false);
-    refetch();
-    setLoading(false);
+    try {
+      const vehicle = vehicles.find(v => v.id === formData.vehicle_id);
+      await base44.entities.FuelRecord.create({
+        ...formData,
+        vehicle_plate: vehicle?.plate,
+        amount: parseFloat(formData.amount),
+        gallons: formData.gallons ? parseFloat(formData.gallons) : null,
+        odometer: formData.odometer ? parseFloat(formData.odometer) : null
+      });
+      setModalOpen(false);
+      refetch();
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

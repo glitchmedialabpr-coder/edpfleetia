@@ -48,17 +48,20 @@ export default function Reports() {
 
   const { data: allTrips = [] } = useQuery({
     queryKey: ['all-trips-reports'],
-    queryFn: () => base44.entities.Trip.list('-created_date', 500)
+    queryFn: () => base44.entities.Trip.list('-created_date', 500),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: allTripRequests = [] } = useQuery({
     queryKey: ['all-requests-reports'],
-    queryFn: () => base44.entities.TripRequest.list('-created_date', 1000)
+    queryFn: () => base44.entities.TripRequest.list('-created_date', 1000),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers'],
-    queryFn: () => base44.entities.Driver.list()
+    queryFn: () => base44.entities.Driver.list(),
+    staleTime: 1000 * 60 * 5
   });
 
   // Apply filters

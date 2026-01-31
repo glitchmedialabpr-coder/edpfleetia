@@ -92,12 +92,14 @@ export default function Warnings() {
 
   const { data: warnings = [] } = useQuery({
     queryKey: ['warnings'],
-    queryFn: () => base44.entities.DriverWarning.list('-warning_date', 200)
+    queryFn: () => base44.entities.DriverWarning.list('-warning_date', 200),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers'],
-    queryFn: () => base44.entities.Driver.list()
+    queryFn: () => base44.entities.Driver.list(),
+    staleTime: 1000 * 60 * 5
   });
 
   const createMutation = useMutation({
@@ -106,6 +108,9 @@ export default function Warnings() {
       queryClient.invalidateQueries(['warnings']);
       setModalOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      console.error('Error:', error);
     }
   });
 

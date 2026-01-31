@@ -38,12 +38,14 @@ export default function DriverSchedule() {
 
   const { data: drivers = [], isLoading } = useQuery({
     queryKey: ['drivers'],
-    queryFn: () => base44.entities.Driver.filter({ status: 'active' })
+    queryFn: () => base44.entities.Driver.filter({ status: 'active' }),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: vehicles = [] } = useQuery({
     queryKey: ['vehicles'],
-    queryFn: () => base44.entities.Vehicle.filter({ status: 'available' })
+    queryFn: () => base44.entities.Vehicle.filter({ status: 'available' }),
+    staleTime: 1000 * 60 * 5
   });
 
   const updateScheduleMutation = useMutation({
@@ -71,7 +73,10 @@ export default function DriverSchedule() {
       toast.success('Horario actualizado exitosamente');
       handleCloseDialog();
     },
-    onError: () => toast.error('Error al actualizar horario')
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al actualizar horario');
+    }
   });
 
   const handleOpenDialog = (driver) => {

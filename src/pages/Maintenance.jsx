@@ -55,12 +55,14 @@ export default function Maintenance() {
 
   const { data: records = [] } = useQuery({
     queryKey: ['maintenance-records'],
-    queryFn: () => base44.entities.MaintenanceRecord.list('-service_date', 200)
+    queryFn: () => base44.entities.MaintenanceRecord.list('-service_date', 200),
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: vehicles = [] } = useQuery({
     queryKey: ['vehicles'],
-    queryFn: () => base44.entities.Vehicle.list()
+    queryFn: () => base44.entities.Vehicle.list(),
+    staleTime: 1000 * 60 * 5
   });
 
   const filteredRecords = records.filter(record => {

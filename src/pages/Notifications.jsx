@@ -63,15 +63,23 @@ export default function Notifications() {
 
   const { data: notifications = [], refetch } = useQuery({
     queryKey: ['notifications'],
-    queryFn: () => base44.entities.Notification.list('-created_date', 100)
+    queryFn: () => base44.entities.Notification.list('-created_date', 100),
+    staleTime: 1000 * 30
   });
 
   useEffect(() => {
-    const unsubscribe = base44.entities.Notification.subscribe(() => {
-      refetch();
-    });
+    let unsubscribe;
+    try {
+      unsubscribe = base44.entities.Notification.subscribe(() => {
+        refetch();
+      });
+    } catch (error) {
+      console.error('Error setting up subscription:', error);
+    }
 
-    return unsubscribe;
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [refetch]);
 
   const markAsReadMutation = useMutation({
@@ -79,6 +87,9 @@ export default function Notifications() {
       base44.entities.Notification.update(notificationId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+    onError: (error) => {
+      console.error('Error:', error);
     }
   });
 
@@ -88,6 +99,10 @@ export default function Notifications() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       toast.success('Notificación eliminada');
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      toast.error('Error al eliminar');
     }
   });
 
