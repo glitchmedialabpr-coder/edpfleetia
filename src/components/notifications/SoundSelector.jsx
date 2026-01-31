@@ -104,7 +104,7 @@ export default function SoundSelector({ value, onChange }) {
               className="w-5 h-5 accent-indigo-600"
             />
             <span className="flex-1 text-sm font-medium text-slate-700">{sound.label}</span>
-            {sound.url && (
+            {key !== 'silent' && (
               <Button
                 size="sm"
                 variant="ghost"
