@@ -161,17 +161,20 @@ export default function GeneralServicePurchases() {
     setFormData({
       date: purchase.date,
       store: purchase.store,
-      item: purchase.item,
-      category: purchase.category,
-      quantity: purchase.quantity || 1,
-      unit_cost: purchase.unit_cost || '',
-      total_amount: purchase.total_amount,
+      items: [{ 
+        item: purchase.item,
+        category: purchase.category,
+        quantity: purchase.quantity || 1,
+        unit_cost: purchase.unit_cost || '',
+        total_amount: purchase.total_amount
+      }],
       job_id: purchase.job_id || '',
       job_title: purchase.job_title || '',
       purchased_by: purchase.purchased_by || '',
       receipt_url: purchase.receipt_url || '',
       notes: purchase.notes || ''
     });
+    setTotalPurchaseAmount(purchase.total_amount || '');
     setShowModal(true);
   };
 
