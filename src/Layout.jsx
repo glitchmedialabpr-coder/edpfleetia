@@ -152,6 +152,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Viajes', page: 'Trips', icon: Bus },
     { name: 'Horarios', page: 'DriverSchedule', icon: Clock },
     { name: 'Reportes', page: 'Reports', icon: ClipboardList },
+    { name: 'Configuración', page: 'Settings', icon: Shield },
     { name: 'Notificaciones', page: 'Notifications', icon: AlertTriangle },
     { name: 'Respuestas', page: 'ResponseHistory', icon: ClipboardList },
     { name: 'Trabajos Servicio', page: 'GeneralServiceJobs', icon: Wrench },

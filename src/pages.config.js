@@ -77,6 +77,7 @@ import Warnings from './pages/Warnings';
 import Reports from './pages/Reports';
 import GeneralServiceJobs from './pages/GeneralServiceJobs';
 import GeneralServicePurchases from './pages/GeneralServicePurchases';
+import Settings from './pages/Settings';
 import __Layout from './Layout.jsx';
 
 
@@ -111,6 +112,7 @@ export const PAGES = {
     "Reports": Reports,
     "GeneralServiceJobs": GeneralServiceJobs,
     "GeneralServicePurchases": GeneralServicePurchases,
+    "Settings": Settings,
 }
 
 export const pagesConfig = {
