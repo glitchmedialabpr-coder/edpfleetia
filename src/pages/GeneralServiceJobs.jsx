@@ -464,16 +464,32 @@ export default function GeneralServiceJobs() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Trabajos de Servicio General</h1>
-          <p className="text-slate-500 mt-1">Gestiona trabajos de construcción, pintura, limpieza y más</p>
+          <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Servicio General</h1>
+          <p className="text-slate-500 mt-1">Gestiona trabajos y compras</p>
         </div>
-        <Button onClick={() => setShowModal(true)} className="bg-teal-600 hover:bg-teal-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo Trabajo
-        </Button>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={mainTab} onValueChange={setMainTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="jobs">
+            <Wrench className="w-4 h-4 mr-2" />
+            Trabajos
+          </TabsTrigger>
+          <TabsTrigger value="purchases">
+            <ShoppingCart className="w-4 h-4 mr-2" />
+            Compras
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="jobs" className="space-y-6">
+          <div className="flex justify-end">
+            <Button onClick={() => setShowModal(true)} className="bg-teal-600 hover:bg-teal-700">
+              <Plus className="w-4 h-4 mr-2" />
+              Nuevo Trabajo
+            </Button>
+          </div>
+
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="todos">Todos ({jobs.length})</TabsTrigger>
           <TabsTrigger value="pendiente">
@@ -576,6 +592,176 @@ export default function GeneralServiceJobs() {
                       size="sm"
                       variant="outline"
                       onClick={() => handleDelete(job.id)}
+                      className="text-red-600 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+        </TabsContent>
+
+        <TabsContent value="purchases" className="space-y-6">
+          <div className="flex justify-end">
+            <Button onClick={() => setPurchaseModal(true)} className="bg-teal-600 hover:bg-teal-700">
+              <Plus className="w-4 h-4 mr-2" />
+              Nueva Compra
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card className="p-5 border-l-4 border-teal-500">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-teal-100 rounded-lg">
+                  <ShoppingCart className="w-5 h-5 text-teal-600" />
+                </div>
+                <div className="text-2xl font-bold text-teal-600">{totalItems}</div>
+              </div>
+              <div className="text-sm text-slate-500">Total Compras</div>
+            </Card>
+
+            <Card className="p-5 border-l-4 border-green-500">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <DollarSign className="w-5 h-5 text-green-600" />
+                </div>
+                <div className="text-2xl font-bold text-green-600">${totalSpent.toFixed(2)}</div>
+              </div>
+              <div className="text-sm text-slate-500">Total Gastado</div>
+            </Card>
+
+            <Card className="p-5 border-l-4 border-blue-500">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <TrendingUp className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="text-2xl font-bold text-blue-600">
+                  ${totalItems > 0 ? (totalSpent / totalItems).toFixed(2) : '0.00'}
+                </div>
+              </div>
+              <div className="text-sm text-slate-500">Promedio por Compra</div>
+            </Card>
+
+            <Card className="p-5 border-l-4 border-purple-500">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Package className="w-5 h-5 text-purple-600" />
+                </div>
+                <div className="text-2xl font-bold text-purple-600">
+                  {Object.keys(categoryConfig).length}
+                </div>
+              </div>
+              <div className="text-sm text-slate-500">Categorías</div>
+            </Card>
+          </div>
+
+          <Card className="p-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs text-slate-500 mb-1 block">Categoría</label>
+                <Select value={filterCategory} onValueChange={setFilterCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Categoría" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas las Categorías</SelectItem>
+                    {Object.entries(categoryConfig).map(([key, config]) => (
+                      <SelectItem key={key} value={key}>{config.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-xs text-slate-500 mb-1 block">Trabajo Asociado</label>
+                <Select value={filterJob} onValueChange={setFilterJob}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Trabajo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos los Trabajos</SelectItem>
+                    {jobs.map(job => (
+                      <SelectItem key={job.id} value={job.id}>{job.title}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </Card>
+
+          {filteredPurchases.length === 0 ? (
+            <EmptyState
+              icon={ShoppingCart}
+              title="No hay compras registradas"
+              description="Comienza a registrar compras para tus trabajos de servicio general"
+            />
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredPurchases.map(purchase => (
+                <Card key={purchase.id} className="p-5 hover:shadow-lg transition-shadow">
+                  <div className="flex justify-between items-start mb-3">
+                    <Badge className={categoryConfig[purchase.category]?.color}>
+                      {categoryConfig[purchase.category]?.label}
+                    </Badge>
+                    <div className="text-sm text-slate-500">{purchase.date}</div>
+                  </div>
+
+                  <h3 className="font-semibold text-slate-800 mb-1">{purchase.item}</h3>
+                  <div className="text-sm text-slate-500 mb-3">{purchase.store}</div>
+
+                  <div className="space-y-2 text-sm mb-4">
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Cantidad:</span>
+                      <span className="font-medium">{purchase.quantity}</span>
+                    </div>
+                    {purchase.unit_cost > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-slate-600">Precio Unitario:</span>
+                        <span className="font-medium">${purchase.unit_cost.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between border-t pt-2">
+                      <span className="text-slate-600 font-medium">Total:</span>
+                      <span className="font-bold text-green-600">${purchase.total_amount.toFixed(2)}</span>
+                    </div>
+                  </div>
+
+                  {purchase.job_title && (
+                    <div className="text-xs text-slate-500 mb-3 p-2 bg-slate-50 rounded">
+                      <strong>Trabajo:</strong> {purchase.job_title}
+                    </div>
+                  )}
+
+                  {purchase.receipt_url && (
+                    <a
+                      href={purchase.receipt_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-xs text-blue-600 hover:underline mb-3"
+                    >
+                      <FileText className="w-3 h-3" />
+                      Ver Recibo
+                    </a>
+                  )}
+
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEditPurchase(purchase)}
+                      className="flex-1"
+                    >
+                      <Edit className="w-4 h-4 mr-1" />
+                      Editar
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDeletePurchase(purchase.id)}
                       className="text-red-600 hover:bg-red-50"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -760,6 +946,279 @@ export default function GeneralServiceJobs() {
               </Button>
               <Button type="submit" className="bg-teal-600 hover:bg-teal-700">
                 {editingJob ? 'Actualizar' : 'Crear'} Trabajo
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={purchaseModal} onOpenChange={setPurchaseModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingPurchase ? 'Editar Compra' : 'Nueva Compra de Servicio General'}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <form onSubmit={handlePurchaseSubmit} className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-1 block">
+                  Fecha *
+                </label>
+                <Input
+                  type="date"
+                  value={purchaseFormData.date}
+                  onChange={(e) => setPurchaseFormData({...purchaseFormData, date: e.target.value})}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-1 block">
+                  Categoría
+                </label>
+                <Select value={purchaseFormData.category} onValueChange={(val) => setPurchaseFormData({...purchaseFormData, category: val})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(categoryConfig).map(([key, config]) => (
+                      <SelectItem key={key} value={key}>{config.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1 block">
+                Tienda/Proveedor *
+              </label>
+              <Select value={purchaseFormData.store} onValueChange={(val) => setPurchaseFormData({...purchaseFormData, store: val})}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar proveedor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {suppliers.map(supplier => (
+                    <SelectItem key={supplier.id} value={supplier.name}>{supplier.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">
+                Productos *
+              </label>
+              <div className="space-y-3 mb-3 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                {purchaseFormData.items.map((product, idx) => (
+                  <div key={idx} className="space-y-3 pb-3 border-b last:border-b-0">
+                    <div className="grid md:grid-cols-2 gap-3">
+                      <Input
+                        placeholder="Nombre del producto"
+                        value={product.item}
+                        onChange={(e) => updatePurchaseProduct(idx, 'item', e.target.value)}
+                        required
+                      />
+                      <Select 
+                        value={product.category} 
+                        onValueChange={(val) => updatePurchaseProduct(idx, 'category', val)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(categoryConfig).map(([key, config]) => (
+                            <SelectItem key={key} value={key}>{config.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-3">
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="Cantidad"
+                        value={product.quantity}
+                        onChange={(e) => updatePurchaseProduct(idx, 'quantity', e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="Costo unitario"
+                        value={product.unit_cost}
+                        onChange={(e) => updatePurchaseProduct(idx, 'unit_cost', e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="Total"
+                        value={product.total_amount}
+                        onChange={(e) => updatePurchaseProduct(idx, 'total_amount', e.target.value)}
+                        readOnly
+                        className="bg-slate-100"
+                      />
+                    </div>
+
+                    {purchaseFormData.items.length > 1 && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => removePurchaseProduct(idx)}
+                        className="text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-3 h-3 mr-1" /> Quitar
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addPurchaseProduct}
+                className="w-full"
+              >
+                <Plus className="w-3 h-3 mr-1" /> Agregar Producto
+              </Button>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <div className="text-sm text-blue-700">
+                <strong>Total de la compra:</strong>
+                <div className="text-2xl font-bold text-blue-600 mt-1">
+                  ${purchaseFormData.items.reduce((sum, it) => sum + (parseFloat(it.total_amount) || 0), 0).toFixed(2)}
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1 block">
+                Comprado por *
+              </label>
+              <div className="space-y-2">
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      value="driver"
+                      checked={purchasedByType === 'driver'}
+                      onChange={(e) => {
+                        setPurchasedByType(e.target.value);
+                        setPurchaseFormData({...purchaseFormData, purchased_by: ''});
+                      }}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm text-slate-600">Chofer</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      value="custom"
+                      checked={purchasedByType === 'custom'}
+                      onChange={(e) => {
+                        setPurchasedByType(e.target.value);
+                        setPurchaseFormData({...purchaseFormData, purchased_by: ''});
+                      }}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm text-slate-600">Otro</span>
+                  </label>
+                </div>
+
+                {purchasedByType === 'driver' ? (
+                  <Select 
+                    value={purchaseFormData.purchased_by} 
+                    onValueChange={(val) => setPurchaseFormData({...purchaseFormData, purchased_by: val})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar chofer" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {drivers.map(driver => (
+                        <SelectItem key={driver.id} value={driver.full_name}>{driver.full_name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    value={purchaseFormData.purchased_by}
+                    onChange={(e) => setPurchaseFormData({...purchaseFormData, purchased_by: e.target.value})}
+                    placeholder="Nombre de quien compró"
+                    required
+                  />
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1 block">
+                Trabajo Asociado
+              </label>
+              <Select 
+                value={purchaseFormData.job_id} 
+                onValueChange={(val) => setPurchaseFormData({...purchaseFormData, job_id: val})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar trabajo (opcional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={null}>Sin trabajo asociado</SelectItem>
+                  {jobs.map(job => (
+                    <SelectItem key={job.id} value={job.id}>{job.title}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1 block">
+                Recibo
+              </label>
+              <Input
+                type="file"
+                accept="image/*,application/pdf"
+                onChange={handleFileUploadPurchase}
+              />
+              {purchaseFormData.receipt_url && (
+                <a
+                  href={purchaseFormData.receipt_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-600 hover:underline mt-1 flex items-center gap-1"
+                >
+                  <FileText className="w-4 h-4" />
+                  Ver recibo cargado
+                </a>
+              )}
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1 block">
+                Notas
+              </label>
+              <Textarea
+                value={purchaseFormData.notes}
+                onChange={(e) => setPurchaseFormData({...purchaseFormData, notes: e.target.value})}
+                placeholder="Notas adicionales..."
+                rows={2}
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4">
+              <Button type="button" variant="outline" onClick={() => {
+                setPurchaseModal(false);
+                resetPurchaseForm();
+              }}>
+                Cancelar
+              </Button>
+              <Button type="submit" className="bg-teal-600 hover:bg-teal-700">
+                {editingPurchase ? 'Actualizar' : 'Registrar'} Compra
               </Button>
             </div>
           </form>
