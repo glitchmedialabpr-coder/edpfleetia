@@ -62,7 +62,25 @@ export default function VideoSplash() {
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900 flex items-center justify-center z-50">
+      {/* Logo animado temporal - reemplaza con tu video */}
+      <div className="text-center">
+        <div className="w-48 h-48 mx-auto mb-6 animate-pulse">
+          <img 
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/303d16ba3_471231367_1006775134815986_8615529326532786364_n.jpg" 
+            alt="EDP University"
+            className="w-full h-full object-contain rounded-2xl"
+          />
+        </div>
+        <h1 className="text-4xl font-bold text-white mb-4">EDP Transport</h1>
+        <div className="flex items-center justify-center gap-2">
+          <div className="w-2 h-2 bg-teal-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+          <div className="w-2 h-2 bg-teal-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+          <div className="w-2 h-2 bg-teal-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+        </div>
+      </div>
+
+      {/* Descomenta y reemplaza la URL cuando tengas tu video
       <video
         id="splash-video"
         className="w-full h-full object-contain"
@@ -70,10 +88,9 @@ export default function VideoSplash() {
         muted
         playsInline
       >
-        {/* Replace this URL with your actual video URL */}
-        <source src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/video-logo.mp4" type="video/mp4" />
-        Tu navegador no soporta la reproducción de video.
+        <source src="TU_URL_DE_VIDEO_AQUI.mp4" type="video/mp4" />
       </video>
+      */}
       
       {redirecting && (
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
