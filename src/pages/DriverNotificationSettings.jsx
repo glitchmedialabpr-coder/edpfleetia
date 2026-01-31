@@ -214,17 +214,34 @@ export default function DriverNotificationSettings() {
           </div>
 
           {currentSettings?.admin_message_enabled && (
-            <div className="ml-13 flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-              <Volume2 className="w-4 h-4 text-slate-600" />
-              <label className="flex items-center gap-2 flex-1 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={currentSettings?.admin_message_sound || false}
-                  onChange={() => handleToggle('admin_message_sound')}
-                  className="w-4 h-4 rounded"
-                />
-                <span className="text-sm text-slate-700">Reproducir sonido</span>
-              </label>
+            <div className="ml-13 space-y-3">
+              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                <Volume2 className="w-4 h-4 text-slate-600" />
+                <label className="flex items-center gap-2 flex-1 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={currentSettings?.admin_message_sound || false}
+                    onChange={() => handleToggle('admin_message_sound')}
+                    className="w-4 h-4 rounded"
+                  />
+                  <span className="text-sm text-slate-700">Reproducir sonido</span>
+                </label>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                <Clock className="w-4 h-4 text-slate-600" />
+                <label className="flex items-center gap-2 flex-1">
+                  <span className="text-sm text-slate-700">Anticipación:</span>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="120"
+                    value={currentSettings?.admin_message_advance_minutes || 0}
+                    onChange={(e) => handleAdvanceMinutesChange('admin_message_advance_minutes', e.target.value)}
+                    className="w-20 h-8"
+                  />
+                  <span className="text-sm text-slate-600">minutos</span>
+                </label>
+              </div>
             </div>
           )}
         </div>
