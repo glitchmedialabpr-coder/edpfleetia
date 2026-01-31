@@ -167,6 +167,7 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   const driverNavItems = [
+      { name: 'Panel de Control', page: 'DriverDashboard', icon: LayoutDashboard },
       { name: 'Solicitudes', page: 'DriverRequests', icon: Bus },
       { name: 'Estudiantes Aceptados', page: 'DriverAcceptedStudents', icon: Users },
       { name: 'Mis Viajes', page: 'DriverTrips', icon: Bus },
