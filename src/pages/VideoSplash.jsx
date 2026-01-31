@@ -56,9 +56,7 @@ export default function VideoSplash() {
 
   if (!videoUrl) {
     return (
-      <div className="fixed inset-0 bg-red-500 flex items-center justify-center z-[9999]">
-        <p className="text-white text-2xl">Cargando video...</p>
-      </div>
+      <div className="fixed inset-0 bg-black z-[9999]" />
     );
   }
 
