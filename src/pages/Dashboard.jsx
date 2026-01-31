@@ -16,8 +16,10 @@ import {
   ArrowRight,
   Calendar,
   AlertTriangle,
-  FileText
+  FileText,
+  TrendingUp
 } from 'lucide-react';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import StatsCard from '../components/common/StatsCard';
 import TripCard from '../components/trips/TripCard';
 import CreateTripModal from '../components/trips/CreateTripModal';
