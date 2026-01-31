@@ -83,6 +83,7 @@ import VideoSplash from './pages/VideoSplash';
 import Warnings from './pages/Warnings';
 import GeneralServicePurchases from './pages/GeneralServicePurchases';
 import DriverDashboard from './pages/DriverDashboard';
+import DriverNotificationSettings from './pages/DriverNotificationSettings';
 import __Layout from './Layout.jsx';
 
 
@@ -123,6 +124,7 @@ export const PAGES = {
     "Warnings": Warnings,
     "GeneralServicePurchases": GeneralServicePurchases,
     "DriverDashboard": DriverDashboard,
+    "DriverNotificationSettings": DriverNotificationSettings,
 }
 
 export const pagesConfig = {
