@@ -345,7 +345,6 @@ export default function PassengerTrips() {
                 className="flex-1 bg-teal-600 hover:bg-teal-700"
                 disabled={
                   !formData.destination_type ||
-                  !formData.destination_town ||
                   (formData.destination_type === 'otros' && !formData.destination_other)
                 }
               >
