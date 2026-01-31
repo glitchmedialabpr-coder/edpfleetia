@@ -9,7 +9,6 @@ export default function VideoSplash() {
     const pinUser = localStorage.getItem('pin_user');
     
     if (!pinUser) {
-      // If no user, redirect to home
       window.location.href = createPageUrl('Home');
       return;
     }
@@ -22,10 +21,9 @@ export default function VideoSplash() {
       return;
     }
 
-    const handleVideoEnd = () => {
+    const handleRedirect = () => {
       setRedirecting(true);
       
-      // Determine destination based on user type
       let destination = 'Home';
       
       if (user.role === 'admin') {
@@ -36,35 +34,50 @@ export default function VideoSplash() {
         destination = 'PassengerTrips';
       }
       
-      // Small delay before redirect for smooth transition
       setTimeout(() => {
         window.location.href = createPageUrl(destination);
       }, 300);
     };
 
-    // Redirect after 4 seconds (adjust based on your video length)
-    const timer = setTimeout(handleVideoEnd, 4000);
-    
-    return () => clearTimeout(timer);
+    // Listen for video end
+    const video = document.getElementById('splash-video');
+    if (video) {
+      video.addEventListener('ended', handleRedirect);
+      
+      // Fallback: redirect after 10 seconds if video doesn't trigger
+      const fallback = setTimeout(handleRedirect, 10000);
+      
+      return () => {
+        video.removeEventListener('ended', handleRedirect);
+        clearTimeout(fallback);
+      };
+    } else {
+      // If no video element, redirect after 5 seconds
+      const timer = setTimeout(handleRedirect, 5000);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-black flex items-center justify-center z-50 overflow-hidden">
+    <div className="fixed inset-0 bg-black flex items-center justify-center z-[9999] overflow-hidden">
       <video
-        className="w-full h-full object-cover"
+        id="splash-video"
+        className="w-full h-full object-contain"
         autoPlay
         muted
         playsInline
-        controls={false}
       >
-        <source src="https://drive.google.com/uc?export=download&id=1VeEsl5KCVoN6nFYEM9qjMBtDsEWK5JYu" type="video/mp4" />
+        {/* Sube tu video MP4 a Base44 y reemplaza esta URL */}
+        <source src="TU_VIDEO_URL.mp4" type="video/mp4" />
       </video>
       
-      {redirecting && (
-        <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-          <div className="animate-pulse text-white text-xl">Cargando...</div>
-        </div>
-      )}
+      <div className="absolute inset-0 pointer-events-none">
+        {redirecting && (
+          <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
+            <div className="animate-pulse text-white text-xl">Cargando...</div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
