@@ -157,6 +157,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Advertencias', page: 'Warnings', icon: AlertTriangle },
     { name: 'Trabajos Servicio', page: 'GeneralServiceJobs', icon: Wrench },
     { name: 'Compras Servicio', page: 'GeneralServicePurchases', icon: ShoppingCart },
+    { name: 'Reportes Compras', page: 'PurchaseReports', icon: ClipboardList },
     { name: 'Estudiantes', page: 'Students', icon: GraduationCap },
     { name: 'Hospedajes', page: 'Housing', icon: Building2 },
     { name: 'Reportes', page: 'Reports', icon: ClipboardList },
