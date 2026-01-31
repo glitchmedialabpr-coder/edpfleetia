@@ -37,8 +37,7 @@ export default function PassengerTrips() {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     destination_type: '',
-    destination_other: '',
-    destination_town: ''
+    destination_other: ''
   });
 
   useEffect(() => {
@@ -95,8 +94,8 @@ export default function PassengerTrips() {
       const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       
       const destination = formData.destination_type === 'otros' 
-        ? `${formData.destination_other} - ${formData.destination_town}`
-        : `${formData.destination_type} - ${formData.destination_town}`;
+        ? formData.destination_other
+        : formData.destination_type;
       
       await base44.entities.TripRequest.create({
         passenger_id: user.student_id,
@@ -106,7 +105,6 @@ export default function PassengerTrips() {
         destination: destination,
         destination_type: formData.destination_type,
         destination_other: formData.destination_other,
-        destination_town: formData.destination_town,
         passengers_count: 1,
         pickup_time: timeString,
         status: 'pending'
@@ -116,8 +114,7 @@ export default function PassengerTrips() {
       setModalOpen(false);
       setFormData({
         destination_type: '',
-        destination_other: '',
-        destination_town: ''
+        destination_other: ''
       });
       refetch();
     } catch (error) {
@@ -319,15 +316,6 @@ export default function PassengerTrips() {
                 />
               </div>
             )}
-
-            <div className="space-y-2">
-              <Label>Pueblo/Ciudad</Label>
-              <Input
-                placeholder="Ej: San Juan, Bayamón..."
-                value={formData.destination_town}
-                onChange={(e) => setFormData({ ...formData, destination_town: e.target.value })}
-              />
-            </div>
 
             <div className="p-3 bg-slate-50 rounded-lg text-sm text-slate-600">
               <p className="flex items-center gap-2">
