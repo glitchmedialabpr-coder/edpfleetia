@@ -67,6 +67,12 @@ export default function GeneralServicePurchases() {
     staleTime: 1000 * 60 * 5
   });
 
+  const { data: drivers = [] } = useQuery({
+    queryKey: ['drivers'],
+    queryFn: () => base44.entities.Driver.list('-created_date', 200),
+    staleTime: 1000 * 60 * 5
+  });
+
   const createPurchaseMutation = useMutation({
     mutationFn: (data) => base44.entities.GeneralServicePurchase.create(data),
     onSuccess: () => {
