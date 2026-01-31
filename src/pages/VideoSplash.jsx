@@ -22,9 +22,6 @@ export default function VideoSplash() {
       return;
     }
 
-    // Set up video end handler
-    const videoElement = document.getElementById('splash-video');
-    
     const handleVideoEnd = () => {
       setRedirecting(true);
       
@@ -45,32 +42,23 @@ export default function VideoSplash() {
       }, 300);
     };
 
-    if (videoElement) {
-      videoElement.addEventListener('ended', handleVideoEnd);
-      
-      // Fallback: redirect after 5 seconds if video doesn't end
-      const fallbackTimeout = setTimeout(handleVideoEnd, 5000);
-      
-      return () => {
-        videoElement.removeEventListener('ended', handleVideoEnd);
-        clearTimeout(fallbackTimeout);
-      };
-    } else {
-      // If video element not found, redirect immediately
-      handleVideoEnd();
-    }
+    // Redirect after 4 seconds (adjust based on your video length)
+    const timer = setTimeout(handleVideoEnd, 4000);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
-      <iframe
-        id="splash-video"
-        src="https://drive.google.com/file/d/1VeEsl5KCVoN6nFYEM9qjMBtDsEWK5JYu/preview"
-        className="w-full h-full"
-        allow="autoplay"
-        allowFullScreen
-        style={{ border: 'none' }}
-      />
+    <div className="fixed inset-0 bg-black flex items-center justify-center z-50 overflow-hidden">
+      <video
+        className="w-full h-full object-cover"
+        autoPlay
+        muted
+        playsInline
+        controls={false}
+      >
+        <source src="https://drive.google.com/uc?export=download&id=1VeEsl5KCVoN6nFYEM9qjMBtDsEWK5JYu" type="video/mp4" />
+      </video>
       
       {redirecting && (
         <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
