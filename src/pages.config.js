@@ -75,6 +75,8 @@ import Trips from './pages/Trips';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
 import Reports from './pages/Reports';
+import GeneralServiceJobs from './pages/GeneralServiceJobs';
+import GeneralServicePurchases from './pages/GeneralServicePurchases';
 import __Layout from './Layout.jsx';
 
 
@@ -107,6 +109,8 @@ export const PAGES = {
     "Vehicles": Vehicles,
     "Warnings": Warnings,
     "Reports": Reports,
+    "GeneralServiceJobs": GeneralServiceJobs,
+    "GeneralServicePurchases": GeneralServicePurchases,
 }
 
 export const pagesConfig = {
