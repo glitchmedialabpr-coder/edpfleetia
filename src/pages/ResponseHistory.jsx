@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
   SelectContent,
@@ -19,8 +21,12 @@ import {
   MapPin,
   Car,
   Search,
-  Filter
+  Filter,
+  Bell,
+  Check,
+  Trash2
 } from 'lucide-react';
+import { toast } from 'sonner';
 import EmptyState from '../components/common/EmptyState';
 
 const responseConfig = {
@@ -30,6 +36,7 @@ const responseConfig = {
 };
 
 export default function ResponseHistory() {
+  const [tab, setTab] = useState('responses');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterResponse, setFilterResponse] = useState('all');
   const [filterDriver, setFilterDriver] = useState('all');
@@ -67,6 +74,12 @@ export default function ResponseHistory() {
   const { data: allTripRequests = [] } = useQuery({
     queryKey: ['all-trip-requests'],
     queryFn: () => base44.entities.TripRequest.list('-created_date', 500),
+    staleTime: 1000 * 60 * 5
+  });
+
+  const { data: notifications = [] } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: () => base44.entities.Notification.list('-created_date', 200),
     staleTime: 1000 * 60 * 5
   });
 
@@ -148,12 +161,34 @@ export default function ResponseHistory() {
     timeout: responses.filter(r => r.response === 'timeout').length
   };
 
+  const notificationTypeConfig = {
+    schedule_change: { label: 'Cambio de Horario', color: 'bg-blue-100 text-blue-700' },
+    driver_login: { label: 'Login Conductor', color: 'bg-green-100 text-green-700' },
+    trip_completed: { label: 'Viaje Completado', color: 'bg-teal-100 text-teal-700' },
+    accident_reported: { label: 'Accidente Reportado', color: 'bg-red-100 text-red-700' },
+    system: { label: 'Sistema', color: 'bg-slate-100 text-slate-700' }
+  };
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Historial de Respuestas</h1>
-        <p className="text-slate-500 mt-1">Registro completo de aceptaciones y rechazos</p>
+        <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Respuestas y Notificaciones</h1>
+        <p className="text-slate-500 mt-1">Registro completo de aceptaciones, rechazos y notificaciones</p>
       </div>
+
+      <Tabs value={tab} onValueChange={setTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="responses">
+            <CheckCircle className="w-4 h-4 mr-2" />
+            Respuestas
+          </TabsTrigger>
+          <TabsTrigger value="notifications">
+            <Bell className="w-4 h-4 mr-2" />
+            Notificaciones
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="responses" className="space-y-6">
 
       {/* Statistics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -324,6 +359,96 @@ export default function ResponseHistory() {
           })}
         </div>
       )}
+        </TabsContent>
+
+        <TabsContent value="notifications" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <Card className="p-4">
+              <div className="text-2xl font-bold text-slate-800">{notifications.length}</div>
+              <div className="text-sm text-slate-500">Total Notificaciones</div>
+            </Card>
+            <Card className="p-4 border-l-4 border-blue-500">
+              <div className="text-2xl font-bold text-blue-600">
+                {notifications.filter(n => !n.read).length}
+              </div>
+              <div className="text-sm text-slate-500">No Leídas</div>
+            </Card>
+            <Card className="p-4 border-l-4 border-red-500">
+              <div className="text-2xl font-bold text-red-600">
+                {notifications.filter(n => n.priority === 'high').length}
+              </div>
+              <div className="text-sm text-slate-500">Alta Prioridad</div>
+            </Card>
+          </div>
+
+          {notifications.length === 0 ? (
+            <Card className="p-8">
+              <EmptyState
+                icon={Bell}
+                title="No hay notificaciones"
+                description="No se han registrado notificaciones"
+              />
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {notifications.map(notification => {
+                const typeConfig = notificationTypeConfig[notification.type] || { label: notification.type, color: 'bg-slate-100 text-slate-700' };
+                const priorityColor = {
+                  low: 'bg-slate-100 text-slate-700',
+                  medium: 'bg-yellow-100 text-yellow-700',
+                  high: 'bg-red-100 text-red-700'
+                }[notification.priority] || 'bg-slate-100 text-slate-700';
+
+                return (
+                  <Card key={notification.id} className={`p-5 hover:shadow-md transition-shadow ${!notification.read ? 'border-l-4 border-blue-500 bg-blue-50' : ''}`}>
+                    <div className="flex flex-col lg:flex-row lg:items-start gap-4">
+                      <div className="flex gap-3 flex-1">
+                        <div className={`p-2 rounded-full ${!notification.read ? 'bg-blue-200' : 'bg-slate-200'}`}>
+                          <Bell className={`w-5 h-5 ${!notification.read ? 'text-blue-600' : 'text-slate-600'}`} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex gap-2 items-center mb-2">
+                            <h3 className="font-semibold text-slate-800">{notification.title}</h3>
+                            <Badge className={typeConfig.color}>{typeConfig.label}</Badge>
+                            <Badge className={priorityColor}>
+                              {notification.priority === 'low' ? 'Baja' : notification.priority === 'medium' ? 'Media' : 'Alta'} Prioridad
+                            </Badge>
+                            {!notification.read && (
+                              <Badge className="bg-blue-500 text-white">Nueva</Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-slate-600 mb-2">{notification.message}</p>
+                          {notification.driver_name && (
+                            <div className="text-xs text-slate-500">
+                              Conductor: <span className="font-medium">{notification.driver_name}</span>
+                            </div>
+                          )}
+                          <div className="text-xs text-slate-400 mt-2">
+                            {new Date(notification.created_date).toLocaleString('es-ES')}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 lg:ml-auto">
+                        {!notification.read && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-green-600 hover:bg-green-50"
+                            onClick={() => toast.success('Marcada como leída')}
+                          >
+                            <Check className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
