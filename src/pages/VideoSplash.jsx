@@ -92,10 +92,11 @@ export default function VideoSplash() {
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center z-[9999]">
       <video
-        src={videoUrl}
+        key={videoUrl}
         autoPlay
         muted
         playsInline
+        controls
         className="w-full h-full object-contain"
         onEnded={() => {
           const pinUser = localStorage.getItem('pin_user');
@@ -108,7 +109,22 @@ export default function VideoSplash() {
             window.location.href = createPageUrl(destination);
           }
         }}
-      />
+        onError={(e) => {
+          console.error('Error loading video:', e);
+          const pinUser = localStorage.getItem('pin_user');
+          if (pinUser) {
+            const user = JSON.parse(pinUser);
+            let destination = 'Home';
+            if (user.role === 'admin') destination = 'Dashboard';
+            else if (user.user_type === 'driver') destination = 'DriverRequests';
+            else if (user.user_type === 'passenger') destination = 'PassengerTrips';
+            window.location.href = createPageUrl(destination);
+          }
+        }}
+      >
+        <source src={videoUrl} type="video/mp4" />
+        Tu navegador no soporta videos.
+      </video>
       
       {redirecting && (
         <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
