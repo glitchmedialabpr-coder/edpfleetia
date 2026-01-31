@@ -46,7 +46,7 @@ export default function DriverLogin() {
         user.session_expiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 días
         localStorage.setItem('pin_user', JSON.stringify(user));
         toast.success(`¡Bienvenido ${user.full_name}!`);
-        navigate(createPageUrl('DriverVehicleSelection'));
+        navigate(createPageUrl('DriverDashboard'));
       } else {
         toast.error(response.data.error || 'Conductor no encontrado');
         setDriverId('');
