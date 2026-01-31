@@ -41,9 +41,12 @@ export default function DriverLogin() {
       const response = await base44.functions.invoke('validateDriverLogin', { driverId });
       
       if (response.data.success) {
-        localStorage.setItem('pin_user', JSON.stringify(response.data.user));
-        toast.success(`¡Bienvenido ${response.data.user.full_name}!`);
-        window.location.href = createPageUrl('VideoSplash');
+        const user = response.data.user;
+        // Persistencia: guardar sesión sin expiración inmediata
+        user.session_expiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 días
+        localStorage.setItem('pin_user', JSON.stringify(user));
+        toast.success(`¡Bienvenido ${user.full_name}!`);
+        navigate(createPageUrl('DriverVehicleSelection'));
       } else {
         toast.error(response.data.error || 'Conductor no encontrado');
         setDriverId('');
