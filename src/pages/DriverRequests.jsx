@@ -61,6 +61,22 @@ export default function DriverRequests() {
 
   const checkAndSetVehicleFromSchedule = async () => {
     try {
+      // Check new vehicle selection (from DriverVehicleSelection)
+      const vehicleSelection = localStorage.getItem('driver_vehicle_selection');
+      if (vehicleSelection) {
+        try {
+          const selection = JSON.parse(vehicleSelection);
+          if (Date.now() < selection.expires_at) {
+            setSelectedVehicle(selection.vehicle_id);
+            return;
+          } else {
+            localStorage.removeItem('driver_vehicle_selection');
+          }
+        } catch (e) {
+          localStorage.removeItem('driver_vehicle_selection');
+        }
+      }
+
       const drivers = await base44.entities.Driver.filter({ driver_id: user.driver_id });
       if (drivers && drivers.length > 0) {
         const driver = drivers[0];
