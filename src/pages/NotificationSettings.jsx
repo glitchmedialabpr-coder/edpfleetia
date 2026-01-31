@@ -142,7 +142,7 @@ export default function NotificationSettings() {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => navigate(createPageUrl('DriverDashboard'))}
+          onClick={() => navigate(createPageUrl(getBackPage()))}
         >
           <ArrowLeft className="w-5 h-5" />
         </Button>
