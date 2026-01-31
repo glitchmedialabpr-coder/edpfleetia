@@ -59,7 +59,8 @@ export default function Settings() {
     // System
     backup_frequency_days: '7',
     data_retention_days: '365',
-    enable_analytics: 'true'
+    enable_analytics: 'true',
+    enable_splash_video: 'true'
   });
 
   const { data: savedSettings = [] } = useQuery({
