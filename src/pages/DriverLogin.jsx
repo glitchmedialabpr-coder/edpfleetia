@@ -43,7 +43,7 @@ export default function DriverLogin() {
       if (response.data.success) {
         localStorage.setItem('pin_user', JSON.stringify(response.data.user));
         toast.success(`¡Bienvenido ${response.data.user.full_name}!`);
-        navigate(createPageUrl('DriverRequests'));
+        navigate(createPageUrl('VideoSplash'));
       } else {
         toast.error(response.data.error || 'Conductor no encontrado');
         setDriverId('');
