@@ -80,7 +80,10 @@ export default function Drivers() {
 
   const { data: drivers = [], refetch } = useQuery({
     queryKey: ['drivers'],
-    queryFn: () => base44.entities.Driver.list('-created_date')
+    queryFn: async () => {
+      const res = await base44.functions.invoke('getSecureDrivers');
+      return res.data.drivers || [];
+    }
   });
 
   const { data: allAccidents = [] } = useQuery({
