@@ -185,6 +185,15 @@ export default function DriverRequests() {
     try {
       unsubscribeRequest = base44.entities.TripRequest.subscribe((event) => {
         if (event.type === 'create' && event.data?.status === 'pending' && selectedVehicle) {
+          // Create notification via backend
+          base44.functions.invoke('createNotification', {
+            driver_id: user?.driver_id,
+            type: 'new_request',
+            title: '🚗 Nueva Solicitud de Viaje',
+            message: `${event.data.passenger_name} necesita ir a ${event.data.destination}`,
+            priority: 'high'
+          }).catch(e => console.log('Notification error:', e));
+
           notificationSound.play().catch(e => console.log('Audio play failed:', e));
           setHasNewRequest(true);
           setTimeout(() => setHasNewRequest(false), 3000);
