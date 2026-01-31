@@ -60,17 +60,18 @@ export default function NotificationSettings() {
   }, []);
 
   const { data: notifications = [], isLoading } = useQuery({
-    queryKey: ['notification-settings', user?.driver_id],
+    queryKey: ['notification-settings', user?.id || user?.driver_id],
     queryFn: async () => {
+      const driverId = user?.id || user?.driver_id;
       const result = await base44.entities.NotificationSettings.filter({
-        driver_id: user?.driver_id
+        driver_id: driverId
       });
 
       if (!result || result.length === 0) {
         // Crear notificaciones por defecto
         const defaultNotifications = Object.keys(NOTIFICATION_TYPES).map(type =>
           base44.entities.NotificationSettings.create({
-            driver_id: user?.driver_id,
+            driver_id: driverId,
             driver_name: user?.full_name || user?.email,
             notification_type: type,
             enabled: true,
@@ -85,7 +86,7 @@ export default function NotificationSettings() {
       }
       return result;
     },
-    enabled: !!user?.driver_id
+    enabled: !!(user?.id || user?.driver_id)
   });
 
   const updateMutation = useMutation({
