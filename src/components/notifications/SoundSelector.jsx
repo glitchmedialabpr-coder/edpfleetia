@@ -52,14 +52,18 @@ export default function SoundSelector({ value, onChange }) {
       <div className="grid grid-cols-2 gap-2">
         {Object.entries(SOUNDS).map(([key, sound]) => (
           <div key={key} className="flex items-center gap-2">
-            <label className="flex items-center gap-2 flex-1 p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors" style={{ borderColor: value === key ? '#0d9488' : '#e2e8f0', backgroundColor: value === key ? '#f0fdfa' : 'transparent' }}>
+            <label className={`flex items-center gap-2 flex-1 p-3 border rounded-lg cursor-pointer transition-colors ${
+              value === key 
+                ? 'border-teal-600 bg-teal-50' 
+                : 'border-slate-200 hover:bg-slate-50'
+            }`}>
               <input
                 type="radio"
                 name="notification_sound"
                 value={key}
                 checked={value === key}
                 onChange={() => onChange(key)}
-                className="w-4 h-4"
+                className="w-4 h-4 accent-teal-600"
               />
               <span className="text-sm text-slate-700">{sound.label}</span>
             </label>
