@@ -42,6 +42,7 @@ export default function DriverLogin() {
       
       if (response.data.success) {
         const user = response.data.user;
+        user.user_type = 'driver';
         // Persistencia: guardar sesión sin expiración inmediata
         user.session_expiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 días
         localStorage.setItem('pin_user', JSON.stringify(user));
