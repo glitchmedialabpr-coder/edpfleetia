@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
@@ -61,11 +61,18 @@ export default function Notifications() {
   const [filter, setFilter] = useState('all');
   const queryClient = useQueryClient();
 
-  const { data: notifications = [] } = useQuery({
+  const { data: notifications = [], refetch } = useQuery({
     queryKey: ['notifications'],
-    queryFn: () => base44.entities.Notification.list('-created_date', 100),
-    refetchInterval: 5000
+    queryFn: () => base44.entities.Notification.list('-created_date', 100)
   });
+
+  useEffect(() => {
+    const unsubscribe = base44.entities.Notification.subscribe(() => {
+      refetch();
+    });
+
+    return unsubscribe;
+  }, [refetch]);
 
   const markAsReadMutation = useMutation({
     mutationFn: ({ notificationId, data }) =>
