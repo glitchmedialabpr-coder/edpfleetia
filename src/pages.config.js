@@ -69,7 +69,6 @@ import Home from './pages/Home';
 import Housing from './pages/Housing';
 import LiveTrips from './pages/LiveTrips';
 import Maintenance from './pages/Maintenance';
-import Notifications from './pages/Notifications';
 import PassengerLogin from './pages/PassengerLogin';
 import PassengerTrips from './pages/PassengerTrips';
 import PurchaseReports from './pages/PurchaseReports';
@@ -111,7 +110,6 @@ export const PAGES = {
     "Housing": Housing,
     "LiveTrips": LiveTrips,
     "Maintenance": Maintenance,
-    "Notifications": Notifications,
     "PassengerLogin": PassengerLogin,
     "PassengerTrips": PassengerTrips,
     "PurchaseReports": PurchaseReports,
