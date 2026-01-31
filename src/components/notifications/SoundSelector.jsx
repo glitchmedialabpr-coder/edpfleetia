@@ -2,30 +2,61 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Volume2, Play } from 'lucide-react';
 
+// Función para generar sonidos cortos con Web Audio API
+const generateNotificationSound = (type) => {
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const now = audioContext.currentTime;
+  
+  const osc = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  osc.connect(gain);
+  gain.connect(audioContext.destination);
+  
+  gain.gain.setValueAtTime(0.3, now);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+  
+  switch(type) {
+    case 'default':
+      osc.frequency.setValueAtTime(800, now);
+      break;
+    case 'bell':
+      osc.frequency.setValueAtTime(1047, now);
+      break;
+    case 'chime':
+      osc.frequency.setValueAtTime(1319, now);
+      break;
+    case 'notification':
+      osc.frequency.setValueAtTime(900, now);
+      break;
+    case 'alert':
+      osc.frequency.setValueAtTime(1200, now);
+      break;
+    default:
+      osc.frequency.setValueAtTime(800, now);
+  }
+  
+  osc.start(now);
+  osc.stop(now + 0.1);
+};
+
 const SOUNDS = {
   default: {
-    label: 'Predeterminado',
-    url: 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'
+    label: 'Predeterminado'
   },
   bell: {
-    label: 'Campana',
-    url: 'https://assets.mixkit.co/active_storage/sfx/2870/2870-preview.mp3'
+    label: 'Campana'
   },
   chime: {
-    label: 'Timbre',
-    url: 'https://assets.mixkit.co/active_storage/sfx/2914/2914-preview.mp3'
+    label: 'Timbre'
   },
   notification: {
-    label: 'Notificación',
-    url: 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'
+    label: 'Notificación'
   },
   alert: {
-    label: 'Alerta',
-    url: 'https://assets.mixkit.co/active_storage/sfx/2859/2859-preview.mp3'
+    label: 'Alerta'
   },
   silent: {
-    label: 'Silencioso',
-    url: null
+    label: 'Silencioso'
   }
 };
 
