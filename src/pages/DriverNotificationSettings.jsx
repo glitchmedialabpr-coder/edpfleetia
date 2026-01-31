@@ -249,20 +249,39 @@ export default function DriverNotificationSettings() {
 
       {/* Push Notifications */}
       <Card className="p-6 border-l-4 border-teal-600">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex gap-3">
-            <div className="w-10 h-10 rounded-lg bg-teal-50 flex items-center justify-center flex-shrink-0">
-              <Bell className="w-5 h-5 text-teal-600" />
+        <div className="space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex gap-3">
+              <div className="w-10 h-10 rounded-lg bg-teal-50 flex items-center justify-center flex-shrink-0">
+                <Bell className="w-5 h-5 text-teal-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800">Notificaciones Push del Navegador</h3>
+                <p className="text-sm text-slate-500 mt-1">Recibe alertas incluso cuando la aplicación está cerrada</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-semibold text-slate-800">Notificaciones Push del Navegador</h3>
-              <p className="text-sm text-slate-500 mt-1">Recibe alertas incluso cuando la aplicación está cerrada</p>
-            </div>
+            <Switch
+              checked={currentSettings?.push_notifications_enabled || false}
+              onCheckedChange={() => handleToggle('push_notifications_enabled')}
+            />
           </div>
-          <Switch
-            checked={currentSettings?.push_notifications_enabled || false}
-            onCheckedChange={() => handleToggle('push_notifications_enabled')}
-          />
+          {currentSettings?.push_notifications_enabled && (
+            <div className="ml-13 flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+              <Clock className="w-4 h-4 text-slate-600" />
+              <label className="flex items-center gap-2 flex-1">
+                <span className="text-sm text-slate-700">Anticipación:</span>
+                <Input
+                  type="number"
+                  min="0"
+                  max="120"
+                  value={currentSettings?.push_notifications_advance_minutes || 0}
+                  onChange={(e) => handleAdvanceMinutesChange('push_notifications_advance_minutes', e.target.value)}
+                  className="w-20 h-8"
+                />
+                <span className="text-sm text-slate-600">minutos</span>
+              </label>
+            </div>
+          )}
         </div>
       </Card>
     </div>
