@@ -66,6 +66,12 @@ export default function Dashboard() {
     staleTime: 1000 * 60 * 5
   });
 
+  const { data: purchases = [] } = useQuery({
+    queryKey: ['purchases-dashboard'],
+    queryFn: () => base44.entities.GeneralServicePurchase.list('-created_date', 100),
+    staleTime: 1000 * 60 * 5
+  });
+
   const todayTrips = React.useMemo(() => trips.filter(t => t.scheduled_date === today), [trips, today]);
   const scheduledToday = React.useMemo(() => todayTrips.filter(t => t.status === 'scheduled').length, [todayTrips]);
   const inProgressToday = React.useMemo(() => todayTrips.filter(t => t.status === 'in_progress').length, [todayTrips]);
