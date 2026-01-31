@@ -168,7 +168,7 @@ export default function Layout({ children, currentPageName }) {
         { name: 'Estudiantes Aceptados', page: 'DriverAcceptedStudents', icon: Users },
         { name: 'Mis Viajes', page: 'DriverTrips', icon: Bus },
         { name: 'Historial', page: 'DriverHistory', icon: History },
-        { name: 'Notificaciones', page: 'DriverNotificationSettings', icon: Settings },
+        { name: 'Notificaciones', page: 'NotificationSettings', icon: Settings },
       ];
 
   const adminScheduleItems = [
