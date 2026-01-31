@@ -332,37 +332,52 @@ export default function Drivers() {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Choferes</h1>
-          <p className="text-slate-500 mt-1">Gestiona la información de los choferes</p>
-        </div>
-        <div className="flex gap-2">
-          <Button 
-            onClick={openCreateModal}
-            className="bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-600/20"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Agregar Chofer
-          </Button>
-
+          <p className="text-slate-500 mt-1">Gestiona choferes y advertencias</p>
         </div>
       </div>
 
-      {/* Alert Banner */}
-      {expiringLicenses > 0 && (
-        <Card className="p-4 bg-amber-50 border-amber-200">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="w-5 h-5 text-amber-600" />
-            <div>
-              <p className="font-semibold text-amber-800">
-                {expiringLicenses} licencia{expiringLicenses > 1 ? 's' : ''} por vencer
-              </p>
-              <p className="text-sm text-amber-600">Revisa los vencimientos próximos</p>
-            </div>
-          </div>
-        </Card>
-      )}
+      {/* Tabs */}
+      <Tabs value={tab} onValueChange={setTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="drivers">
+            <Users className="w-4 h-4 mr-2" />
+            Choferes
+          </TabsTrigger>
+          <TabsTrigger value="warnings">
+            <AlertTriangle className="w-4 h-4 mr-2" />
+            Advertencias
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Search & Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        {/* Choferes Tab */}
+        <TabsContent value="drivers" className="space-y-4">
+          <div className="flex justify-end">
+            <Button 
+              onClick={openCreateModal}
+              className="bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-600/20"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Agregar Chofer
+            </Button>
+          </div>
+
+          {/* Alert Banner */}
+          {expiringLicenses > 0 && (
+            <Card className="p-4 bg-amber-50 border-amber-200">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="w-5 h-5 text-amber-600" />
+                <div>
+                  <p className="font-semibold text-amber-800">
+                    {expiringLicenses} licencia{expiringLicenses > 1 ? 's' : ''} por vencer
+                  </p>
+                  <p className="text-sm text-amber-600">Revisa los vencimientos próximos</p>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Search & Stats */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <Card className="lg:col-span-3 p-4 border-0 shadow-sm">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -385,24 +400,24 @@ export default function Drivers() {
               <Users className="w-6 h-6 text-teal-600" />
             </div>
           </div>
-        </Card>
-      </div>
+          </Card>
+          </div>
 
-      {/* Status Filters */}
-      <div className="flex gap-2 flex-wrap">
-        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
-          Activos: {drivers.filter(d => d.status === 'active').length}
-        </Badge>
-        <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-          De Licencia: {drivers.filter(d => d.status === 'on_leave').length}
-        </Badge>
-        <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200">
-          Inactivos: {drivers.filter(d => d.status === 'inactive').length}
-        </Badge>
-      </div>
+          {/* Status Filters */}
+          <div className="flex gap-2 flex-wrap">
+            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+              Activos: {drivers.filter(d => d.status === 'active').length}
+            </Badge>
+            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+              De Licencia: {drivers.filter(d => d.status === 'on_leave').length}
+            </Badge>
+            <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200">
+              Inactivos: {drivers.filter(d => d.status === 'inactive').length}
+            </Badge>
+          </div>
 
-      {/* Drivers Table */}
-      <Card className="border-0 shadow-sm overflow-hidden">
+          {/* Drivers Table */}
+          <Card className="border-0 shadow-sm overflow-hidden">
         {filteredDrivers.length === 0 ? (
           <EmptyState
             icon={User}
@@ -534,6 +549,440 @@ export default function Drivers() {
           </div>
         )}
       </Card>
+        </TabsContent>
+
+        {/* Advertencias Tab */}
+        <TabsContent value="warnings" className="space-y-4">
+          <div className="flex justify-end">
+            <Button onClick={() => setWarningModalOpen(true)} className="bg-red-600 hover:bg-red-700">
+              <Plus className="w-4 h-4 mr-2" />
+              Nueva Advertencia
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatsCard title="Total" value={warnings.length} icon={AlertTriangle} color="red" />
+            <StatsCard title="Activas" value={warnings.filter(w => w.status === 'active').length} icon={FileText} color="orange" />
+            <StatsCard title="Verbales" value={warnings.filter(w => w.severity === 'verbal').length} icon={AlertTriangle} color="blue" />
+            <StatsCard title="Escritas" value={warnings.filter(w => w.severity === 'written' || w.severity === 'final' || w.severity === 'suspension').length} icon={FileText} color="yellow" />
+          </div>
+
+          <Card className="p-4 border-0 shadow-sm">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Input
+                  placeholder="Buscar advertencias..."
+                  value={warningSearch}
+                  onChange={(e) => setWarningSearch(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select value={driverFilter} onValueChange={setDriverFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Chofer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos los choferes</SelectItem>
+                  {drivers.map(driver => (
+                    <SelectItem key={driver.id} value={driver.id}>
+                      {driver.full_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </Card>
+
+          <Card className="border-0 shadow-sm overflow-hidden">
+            {filteredWarnings.length === 0 ? (
+              <EmptyState
+                icon={AlertTriangle}
+                title="No hay advertencias registradas"
+                description="Las advertencias aparecerán aquí"
+              />
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-slate-50">
+                      <TableHead>Fecha</TableHead>
+                      <TableHead>Chofer</TableHead>
+                      <TableHead>Tipo</TableHead>
+                      <TableHead>Severidad</TableHead>
+                      <TableHead>Descripción</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead>Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredWarnings.map(warning => (
+                      <TableRow key={warning.id} className="hover:bg-slate-50">
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-slate-400" />
+                            <span className="font-medium">
+                              {format(new Date(warning.warning_date), 'd MMM yyyy', { locale: es })}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="font-medium text-slate-700">{warning.driver_name}</span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm text-slate-600">
+                            {warningTypeLabels[warning.warning_type]}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={severityConfig[warning.severity]?.color}>
+                            {severityConfig[warning.severity]?.label}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="max-w-xs">
+                          <p className="text-slate-600 truncate">{warning.description}</p>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={warningStatusConfig[warning.status]?.color}>
+                            {warningStatusConfig[warning.status]?.label}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setSelectedWarning(warning);
+                              setViewWarningModalOpen(true);
+                            }}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </Card>
+
+          {/* Create Warning Modal */}
+          <Dialog open={warningModalOpen} onOpenChange={setWarningModalOpen}>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Nueva Advertencia</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Chofer *</Label>
+                    <Select value={warningFormData.driver_id} onValueChange={(val) => setWarningFormData({ ...warningFormData, driver_id: val })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {drivers.map(driver => (
+                          <SelectItem key={driver.id} value={driver.id}>
+                            {driver.full_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Fecha *</Label>
+                    <Input
+                      type="date"
+                      value={warningFormData.warning_date}
+                      onChange={(e) => setWarningFormData({ ...warningFormData, warning_date: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Tipo de Advertencia *</Label>
+                    <Select value={warningFormData.warning_type} onValueChange={(val) => setWarningFormData({ ...warningFormData, warning_type: val })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(warningTypeLabels).map(([value, label]) => (
+                          <SelectItem key={value} value={value}>{label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Severidad *</Label>
+                    <Select value={warningFormData.severity} onValueChange={(val) => setWarningFormData({ ...warningFormData, severity: val })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(severityConfig).map(([value, { label }]) => (
+                          <SelectItem key={value} value={value}>{label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label>Descripción *</Label>
+                  <Textarea
+                    value={warningFormData.description}
+                    onChange={(e) => setWarningFormData({ ...warningFormData, description: e.target.value })}
+                    placeholder="Descripción detallada de la falta..."
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <Label>Acción Tomada</Label>
+                  <Textarea
+                    value={warningFormData.action_taken}
+                    onChange={(e) => setWarningFormData({ ...warningFormData, action_taken: e.target.value })}
+                    placeholder="Descripción de la acción correctiva..."
+                    rows={2}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Emitida Por</Label>
+                    <Input
+                      value={warningFormData.issued_by}
+                      onChange={(e) => setWarningFormData({ ...warningFormData, issued_by: e.target.value })}
+                      placeholder="Nombre del supervisor"
+                    />
+                  </div>
+                  <div>
+                    <Label>Testigo</Label>
+                    <Input
+                      value={warningFormData.witness}
+                      onChange={(e) => setWarningFormData({ ...warningFormData, witness: e.target.value })}
+                      placeholder="Nombre del testigo"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={warningFormData.driver_acknowledgment}
+                    onCheckedChange={(checked) => setWarningFormData({ ...warningFormData, driver_acknowledgment: checked })}
+                  />
+                  <Label>El chofer reconoce la advertencia</Label>
+                </div>
+
+                <div>
+                  <Label>Comentarios del Chofer</Label>
+                  <Textarea
+                    value={warningFormData.driver_comments}
+                    onChange={(e) => setWarningFormData({ ...warningFormData, driver_comments: e.target.value })}
+                    placeholder="Comentarios o explicación del chofer..."
+                    rows={2}
+                  />
+                </div>
+
+                <div>
+                  <Label>Documentos de Soporte</Label>
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <Input
+                        type="file"
+                        multiple
+                        onChange={handleFileUpload}
+                        disabled={uploading}
+                        className="flex-1"
+                      />
+                      {uploading && <span className="text-sm text-slate-500">Subiendo...</span>}
+                    </div>
+                    {warningFormData.documents.length > 0 && (
+                      <div className="space-y-2">
+                        {warningFormData.documents.map((doc, idx) => (
+                          <div key={idx} className="p-3 bg-slate-50 rounded flex items-start gap-3">
+                            <FileText className="w-5 h-5 text-slate-400 mt-1" />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm truncate">{doc.name}</p>
+                              <Input
+                                placeholder="Notas sobre este archivo..."
+                                value={doc.notes}
+                                onChange={(e) => handleDocumentNotes(idx, e.target.value)}
+                                className="mt-2"
+                              />
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleRemoveDocument(idx)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Fecha de Seguimiento</Label>
+                    <Input
+                      type="date"
+                      value={warningFormData.follow_up_date}
+                      onChange={(e) => setWarningFormData({ ...warningFormData, follow_up_date: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label>Estado</Label>
+                    <Select value={warningFormData.status} onValueChange={(val) => setWarningFormData({ ...warningFormData, status: val })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(warningStatusConfig).map(([value, { label }]) => (
+                          <SelectItem key={value} value={value}>{label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label>Notas Adicionales</Label>
+                  <Textarea
+                    value={warningFormData.notes}
+                    onChange={(e) => setWarningFormData({ ...warningFormData, notes: e.target.value })}
+                    placeholder="Notas..."
+                    rows={2}
+                  />
+                </div>
+
+                <div className="flex justify-end gap-3">
+                  <Button variant="outline" onClick={() => setWarningModalOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button
+                    onClick={handleWarningSubmit}
+                    disabled={!warningFormData.driver_id || !warningFormData.description}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Guardar Advertencia
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* View Warning Modal */}
+          <Dialog open={viewWarningModalOpen} onOpenChange={setViewWarningModalOpen}>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Detalles de Advertencia</DialogTitle>
+              </DialogHeader>
+              {selectedWarning && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-slate-500">Chofer</p>
+                      <p className="font-semibold">{selectedWarning.driver_name}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-slate-500">Fecha</p>
+                      <p className="font-semibold">
+                        {format(new Date(selectedWarning.warning_date), 'd MMM yyyy', { locale: es })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-slate-500">Tipo</p>
+                      <p className="font-semibold">{warningTypeLabels[selectedWarning.warning_type]}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-slate-500">Severidad</p>
+                      <Badge className={severityConfig[selectedWarning.severity]?.color}>
+                        {severityConfig[selectedWarning.severity]?.label}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">Descripción</p>
+                    <p className="text-slate-700">{selectedWarning.description}</p>
+                  </div>
+                  {selectedWarning.action_taken && (
+                    <div>
+                      <p className="text-sm text-slate-500">Acción Tomada</p>
+                      <p className="text-slate-700">{selectedWarning.action_taken}</p>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-slate-500">Emitida Por</p>
+                      <p className="font-medium">{selectedWarning.issued_by || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-slate-500">Testigo</p>
+                      <p className="font-medium">{selectedWarning.witness || '-'}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">Reconocimiento del Chofer</p>
+                    <Badge className={selectedWarning.driver_acknowledgment ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}>
+                      {selectedWarning.driver_acknowledgment ? 'Reconocida' : 'No Reconocida'}
+                    </Badge>
+                  </div>
+                  {selectedWarning.driver_comments && (
+                    <div>
+                      <p className="text-sm text-slate-500">Comentarios del Chofer</p>
+                      <p className="text-slate-700">{selectedWarning.driver_comments}</p>
+                    </div>
+                  )}
+                  {selectedWarning.documents?.length > 0 && (
+                    <div>
+                      <p className="text-sm text-slate-500 mb-2">Documentos</p>
+                      <div className="space-y-2">
+                        {selectedWarning.documents.map((doc, idx) => (
+                          <div key={idx} className="p-3 bg-slate-50 rounded flex items-start justify-between">
+                            <div className="flex-1">
+                              <a
+                                href={doc.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-teal-600 hover:underline font-medium"
+                              >
+                                {doc.name}
+                              </a>
+                              {doc.notes && <p className="text-sm text-slate-600 mt-1">{doc.notes}</p>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {selectedWarning.follow_up_date && (
+                    <div>
+                      <p className="text-sm text-slate-500">Seguimiento</p>
+                      <p className="font-medium">
+                        {format(new Date(selectedWarning.follow_up_date), 'd MMM yyyy', { locale: es })}
+                      </p>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm text-slate-500">Estado</p>
+                    <Badge className={warningStatusConfig[selectedWarning.status]?.color}>
+                      {warningStatusConfig[selectedWarning.status]?.label}
+                    </Badge>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
+      </Tabs>
 
       {/* Driver Form Modal */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
