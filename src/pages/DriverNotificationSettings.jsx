@@ -67,8 +67,14 @@ export default function DriverNotificationSettings() {
   const handleToggle = (field) => {
     if (!driverSettings) return;
     const newValue = !driverSettings[field];
-    setSettings({ ...driverSettings, [field]: newValue });
+    setSettings({ ...currentSettings, [field]: newValue });
     updateMutation.mutate({ [field]: newValue });
+  };
+
+  const handleAdvanceMinutesChange = (field, value) => {
+    const minutes = Math.max(0, parseInt(value) || 0);
+    setSettings({ ...currentSettings, [field]: minutes });
+    updateMutation.mutate({ [field]: minutes });
   };
 
   const currentSettings = settings || driverSettings;
