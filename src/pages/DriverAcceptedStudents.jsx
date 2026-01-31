@@ -41,12 +41,14 @@ export default function DriverAcceptedStudents() {
       driver_id: user?.driver_id,
       status: 'accepted_by_driver'
     }, '-created_date'),
-    enabled: !!user?.driver_id
+    enabled: !!user?.driver_id,
+    staleTime: 1000 * 30
   });
 
   const { data: vehicles = [] } = useQuery({
     queryKey: ['vehicles'],
-    queryFn: () => base44.entities.Vehicle.filter({ status: 'available' })
+    queryFn: () => base44.entities.Vehicle.filter({ status: 'available' }),
+    staleTime: 1000 * 60 * 5
   });
 
   const handleStartTrip = async () => {
@@ -56,45 +58,16 @@ export default function DriverAcceptedStudents() {
     }
 
     try {
-      const now = new Date();
-      const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       const firstRequest = acceptedRequests[0];
-      const vehicle = vehicles.find(v => v.id === firstRequest.vehicle_id);
-
-      const studentsData = acceptedRequests.map(req => ({
-        request_id: req.id,
-        student_id: req.passenger_id,
-        student_name: req.passenger_name,
-        housing_name: req.destination,
-        destination: req.destination,
-        destination_town: req.destination_town,
-        delivery_status: 'pending',
-        delivery_time: null
-      }));
-
-      const trip = await base44.entities.Trip.create({
-        driver_id: user.driver_id,
-        driver_name: user.full_name || user.email,
-        vehicle_id: firstRequest.vehicle_id,
-        vehicle_info: vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '',
-        scheduled_date: new Date().toISOString().split('T')[0],
-        scheduled_time: timeString,
-        departure_time: timeString,
-        students: studentsData,
-        origin: 'EDP University',
-        status: 'in_progress'
+      const res = await base44.functions.invoke('createTripFromRequests', {
+        acceptedRequests,
+        selectedVehicle: firstRequest.vehicle_id
       });
 
-      for (const req of acceptedRequests) {
-        await base44.entities.TripRequest.update(req.id, {
-          status: 'in_trip',
-          started_at: timeString,
-          trip_id: trip.id
-        });
+      if (res.data.success) {
+        toast.success(`Viaje iniciado con ${acceptedRequests.length} estudiante(s)`);
+        navigate(createPageUrl('DriverRequests'));
       }
-
-      toast.success(`Viaje iniciado con ${acceptedRequests.length} estudiante(s)`);
-      navigate(createPageUrl('DriverRequests'));
     } catch (error) {
       toast.error('Error al iniciar viaje');
       console.error(error);

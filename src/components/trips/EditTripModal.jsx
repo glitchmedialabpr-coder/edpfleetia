@@ -38,6 +38,7 @@ export default function EditTripModal({ trip, open, onClose, onUpdated }) {
       onUpdated();
       onClose();
     } catch (error) {
+      console.error('Error:', error);
       toast.error('Error al actualizar el viaje');
     }
     setLoading(false);

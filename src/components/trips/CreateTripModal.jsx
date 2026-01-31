@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -119,8 +120,9 @@ export default function CreateTripModal({ open, onClose, onCreated }) {
         notes: ''
       });
       setSelectedStudents([]);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Error al crear viaje');
     }
     setLoading(false);
   };

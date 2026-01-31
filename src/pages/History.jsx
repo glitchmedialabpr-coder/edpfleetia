@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
+import { createPageUrl } from '../utils';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,10 +54,12 @@ export default function History() {
       if (pinUser) {
         const userData = JSON.parse(pinUser);
         if (userData.role !== 'admin') {
-          window.location.href = '/';
+          window.location.href = createPageUrl('Dashboard');
           return;
         }
         setUser(userData);
+      } else {
+        window.location.href = createPageUrl('Home');
       }
     };
     loadUser();
@@ -65,12 +68,14 @@ export default function History() {
   const { data: trips = [] } = useQuery({
     queryKey: ['trips-history'],
     queryFn: () => base44.entities.Trip.list('-scheduled_date', 200),
-    enabled: !!user
+    enabled: !!user,
+    staleTime: 1000 * 60 * 5
   });
 
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers'],
-    queryFn: () => base44.entities.User.filter({ role: 'user' })
+    queryFn: () => base44.entities.Driver.list(),
+    staleTime: 1000 * 60 * 5
   });
 
   const filteredTrips = trips.filter(trip => {

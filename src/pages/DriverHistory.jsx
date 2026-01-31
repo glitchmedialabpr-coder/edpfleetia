@@ -46,7 +46,8 @@ export default function DriverHistory() {
       }
       return base44.entities.Trip.filter({ driver_id: user?.id }, '-scheduled_date', 100);
     },
-    enabled: !!user?.id
+    enabled: !!user?.id,
+    staleTime: 1000 * 60 * 5
   });
 
   const completedTrips = trips.filter(t => t.status === 'completed');
