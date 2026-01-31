@@ -90,6 +90,8 @@ const warningStatusConfig = {
   dismissed: { label: 'Desestimada', color: 'bg-slate-100 text-slate-700' }
 };
 
+const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
 export default function Drivers() {
   const queryClient = useQueryClient();
   const [tab, setTab] = useState('drivers');
@@ -103,6 +105,7 @@ export default function Drivers() {
   const [warningSearch, setWarningSearch] = useState('');
   const [driverFilter, setDriverFilter] = useState('all');
   const [uploading, setUploading] = useState(false);
+  const [scheduleSearchTerm, setScheduleSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     driver_id: '',
     full_name: '',
@@ -239,6 +242,88 @@ export default function Drivers() {
     const matchesDriver = driverFilter === 'all' || warning.driver_id === driverFilter;
     return matchesSearch && matchesDriver;
   });
+
+  const { data: vehicles = [] } = useQuery({
+    queryKey: ['vehicles'],
+    queryFn: () => base44.entities.Vehicle.filter({ status: 'available' }),
+    staleTime: 1000 * 60 * 5
+  });
+
+  const [editingScheduleDriver, setEditingScheduleDriver] = useState(null);
+  const [scheduleFormData, setScheduleFormData] = useState({
+    shift_duration: 8,
+    shift_start_time: '06:00',
+    shift_days: [],
+    assigned_vehicle_id: ''
+  });
+
+  const updateScheduleMutation = useMutation({
+    mutationFn: async ({ driverId, data }) => {
+      await base44.entities.Driver.update(driverId, data);
+      await base44.entities.Notification.create({
+        type: 'schedule_change',
+        title: 'Horario de Conductor Actualizado',
+        message: `Se actualizó el horario de ${editingScheduleDriver.full_name}`,
+        driver_id: editingScheduleDriver.driver_id,
+        driver_name: editingScheduleDriver.full_name,
+        priority: 'medium',
+        data: {
+          shift_duration: data.shift_duration,
+          shift_start_time: data.shift_start_time,
+          shift_days: data.shift_days
+        }
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['drivers']);
+      queryClient.invalidateQueries(['notifications']);
+      handleCloseScheduleDialog();
+    }
+  });
+
+  const handleOpenScheduleDialog = (driver) => {
+    setEditingScheduleDriver(driver);
+    setScheduleFormData({
+      shift_duration: driver.shift_duration || 8,
+      shift_start_time: driver.shift_start_time || '06:00',
+      shift_days: driver.shift_days || [],
+      assigned_vehicle_id: driver.assigned_vehicle_id || ''
+    });
+  };
+
+  const handleCloseScheduleDialog = () => {
+    setEditingScheduleDriver(null);
+    setScheduleFormData({
+      shift_duration: 8,
+      shift_start_time: '06:00',
+      shift_days: [],
+      assigned_vehicle_id: ''
+    });
+  };
+
+  const toggleDay = (dayIndex) => {
+    setScheduleFormData(prev => ({
+      ...prev,
+      shift_days: prev.shift_days.includes(dayIndex)
+        ? prev.shift_days.filter(d => d !== dayIndex)
+        : [...prev.shift_days, dayIndex].sort((a, b) => a - b)
+    }));
+  };
+
+  const handleScheduleSave = () => {
+    if (!scheduleFormData.shift_start_time || scheduleFormData.shift_days.length === 0 || !scheduleFormData.assigned_vehicle_id) {
+      return;
+    }
+    updateScheduleMutation.mutate({
+      driverId: editingScheduleDriver.id,
+      data: scheduleFormData
+    });
+  };
+
+  const filteredScheduleDrivers = drivers.filter(driver =>
+    driver.full_name.toLowerCase().includes(scheduleSearchTerm.toLowerCase()) ||
+    driver.driver_id.includes(scheduleSearchTerm)
+  );
 
   const filteredDrivers = drivers.filter(d => 
     d.full_name?.toLowerCase().includes(search.toLowerCase()) ||
