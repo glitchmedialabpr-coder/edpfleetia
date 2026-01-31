@@ -163,6 +163,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Respuestas', page: 'ResponseHistory', icon: ClipboardList },
     { name: 'Historial', page: 'History', icon: History },
     { name: 'Notificaciones', page: 'Notifications', icon: AlertTriangle },
+    { name: 'Video Splash', page: 'UploadVideo', icon: AlertTriangle },
     { name: 'Configuración', page: 'Settings', icon: Shield },
   ];
 
