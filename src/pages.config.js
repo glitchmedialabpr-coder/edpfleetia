@@ -55,6 +55,7 @@ import DriverAcceptedStudents from './pages/DriverAcceptedStudents';
 import DriverHistory from './pages/DriverHistory';
 import DriverLogin from './pages/DriverLogin';
 import DriverRequests from './pages/DriverRequests';
+import DriverSchedule from './pages/DriverSchedule';
 import DriverTrips from './pages/DriverTrips';
 import Drivers from './pages/Drivers';
 import FuelRecords from './pages/FuelRecords';
@@ -63,6 +64,7 @@ import Home from './pages/Home';
 import Housing from './pages/Housing';
 import LiveTrips from './pages/LiveTrips';
 import Maintenance from './pages/Maintenance';
+import Notifications from './pages/Notifications';
 import PassengerLogin from './pages/PassengerLogin';
 import PassengerTrips from './pages/PassengerTrips';
 import Purchases from './pages/Purchases';
@@ -72,8 +74,6 @@ import Students from './pages/Students';
 import Trips from './pages/Trips';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
-import DriverSchedule from './pages/DriverSchedule';
-import Notifications from './pages/Notifications';
 import __Layout from './Layout.jsx';
 
 
@@ -86,6 +86,7 @@ export const PAGES = {
     "DriverHistory": DriverHistory,
     "DriverLogin": DriverLogin,
     "DriverRequests": DriverRequests,
+    "DriverSchedule": DriverSchedule,
     "DriverTrips": DriverTrips,
     "Drivers": Drivers,
     "FuelRecords": FuelRecords,
@@ -94,6 +95,7 @@ export const PAGES = {
     "Housing": Housing,
     "LiveTrips": LiveTrips,
     "Maintenance": Maintenance,
+    "Notifications": Notifications,
     "PassengerLogin": PassengerLogin,
     "PassengerTrips": PassengerTrips,
     "Purchases": Purchases,
@@ -103,8 +105,6 @@ export const PAGES = {
     "Trips": Trips,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
-    "DriverSchedule": DriverSchedule,
-    "Notifications": Notifications,
 }
 
 export const pagesConfig = {
