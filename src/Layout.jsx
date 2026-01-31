@@ -219,11 +219,11 @@ export default function Layout({ children, currentPageName }) {
   }
 
   // Route guard: Protect driver pages
-  const driverPages = ['DriverRequests', 'DriverAcceptedStudents', 'DriverTrips', 'DriverHistory'];
-  if (driverPages.includes(currentPageName) && user.user_type !== 'driver') {
-    window.location.href = createPageUrl('Dashboard');
-    return null;
-  }
+    const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverAcceptedStudents', 'DriverTrips', 'DriverHistory'];
+    if (driverPages.includes(currentPageName) && user.user_type !== 'driver') {
+      window.location.href = createPageUrl('Dashboard');
+      return null;
+    }
 
   // Route guard: Protect passenger pages
   const passengerPages = ['PassengerTrips'];
