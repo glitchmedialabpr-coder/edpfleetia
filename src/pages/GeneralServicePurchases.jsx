@@ -197,12 +197,37 @@ export default function GeneralServicePurchases() {
     }
   };
 
-  const calculateTotalCost = () => {
-    const qty = parseFloat(formData.quantity) || 0;
-    const unit = parseFloat(formData.unit_cost) || 0;
-    if (qty > 0 && unit > 0) {
-      setFormData({...formData, total_amount: (qty * unit).toFixed(2)});
+  const addProduct = () => {
+    setFormData({
+      ...formData,
+      items: [...formData.items, { item: '', category: 'otros', quantity: 1, unit_cost: '', total_amount: '' }]
+    });
+  };
+
+  const removeProduct = (index) => {
+    const updatedItems = formData.items.filter((_, i) => i !== index);
+    setFormData({ ...formData, items: updatedItems });
+  };
+
+  const updateProduct = (index, field, value) => {
+    const updatedItems = [...formData.items];
+    updatedItems[index] = { ...updatedItems[index], [field]: value };
+    
+    // Auto-calculate total if quantity and unit_cost are provided
+    if (field === 'quantity' || field === 'unit_cost') {
+      const qty = parseFloat(updatedItems[index].quantity) || 0;
+      const unit = parseFloat(updatedItems[index].unit_cost) || 0;
+      if (qty > 0 && unit > 0) {
+        updatedItems[index].total_amount = (qty * unit).toFixed(2);
+      }
     }
+    
+    setFormData({ ...formData, items: updatedItems });
+  };
+
+  const calculateTotalPurchase = () => {
+    const total = formData.items.reduce((sum, it) => sum + (parseFloat(it.total_amount) || 0), 0);
+    setTotalPurchaseAmount(total.toFixed(2));
   };
 
   const filteredPurchases = purchases.filter(purchase => {
