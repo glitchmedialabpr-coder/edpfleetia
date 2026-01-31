@@ -168,12 +168,11 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   const driverNavItems = [
-        { name: 'Dashboard', page: 'DriverDashboard', icon: LayoutDashboard },
-        { name: 'Solicitudes', page: 'DriverRequests', icon: Bus },
-        { name: 'Estudiantes Aceptados', page: 'DriverAcceptedStudents', icon: Users },
-        { name: 'Mis Viajes', page: 'DriverTrips', icon: Bus },
-        { name: 'Historial', page: 'DriverHistory', icon: History },
-      ];
+      { name: 'Solicitudes', page: 'DriverRequests', icon: Bus },
+      { name: 'Estudiantes Aceptados', page: 'DriverAcceptedStudents', icon: Users },
+      { name: 'Mis Viajes', page: 'DriverTrips', icon: Bus },
+      { name: 'Historial', page: 'DriverHistory', icon: History },
+    ];
 
   const adminScheduleItems = [
       { name: 'Horarios', page: 'DriverSchedule', icon: Bus },
@@ -219,11 +218,11 @@ export default function Layout({ children, currentPageName }) {
   }
 
   // Route guard: Protect driver pages
-    const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverAcceptedStudents', 'DriverTrips', 'DriverHistory'];
-    if (driverPages.includes(currentPageName) && user.user_type !== 'driver') {
-      window.location.href = createPageUrl('Dashboard');
-      return null;
-    }
+  const driverPages = ['DriverRequests', 'DriverAcceptedStudents', 'DriverTrips', 'DriverHistory'];
+  if (driverPages.includes(currentPageName) && user.user_type !== 'driver') {
+    window.location.href = createPageUrl('Dashboard');
+    return null;
+  }
 
   // Route guard: Protect passenger pages
   const passengerPages = ['PassengerTrips'];
