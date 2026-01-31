@@ -64,14 +64,15 @@ export default function SoundSelector({ value, onChange }) {
   const [playing, setPlaying] = useState(null);
 
   const playSound = (soundKey) => {
-    const sound = SOUNDS[soundKey];
-    if (!sound.url || soundKey === 'silent') return;
-
-    const audio = new Audio(sound.url);
-    audio.volume = 0.5;
-    audio.play().catch(e => console.log('Audio play failed:', e));
-    setPlaying(soundKey);
-    setTimeout(() => setPlaying(null), 1000);
+    if (soundKey === 'silent') return;
+    
+    try {
+      generateNotificationSound(soundKey);
+      setPlaying(soundKey);
+      setTimeout(() => setPlaying(null), 150);
+    } catch (e) {
+      console.log('Sound play failed:', e);
+    }
   };
 
   const handleSoundChange = (key) => {
