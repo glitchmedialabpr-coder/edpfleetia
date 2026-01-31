@@ -5,23 +5,23 @@ import { Volume2, Play } from 'lucide-react';
 const SOUNDS = {
   default: {
     label: 'Predeterminado',
-    url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUKnl87RiGwU7k9n0yHInBSh+zPLaizsKFF+28ud2URwMTKXh8bllHAU2jdTxy3ksiCV8zPDbjzsKEly18O2jUBsMSqPf8r1nHwU6kdnzxnErBSh+zvPaiTwKEV619Oy+aCAGL47V8tWTQwsVYLXp7JhPEAxMovTyvmsiBTaO1vLNdSYEJ4HO8tiJOAgZaLzu551NEQxPqOT0s2IcBTiQ2PPLeSgEKH7N8tmJPAoUXrXy77hVGApFnuHytW0hBSuCz/PaiDUHGWi78OWcTQ0OUKjk87NhHAU7k9jzy3krBCiAz/PaiD0GEly08uq5Vx0LRZP0yHMnBSh9zfDcjD4HEly18uq5V+0LPJrc8shzJwUng87y2Ik3CBpouPDmnk0PDlCo5fKzYhwFOpPZ88t5KwQogc7y2Yk3CBppofHvnU0QDFGr5PK0YRoFPJTY88p5TAUAAAAAAAA='
+    url: null
   },
   bell: {
     label: 'Campana',
-    url: 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA=='
+    url: null
   },
   chime: {
     label: 'Timbre',
-    url: 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA=='
+    url: null
   },
   notification: {
     label: 'Notificación',
-    url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+'
+    url: null
   },
   alert: {
     label: 'Alerta',
-    url: 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA=='
+    url: null
   },
   silent: {
     label: 'Silencioso',
@@ -44,41 +44,44 @@ export default function SoundSelector({ value, onChange }) {
   };
 
   return (
-    <div className="space-y-3">
-      <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
-        <Volume2 className="w-4 h-4" />
-        Sonido de Notificación
-      </label>
-      <div className="grid grid-cols-2 gap-2">
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <Volume2 className="w-5 h-5 text-indigo-600" />
+        <h3 className="font-semibold text-slate-800">Sonido de Notificación</h3>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {Object.entries(SOUNDS).map(([key, sound]) => (
-          <div key={key} className="flex items-center gap-2">
-            <label className={`flex items-center gap-2 flex-1 p-3 border rounded-lg cursor-pointer transition-colors ${
+          <label
+            key={key}
+            className={`flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${
               value === key 
-                ? 'border-teal-600 bg-teal-50' 
-                : 'border-slate-200 hover:bg-slate-50'
-            }`}>
-              <input
-                type="radio"
-                name="notification_sound"
-                value={key}
-                checked={value === key}
-                onChange={() => onChange(key)}
-                className="w-4 h-4 accent-teal-600"
-              />
-              <span className="text-sm text-slate-700">{sound.label}</span>
-            </label>
+                ? 'border-indigo-600 bg-indigo-50' 
+                : 'border-slate-200 hover:border-slate-300 bg-white'
+            }`}
+          >
+            <input
+              type="radio"
+              name="notification_sound"
+              value={key}
+              checked={value === key}
+              onChange={() => onChange(key)}
+              className="w-5 h-5 accent-indigo-600"
+            />
+            <span className="flex-1 text-sm font-medium text-slate-700">{sound.label}</span>
             {sound.url && (
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={() => playSound(key)}
-                disabled={playing === key}
+                onClick={(e) => {
+                  e.preventDefault();
+                  playSound(key);
+                }}
                 className="flex-shrink-0"
               >
                 <Play className="w-4 h-4" />
               </Button>
             )}
-          </div>
+          </label>
         ))}
       </div>
     </div>
