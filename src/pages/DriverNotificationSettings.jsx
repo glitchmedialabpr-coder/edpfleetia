@@ -208,13 +208,22 @@ export default function DriverNotificationSettings() {
 
       {/* Sound Selection */}
       <Card className="p-6 border-l-4 border-indigo-600">
-        <SoundSelector
-          value={currentSettings?.notification_sound || 'default'}
-          onChange={(sound) => {
-            setSettings({ ...currentSettings, notification_sound: sound });
-            updateMutation.mutate({ notification_sound: sound });
-          }}
-        />
+        <div className="space-y-4">
+          <div>
+            <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+              <Volume2 className="w-5 h-5 text-indigo-600" />
+              Sonido de Notificaciones
+            </h3>
+            <p className="text-sm text-slate-500 mt-1">Elige el sonido que quieres escuchar en tus alertas</p>
+          </div>
+          <SoundSelector
+            value={currentSettings?.notification_sound || 'default'}
+            onChange={(sound) => {
+              setSettings({ ...currentSettings, notification_sound: sound });
+              updateMutation.mutate({ notification_sound: sound });
+            }}
+          />
+        </div>
       </Card>
     </div>
   );
