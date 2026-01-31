@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
@@ -23,8 +23,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import EmptyState from '@/components/common/EmptyState';
-import AdvancedFilters from '@/components/common/AdvancedFilters';
-import useFilterPreferences from '@/components/common/useFilterPreferences';
 
 const categoryConfig = {
   materiales_construccion: { label: 'Materiales de Construcción', color: 'bg-orange-100 text-orange-700' },
@@ -40,12 +38,9 @@ const categoryConfig = {
 export default function GeneralServicePurchases() {
   const [showModal, setShowModal] = useState(false);
   const [editingPurchase, setEditingPurchase] = useState(null);
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterJob, setFilterJob] = useState('all');
   const [purchasedByType, setPurchasedByType] = useState('driver'); // 'driver' or 'custom'
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filtersExpanded, setFiltersExpanded] = useState(false);
-
-  // Load saved filter preferences
-  const { filters, updateFilters, clearFilters } = useFilterPreferences('general-service-purchases');
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     store: '',
@@ -251,35 +246,11 @@ export default function GeneralServicePurchases() {
     setTotalPurchaseAmount(total.toFixed(2));
   };
 
-  // Advanced filtering with search and multiple criteria
-  const filteredPurchases = useMemo(() => {
-    return purchases.filter(purchase => {
-      // Search in multiple fields
-      const searchLower = searchQuery.toLowerCase();
-      const matchesSearch = !searchQuery || 
-        purchase.item?.toLowerCase().includes(searchLower) ||
-        purchase.store?.toLowerCase().includes(searchLower) ||
-        purchase.job_title?.toLowerCase().includes(searchLower) ||
-        purchase.purchased_by?.toLowerCase().includes(searchLower) ||
-        purchase.notes?.toLowerCase().includes(searchLower);
-
-      // Apply saved filters
-      const matchesCategory = !filters.category || filters.category === 'all' || purchase.category === filters.category;
-      const matchesJob = !filters.job || filters.job === 'all' || purchase.job_id === filters.job;
-      const matchesSupplier = !filters.supplier || filters.supplier === 'all' || purchase.store === filters.supplier;
-
-      // Date range filters
-      let matchesDateRange = true;
-      if (filters.dateFrom) {
-        matchesDateRange = matchesDateRange && new Date(purchase.date) >= new Date(filters.dateFrom);
-      }
-      if (filters.dateTo) {
-        matchesDateRange = matchesDateRange && new Date(purchase.date) <= new Date(filters.dateTo);
-      }
-
-      return matchesSearch && matchesCategory && matchesJob && matchesSupplier && matchesDateRange;
-    });
-  }, [purchases, searchQuery, filters]);
+  const filteredPurchases = purchases.filter(purchase => {
+    const matchesCategory = filterCategory === 'all' || purchase.category === filterCategory;
+    const matchesJob = filterJob === 'all' || purchase.job_id === filterJob;
+    return matchesCategory && matchesJob;
+  });
 
   const totalSpent = filteredPurchases.reduce((sum, p) => sum + (p.total_amount || 0), 0);
   const totalItems = filteredPurchases.length;
@@ -348,38 +319,40 @@ export default function GeneralServicePurchases() {
         </Card>
       </div>
 
-      {/* Advanced Filters */}
-      <AdvancedFilters
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        filters={filters}
-        onFiltersChange={updateFilters}
-        isExpanded={filtersExpanded}
-        onToggleExpanded={() => setFiltersExpanded(!filtersExpanded)}
-        onClearAll={() => {
-          setSearchQuery('');
-          clearFilters();
-        }}
-        filterOptions={{
-          category: {
-            label: 'Categoría',
-            options: Object.entries(categoryConfig).map(([key, config]) => ({
-              value: key,
-              label: config.label
-            }))
-          },
-          supplier: {
-            label: 'Proveedor',
-            options: suppliers.map(s => ({ value: s.name, label: s.name }))
-          },
-          job: {
-            label: 'Trabajo Asociado',
-            options: jobs.map(j => ({ value: j.id, label: j.title }))
-          },
-          dateFrom: true,
-          dateTo: true
-        }}
-      />
+      {/* Filters */}
+      <Card className="p-4">
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-xs text-slate-500 mb-1 block">Categoría</label>
+            <Select value={filterCategory} onValueChange={setFilterCategory}>
+              <SelectTrigger>
+                <SelectValue placeholder="Categoría" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas las Categorías</SelectItem>
+                {Object.entries(categoryConfig).map(([key, config]) => (
+                  <SelectItem key={key} value={key}>{config.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className="text-xs text-slate-500 mb-1 block">Trabajo Asociado</label>
+            <Select value={filterJob} onValueChange={setFilterJob}>
+              <SelectTrigger>
+                <SelectValue placeholder="Trabajo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos los Trabajos</SelectItem>
+                {jobs.map(job => (
+                  <SelectItem key={job.id} value={job.id}>{job.title}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </Card>
 
       {/* Purchases List */}
       {filteredPurchases.length === 0 ? (

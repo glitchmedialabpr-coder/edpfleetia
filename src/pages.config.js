@@ -70,7 +70,6 @@ import Maintenance from './pages/Maintenance';
 import Notifications from './pages/Notifications';
 import PassengerLogin from './pages/PassengerLogin';
 import PassengerTrips from './pages/PassengerTrips';
-import PurchaseReports from './pages/PurchaseReports';
 import Purchases from './pages/Purchases';
 import Reports from './pages/Reports';
 import ResponseHistory from './pages/ResponseHistory';
@@ -82,6 +81,7 @@ import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import VideoSplash from './pages/VideoSplash';
 import Warnings from './pages/Warnings';
+import PurchaseReports from './pages/PurchaseReports';
 import __Layout from './Layout.jsx';
 
 
@@ -109,7 +109,6 @@ export const PAGES = {
     "Notifications": Notifications,
     "PassengerLogin": PassengerLogin,
     "PassengerTrips": PassengerTrips,
-    "PurchaseReports": PurchaseReports,
     "Purchases": Purchases,
     "Reports": Reports,
     "ResponseHistory": ResponseHistory,
@@ -121,6 +120,7 @@ export const PAGES = {
     "Vehicles": Vehicles,
     "VideoSplash": VideoSplash,
     "Warnings": Warnings,
+    "PurchaseReports": PurchaseReports,
 }
 
 export const pagesConfig = {
