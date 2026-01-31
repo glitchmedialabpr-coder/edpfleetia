@@ -279,10 +279,11 @@ export default function NotificationSettings() {
             <Card className="p-8 text-center">
               <div className="flex justify-center mb-3">
                 <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                  <Bell className="w-6 h-6 text-green-600" />
+                  <CheckCircle2 className="w-6 h-6 text-green-600" />
                 </div>
               </div>
-              <p className="text-slate-600">No hay alertas por el momento</p>
+              <p className="text-slate-600 font-medium">Todo al día</p>
+              <p className="text-slate-500 text-sm">No hay alertas por el momento</p>
             </Card>
           ) : (
             systemAlerts.map(alert => (
@@ -296,42 +297,78 @@ export default function NotificationSettings() {
                     : 'border-yellow-600 bg-yellow-50'
                 }`}
               >
-                <div className="flex items-start gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                    alert.severity === 'critical'
-                      ? 'bg-red-100'
-                      : alert.severity === 'high'
-                      ? 'bg-orange-100'
-                      : 'bg-yellow-100'
-                  }`}>
-                    <AlertCircle className={`w-5 h-5 ${
+                <div className="flex items-start gap-3 justify-between">
+                  <div className="flex items-start gap-3 flex-1">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                       alert.severity === 'critical'
-                        ? 'text-red-600'
+                        ? 'bg-red-100'
                         : alert.severity === 'high'
-                        ? 'text-orange-600'
-                        : 'text-yellow-600'
-                    }`} />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className={`font-semibold ${
-                      alert.severity === 'critical'
-                        ? 'text-red-800'
-                        : alert.severity === 'high'
-                        ? 'text-orange-800'
-                        : 'text-yellow-800'
+                        ? 'bg-orange-100'
+                        : 'bg-yellow-100'
                     }`}>
-                      {alert.title}
-                    </h3>
-                    <p className={`text-sm mt-1 ${
-                      alert.severity === 'critical'
-                        ? 'text-red-700'
-                        : alert.severity === 'high'
-                        ? 'text-orange-700'
-                        : 'text-yellow-700'
-                    }`}>
-                      {alert.message}
-                    </p>
+                      <AlertCircle className={`w-5 h-5 ${
+                        alert.severity === 'critical'
+                          ? 'text-red-600'
+                          : alert.severity === 'high'
+                          ? 'text-orange-600'
+                          : 'text-yellow-600'
+                      }`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className={`font-semibold ${
+                          alert.severity === 'critical'
+                            ? 'text-red-800'
+                            : alert.severity === 'high'
+                            ? 'text-orange-800'
+                            : 'text-yellow-800'
+                        }`}>
+                          {alert.title}
+                        </h3>
+                        <span className={`text-xs font-semibold px-2 py-1 rounded ${
+                          alert.severity === 'critical'
+                            ? 'bg-red-200 text-red-700'
+                            : alert.severity === 'high'
+                            ? 'bg-orange-200 text-orange-700'
+                            : 'bg-yellow-200 text-yellow-700'
+                        }`}>
+                          {alert.stageLabel}
+                        </span>
+                      </div>
+                      <p className={`text-xs mt-1 ${
+                        alert.severity === 'critical'
+                          ? 'text-red-700'
+                          : alert.severity === 'high'
+                          ? 'text-orange-700'
+                          : 'text-yellow-700'
+                      }`}>
+                        {alert.description}
+                      </p>
+                      <p className={`text-sm font-medium mt-2 ${
+                        alert.severity === 'critical'
+                          ? 'text-red-800'
+                          : alert.severity === 'high'
+                          ? 'text-orange-800'
+                          : 'text-yellow-800'
+                      }`}>
+                        {alert.message}
+                      </p>
+                    </div>
                   </div>
+                  <Button
+                    onClick={() => handleCompleteAlert(alert)}
+                    className={`flex-shrink-0 ml-4 ${
+                      alert.severity === 'critical'
+                        ? 'bg-red-600 hover:bg-red-700'
+                        : alert.severity === 'high'
+                        ? 'bg-orange-600 hover:bg-orange-700'
+                        : 'bg-yellow-600 hover:bg-yellow-700'
+                    }`}
+                    size="sm"
+                  >
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                    Realizado
+                  </Button>
                 </div>
               </Card>
             ))
