@@ -69,8 +69,16 @@ export default function VideoSplash() {
         autoPlay
         muted
         playsInline
-        className="w-full h-full object-contain"
+        controls={false}
+        className="max-w-full max-h-full"
         onEnded={() => {
+          const pinUser = localStorage.getItem('pin_user');
+          if (pinUser) {
+            redirect(JSON.parse(pinUser));
+          }
+        }}
+        onError={(e) => {
+          console.error('Error al cargar video:', e);
           const pinUser = localStorage.getItem('pin_user');
           if (pinUser) {
             redirect(JSON.parse(pinUser));
