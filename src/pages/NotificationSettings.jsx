@@ -429,6 +429,65 @@ export default function NotificationSettings() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Dialog para actualizar fecha */}
+      <Dialog open={!!completeDialog} onOpenChange={(open) => {
+        if (!open) {
+          setCompleteDialog(null);
+          setNewDate('');
+        }
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {completeDialog?.actionType === 'license' && 'Actualizar Licencia'}
+              {completeDialog?.actionType === 'marbete' && 'Actualizar Marbete'}
+              {completeDialog?.actionType === 'insurance' && 'Actualizar Seguro'}
+              {completeDialog?.actionType === 'maintenance' && 'Próximo Mantenimiento'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm text-slate-600 mb-2">
+                {completeDialog?.type}
+              </p>
+              <p className="font-medium text-slate-800">{completeDialog?.title}</p>
+              <p className="text-sm text-slate-500">{completeDialog?.description}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                {completeDialog?.actionType === 'maintenance' 
+                  ? 'Fecha del próximo mantenimiento' 
+                  : 'Nueva fecha de vencimiento'}
+              </label>
+              <Input
+                type="date"
+                value={newDate}
+                onChange={(e) => setNewDate(e.target.value)}
+                min={format(new Date(), 'yyyy-MM-dd')}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline"
+              onClick={() => {
+                setCompleteDialog(null);
+                setNewDate('');
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleSaveNewDate}
+              disabled={updateDateMutation.isPending}
+              className="bg-teal-600 hover:bg-teal-700"
+            >
+              {updateDateMutation.isPending ? 'Guardando...' : 'Guardar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
