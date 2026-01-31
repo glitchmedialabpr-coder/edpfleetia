@@ -1,132 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Bell, Volume2, Clock } from 'lucide-react';
+import { ArrowLeft, Send, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { toast } from 'sonner';
 
-const NOTIFICATION_TYPES = {
-  new_requests: { label: 'Nuevas Solicitudes', icon: Bell, color: 'blue' },
-  status_changes: { label: 'Cambios de Estado', icon: Clock, color: 'orange' },
-  admin_messages: { label: 'Mensajes del Administrador', icon: Bell, color: 'purple' },
-  license_expiry: { label: 'Vencimiento de Licencia', icon: Clock, color: 'red' },
-  accidents: { label: 'Accidentes', icon: Bell, color: 'red' },
-  vehicle_alerts: { label: 'Alertas de Vehículos', icon: Bell, color: 'yellow' },
-  maintenance_due: { label: 'Mantenimiento Vencido', icon: Clock, color: 'green' }
-};
-
-const DAYS_OF_WEEK = [
-  { id: 0, label: 'Domingo' },
-  { id: 1, label: 'Lunes' },
-  { id: 2, label: 'Martes' },
-  { id: 3, label: 'Miércoles' },
-  { id: 4, label: 'Jueves' },
-  { id: 5, label: 'Viernes' },
-  { id: 6, label: 'Sábado' }
-];
-
-const MONTHS = [
-  { id: 1, label: 'Enero' },
-  { id: 2, label: 'Febrero' },
-  { id: 3, label: 'Marzo' },
-  { id: 4, label: 'Abril' },
-  { id: 5, label: 'Mayo' },
-  { id: 6, label: 'Junio' },
-  { id: 7, label: 'Julio' },
-  { id: 8, label: 'Agosto' },
-  { id: 9, label: 'Septiembre' },
-  { id: 10, label: 'Octubre' },
-  { id: 11, label: 'Noviembre' },
-  { id: 12, label: 'Diciembre' }
-];
-
 export default function NotificationSettings() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [user, setUser] = useState(null);
-  const [expandedType, setExpandedType] = useState(null);
-
-  useEffect(() => {
-    const pinUser = localStorage.getItem('pin_user');
-    if (pinUser) {
-      const userData = JSON.parse(pinUser);
-      setUser(userData);
-    }
-  }, []);
-
-  const getBackPage = () => {
-    if (user?.role === 'admin') return 'Dashboard';
-    return 'DriverDashboard';
-  };
-
-  const { data: notifications = [], isLoading } = useQuery({
-    queryKey: ['notification-settings', user?.id || user?.driver_id],
-    queryFn: async () => {
-      const driverId = user?.id || user?.driver_id;
-      const result = await base44.entities.NotificationSettings.filter({
-        driver_id: driverId
-      });
-
-      if (!result || result.length === 0) {
-        // Crear notificaciones por defecto
-        const defaultNotifications = Object.keys(NOTIFICATION_TYPES).map(type =>
-          base44.entities.NotificationSettings.create({
-            driver_id: driverId,
-            driver_name: user?.full_name || user?.email,
-            notification_type: type,
-            enabled: true,
-            sound_enabled: true,
-            notification_sound: 'default',
-            advance_minutes: 0,
-            scheduled_time: '09:00',
-            push_enabled: true
-          })
-        );
-        return Promise.all(defaultNotifications);
-      }
-      return result;
-    },
-    enabled: !!(user?.id || user?.driver_id)
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: (data) =>
-      base44.entities.NotificationSettings.update(data.id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notification-settings'] });
-      toast.success('Preferencias actualizadas');
-    },
-    onError: () => {
-      toast.error('Error al guardar');
-    }
-  });
-
-  const handleUpdateField = (notification, field, value) => {
-    const updateData = { id: notification.id };
-    updateData[field] = value;
-    updateMutation.mutate(updateData);
-  };
-
-  const toggleScheduleDay = (notification, day) => {
-    const current = notification.scheduled_days || [];
-    const updated = current.includes(day)
-      ? current.filter(d => d !== day)
-      : [...current, day];
-    handleUpdateField(notification, 'scheduled_days', updated);
-  };
-
-  const toggleScheduleMonth = (notification, month) => {
-    const current = notification.scheduled_months || [];
-    const updated = current.includes(month)
-      ? current.filter(m => m !== month)
-      : [...current, month];
-    handleUpdateField(notification, 'scheduled_months', updated);
-  };
+  const [selectedDriver, setSelectedDriver] = useState(null);
+  const [message, setMessage] = useState('');
+  const [title, setTitle] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   if (isLoading) {
     return (
