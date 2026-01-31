@@ -19,11 +19,13 @@ import {
         ClipboardList,
         ShoppingCart,
         Shield,
-        Clock
+        Clock,
+        Settings
       } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import NotificationCenter from './components/notifications/NotificationCenter';
 
 const ADMIN_PIN = '0573';
 
@@ -173,6 +175,7 @@ export default function Layout({ children, currentPageName }) {
         { name: 'Estudiantes Aceptados', page: 'DriverAcceptedStudents', icon: Users },
         { name: 'Mis Viajes', page: 'DriverTrips', icon: Bus },
         { name: 'Historial', page: 'DriverHistory', icon: History },
+        { name: 'Notificaciones', page: 'DriverNotificationSettings', icon: Settings },
       ];
 
   const adminScheduleItems = [
@@ -237,6 +240,7 @@ export default function Layout({ children, currentPageName }) {
       {/* Desktop Header */}
       <header className="hidden lg:block fixed top-0 left-72 right-0 h-16 bg-white border-b border-slate-200 z-30 px-8">
         <div className="flex items-center justify-end h-full gap-4">
+          {isDriver && <NotificationCenter user={user} />}
           <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-50">
             <div className="w-9 h-9 bg-slate-200 rounded-full flex items-center justify-center">
               <User className="w-5 h-5 text-slate-500" />
@@ -271,13 +275,16 @@ export default function Layout({ children, currentPageName }) {
           </div>
           <span className="font-semibold text-slate-800">EDP Transport</span>
         </div>
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-        >
-          {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </Button>
+        <div className="flex items-center gap-2">
+          {isDriver && <NotificationCenter user={user} />}
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </Button>
+        </div>
       </header>
 
       {/* Mobile Sidebar Overlay */}
