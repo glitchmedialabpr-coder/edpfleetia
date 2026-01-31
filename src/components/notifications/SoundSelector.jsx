@@ -88,7 +88,7 @@ export default function SoundSelector({ value, onChange }) {
     try {
       generateNotificationSound(soundKey);
       setPlaying(soundKey);
-      setTimeout(() => setPlaying(null), 150);
+      setTimeout(() => setPlaying(null), 4500);
     } catch (e) {
       console.log('Sound play failed:', e);
     }
