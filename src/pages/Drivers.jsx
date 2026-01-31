@@ -43,12 +43,21 @@ import {
   Pencil,
   Users,
   Badge as BadgeIcon,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Eye,
+  FileText,
+  Trash2,
+  Upload,
+  X
 } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import EmptyState from '../components/common/EmptyState';
+import StatsCard from '../components/common/StatsCard';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const statusConfig = {
   active: { label: 'Activo', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
@@ -56,11 +65,44 @@ const statusConfig = {
   on_leave: { label: 'De Licencia', color: 'bg-amber-100 text-amber-700 border-amber-200' }
 };
 
+const warningTypeLabels = {
+  tardiness: 'Tardanza',
+  absence: 'Ausencia',
+  misconduct: 'Mala Conducta',
+  safety_violation: 'Violación de Seguridad',
+  policy_violation: 'Violación de Política',
+  performance: 'Rendimiento',
+  customer_complaint: 'Queja de Cliente',
+  other: 'Otro'
+};
+
+const severityConfig = {
+  verbal: { label: 'Verbal', color: 'bg-blue-100 text-blue-700' },
+  written: { label: 'Escrita', color: 'bg-yellow-100 text-yellow-700' },
+  final: { label: 'Final', color: 'bg-orange-100 text-orange-700' },
+  suspension: { label: 'Suspensión', color: 'bg-red-100 text-red-700' }
+};
+
+const warningStatusConfig = {
+  active: { label: 'Activa', color: 'bg-red-100 text-red-700' },
+  resolved: { label: 'Resuelta', color: 'bg-green-100 text-green-700' },
+  appealed: { label: 'Apelada', color: 'bg-purple-100 text-purple-700' },
+  dismissed: { label: 'Desestimada', color: 'bg-slate-100 text-slate-700' }
+};
+
 export default function Drivers() {
+  const queryClient = useQueryClient();
+  const [tab, setTab] = useState('drivers');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingDriver, setEditingDriver] = useState(null);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
+  const [warningModalOpen, setWarningModalOpen] = useState(false);
+  const [viewWarningModalOpen, setViewWarningModalOpen] = useState(false);
+  const [selectedWarning, setSelectedWarning] = useState(null);
+  const [warningSearch, setWarningSearch] = useState('');
+  const [driverFilter, setDriverFilter] = useState('all');
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     driver_id: '',
     full_name: '',
@@ -90,6 +132,112 @@ export default function Drivers() {
   const { data: allAccidents = [] } = useQuery({
     queryKey: ['accidents'],
     queryFn: () => base44.entities.VehicleAccident.list()
+  });
+
+  const { data: warnings = [] } = useQuery({
+    queryKey: ['warnings'],
+    queryFn: () => base44.entities.DriverWarning.list('-warning_date', 200),
+    staleTime: 1000 * 60 * 5
+  });
+
+  const [warningFormData, setWarningFormData] = useState({
+    driver_id: '',
+    warning_date: format(new Date(), 'yyyy-MM-dd'),
+    warning_type: 'other',
+    severity: 'verbal',
+    description: '',
+    action_taken: '',
+    issued_by: '',
+    witness: '',
+    driver_acknowledgment: false,
+    driver_comments: '',
+    follow_up_date: '',
+    documents: [],
+    status: 'active',
+    notes: ''
+  });
+
+  const createWarningMutation = useMutation({
+    mutationFn: (data) => base44.entities.DriverWarning.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['warnings']);
+      setWarningModalOpen(false);
+      resetWarningForm();
+    }
+  });
+
+  const resetWarningForm = () => {
+    setWarningFormData({
+      driver_id: '',
+      warning_date: format(new Date(), 'yyyy-MM-dd'),
+      warning_type: 'other',
+      severity: 'verbal',
+      description: '',
+      action_taken: '',
+      issued_by: '',
+      witness: '',
+      driver_acknowledgment: false,
+      driver_comments: '',
+      follow_up_date: '',
+      documents: [],
+      status: 'active',
+      notes: ''
+    });
+  };
+
+  const handleFileUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    setUploading(true);
+    
+    try {
+      const uploadPromises = files.map(async (file) => {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        return {
+          url: file_url,
+          name: file.name,
+          notes: ''
+        };
+      });
+      
+      const uploadedDocs = await Promise.all(uploadPromises);
+      setWarningFormData({
+        ...warningFormData,
+        documents: [...warningFormData.documents, ...uploadedDocs]
+      });
+    } catch (error) {
+      console.error('Error uploading files:', error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemoveDocument = (index) => {
+    setWarningFormData({
+      ...warningFormData,
+      documents: warningFormData.documents.filter((_, i) => i !== index)
+    });
+  };
+
+  const handleDocumentNotes = (index, notes) => {
+    const updated = [...warningFormData.documents];
+    updated[index].notes = notes;
+    setWarningFormData({ ...warningFormData, documents: updated });
+  };
+
+  const handleWarningSubmit = () => {
+    const driver = drivers.find(d => d.id === warningFormData.driver_id);
+    createWarningMutation.mutate({
+      ...warningFormData,
+      driver_name: driver?.full_name || ''
+    });
+  };
+
+  const filteredWarnings = warnings.filter(warning => {
+    const matchesSearch = 
+      warning.driver_name?.toLowerCase().includes(warningSearch.toLowerCase()) ||
+      warning.description?.toLowerCase().includes(warningSearch.toLowerCase());
+    const matchesDriver = driverFilter === 'all' || warning.driver_id === driverFilter;
+    return matchesSearch && matchesDriver;
   });
 
   const filteredDrivers = drivers.filter(d => 
