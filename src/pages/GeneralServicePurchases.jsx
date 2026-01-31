@@ -560,25 +560,7 @@ export default function GeneralServicePurchases() {
               </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-slate-700 mb-1 block">
-                Trabajo Asociado
-              </label>
-              <Select 
-                value={formData.job_id} 
-                onValueChange={(val) => setFormData({...formData, job_id: val})}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar trabajo (opcional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={null}>Sin trabajo asociado</SelectItem>
-                  {jobs.map(job => (
-                    <SelectItem key={job.id} value={job.id}>{job.title}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
