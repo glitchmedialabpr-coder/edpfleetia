@@ -126,6 +126,7 @@ export default function GeneralServicePurchases() {
     });
     setTotalPurchaseAmount('');
     setEditingPurchase(null);
+    setPurchasedByType('driver');
   };
 
   const handleSubmit = (e) => {
