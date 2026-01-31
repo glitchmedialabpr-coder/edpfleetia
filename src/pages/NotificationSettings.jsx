@@ -102,10 +102,9 @@ export default function NotificationSettings() {
   });
 
   const handleUpdateField = (notification, field, value) => {
-    updateMutation.mutate({
-      id: notification.id,
-      [field]: value
-    });
+    const updateData = { id: notification.id };
+    updateData[field] = value;
+    updateMutation.mutate(updateData);
   };
 
   const toggleScheduleDay = (notification, day) => {
