@@ -40,9 +40,12 @@ const categoryConfig = {
 export default function GeneralServicePurchases() {
   const [showModal, setShowModal] = useState(false);
   const [editingPurchase, setEditingPurchase] = useState(null);
-  const [filterCategory, setFilterCategory] = useState('all');
-  const [filterJob, setFilterJob] = useState('all');
   const [purchasedByType, setPurchasedByType] = useState('driver'); // 'driver' or 'custom'
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
+
+  // Load saved filter preferences
+  const { filters, updateFilters, clearFilters } = useFilterPreferences('general-service-purchases');
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     store: '',
