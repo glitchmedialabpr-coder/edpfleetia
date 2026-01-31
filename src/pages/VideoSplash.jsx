@@ -60,25 +60,19 @@ export default function VideoSplash() {
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center z-[9999] overflow-hidden">
-      <video
+      <iframe 
         id="splash-video"
-        className="w-full h-full object-cover"
-        autoPlay
-        muted
-        playsInline
-        preload="auto"
-      >
-        <source src="https://drive.google.com/uc?export=download&id=1VeEsl5KCVoN6nFYEM9qjMBtDsEWK5JYu" type="video/mp4" />
-        Tu navegador no soporta videos HTML5.
-      </video>
+        src="https://drive.google.com/file/d/1VeEsl5KCVoN6nFYEM9qjMBtDsEWK5JYu/preview"
+        className="w-full h-full border-0"
+        allow="autoplay"
+        allowFullScreen
+      />
       
-      <div className="absolute inset-0 pointer-events-none">
-        {redirecting && (
-          <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-            <div className="animate-pulse text-white text-xl">Cargando...</div>
-          </div>
-        )}
-      </div>
+      {redirecting && (
+        <div className="absolute inset-0 bg-black/80 flex items-center justify-center pointer-events-none">
+          <div className="animate-pulse text-white text-xl">Cargando...</div>
+        </div>
+      )}
     </div>
   );
 }
