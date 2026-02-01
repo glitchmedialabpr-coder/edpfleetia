@@ -60,30 +60,24 @@ export default function PassengerTrips() {
     queryKey: ['trip-requests', user?.student_id],
     queryFn: () => base44.entities.TripRequest.filter({ passenger_id: user?.student_id }, '-created_date'),
     enabled: !!user?.student_id,
-    staleTime: 1000 * 30
+    staleTime: 0,
+    refetchInterval: false
   });
 
   useEffect(() => {
     if (!user?.student_id) return;
 
-    let unsubscribe;
-    try {
-      unsubscribe = base44.entities.TripRequest.subscribe((event) => {
-        if (event.data?.passenger_id === user.student_id) {
-          refetch();
-          if (event.type === 'update' && event.data.status === 'accepted') {
-            toast.success('¡Un conductor aceptó tu viaje!');
-          }
+    const unsubscribe = base44.entities.TripRequest.subscribe((event) => {
+      if (event.data?.passenger_id === user.student_id) {
+        if (event.type === 'update' && event.data.status === 'accepted') {
+          toast.success('Conductor asignado');
         }
-      });
-    } catch (error) {
-      console.error('Error setting up subscription:', error);
-    }
+        refetch();
+      }
+    });
 
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
-  }, [user?.student_id, refetch]);
+    return () => unsubscribe?.();
+  }, [user?.student_id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -113,7 +107,6 @@ export default function PassengerTrips() {
           destination_type: '',
           destination_other: ''
         });
-        refetch();
       }
     } catch (error) {
       console.error('Error al crear solicitud:', error);
@@ -126,8 +119,7 @@ export default function PassengerTrips() {
 
     try {
       await base44.entities.TripRequest.update(request.id, { status: 'cancelled' });
-      toast.success('Solicitud cancelada');
-      refetch();
+      toast.success('Cancelado');
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error al cancelar');
