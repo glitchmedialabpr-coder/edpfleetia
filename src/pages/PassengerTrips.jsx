@@ -100,7 +100,10 @@ export default function PassengerTrips() {
     try {
       const res = await base44.functions.invoke('createTripRequest', {
         destination_type: formData.destination_type,
-        destination_other: formData.destination_other
+        destination_other: formData.destination_other,
+        student_id: user.student_id,
+        student_name: user.full_name,
+        student_phone: user.phone || ''
       });
 
       if (res.data.success) {
