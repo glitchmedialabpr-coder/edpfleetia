@@ -43,16 +43,17 @@ export default function PassengerLogin() {
       if (response.data.success) {
         localStorage.setItem('pin_user', JSON.stringify(response.data.user));
         toast.success(`¡Bienvenido ${response.data.user.full_name}!`);
-        navigate(createPageUrl('PassengerTrips'));
+        window.location.href = createPageUrl('PassengerTrips');
       } else {
         toast.error(response.data.error || 'Estudiante no encontrado');
         setStudentId('');
+        setLoading(false);
       }
     } catch (error) {
       toast.error('Error al verificar estudiante');
       setStudentId('');
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
