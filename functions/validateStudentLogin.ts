@@ -113,7 +113,6 @@ Deno.serve(async (req) => {
     // Login exitoso
     resetStudentAttempts(sanitizedId);
     
-    const student = students[0];
     return Response.json({ 
       success: true,
       user: {
