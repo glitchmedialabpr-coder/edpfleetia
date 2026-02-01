@@ -42,8 +42,21 @@ export default function DriverAcceptedStudents() {
       status: 'accepted_by_driver'
     }, '-created_date'),
     enabled: !!user?.driver_id,
-    staleTime: 1000 * 30
+    staleTime: 0,
+    refetchInterval: false
   });
+
+  useEffect(() => {
+    if (!user?.driver_id) return;
+
+    const unsubscribe = base44.entities.TripRequest.subscribe((event) => {
+      if (event.data?.driver_id === user.driver_id) {
+        refetchAccepted();
+      }
+    });
+
+    return () => unsubscribe?.();
+  }, [user?.driver_id]);
 
   const { data: vehicles = [] } = useQuery({
     queryKey: ['vehicles'],
@@ -62,34 +75,27 @@ export default function DriverAcceptedStudents() {
       return;
     }
 
-    toast.loading('Iniciando viaje...');
-
     try {
       const firstRequest = acceptedRequests[0];
-      const res = await base44.functions.invoke('createTripFromRequests', {
-        acceptedRequests,
-        selectedVehicle: firstRequest.vehicle_id,
-        driverId: user.driver_id,
-        driverName: user.full_name || user.email
-      });
-
-      toast.dismiss();
-
-      if (res.data?.success) {
-        toast.success(`Viaje iniciado con ${acceptedRequests.length} estudiante(s)`);
-        refetchAccepted();
-        setTimeout(() => {
-          navigate(createPageUrl('DriverTrips'));
-        }, 500);
-      } else {
-        console.error('Error response:', res.data);
-        toast.error(res.data?.error || 'Error al iniciar viaje');
-      }
+      
+      await toast.promise(
+        base44.functions.invoke('createTripFromRequests', {
+          acceptedRequests,
+          selectedVehicle: firstRequest.vehicle_id,
+          driverId: user.driver_id,
+          driverName: user.full_name || user.email
+        }),
+        {
+          loading: 'Iniciando...',
+          success: () => {
+            setTimeout(() => navigate(createPageUrl('DriverTrips')), 300);
+            return `Viaje con ${acceptedRequests.length} est.`;
+          },
+          error: 'Error al iniciar'
+        }
+      );
     } catch (error) {
-      toast.dismiss();
-      console.error('Error starting trip:', error);
-      console.error('Full error:', error.response?.data || error);
-      toast.error(error.response?.data?.error || 'Error al iniciar viaje. Verifica tu conexión.');
+      console.error('Error:', error);
     }
   };
 

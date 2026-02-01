@@ -359,10 +359,10 @@ export default function DriverRequests() {
         students: updatedStudents
       });
 
-      toast.success('Entregado - ' + timeString);
+      toast.success('Entregado ' + timeString);
     } catch (error) {
-      console.error('Error delivering student:', error);
-      toast.error('Error al marcar estudiante. Intenta nuevamente.');
+      console.error('Error:', error);
+      toast.error('Error al marcar');
     }
   };
 
@@ -370,7 +370,7 @@ export default function DriverRequests() {
     const allDelivered = trip.students.every(s => s.delivery_status === 'delivered');
     
     if (!allDelivered) {
-      toast.error('Debes entregar todos los estudiantes primero');
+      toast.error('Entrega todos primero');
       return;
     }
 
@@ -383,19 +383,18 @@ export default function DriverRequests() {
         arrival_time: timeString
       });
 
-      // Update all trip requests to completed
-      const requestIds = trip.students.map(s => s.request_id);
-      for (const reqId of requestIds) {
-        await base44.entities.TripRequest.update(reqId, {
+      const updates = trip.students.map(s =>
+        base44.entities.TripRequest.update(s.request_id, {
           status: 'completed',
           completed_at: timeString
-        });
-      }
+        })
+      );
+      await Promise.all(updates);
 
-      toast.success('Viaje completado');
+      toast.success('Completado');
     } catch (error) {
-      console.error('Error completing trip:', error);
-      toast.error('Error al completar viaje. Intenta nuevamente.');
+      console.error('Error:', error);
+      toast.error('Error al completar');
     }
   };
 

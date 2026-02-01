@@ -26,8 +26,8 @@ import EmptyState from '../components/common/EmptyState';
 
 const statusConfig = {
   pending: { label: 'Buscando conductor', color: 'bg-yellow-100 text-yellow-700' },
-  accepted: { label: 'Conductor asignado', color: 'bg-blue-100 text-blue-700' },
-  in_progress: { label: 'En camino', color: 'bg-purple-100 text-purple-700' },
+  accepted_by_driver: { label: 'Conductor asignado', color: 'bg-blue-100 text-blue-700' },
+  in_trip: { label: 'En camino', color: 'bg-purple-100 text-purple-700' },
   completed: { label: 'Completado', color: 'bg-green-100 text-green-700' },
   cancelled: { label: 'Cancelado', color: 'bg-red-100 text-red-700' }
 };
@@ -69,8 +69,14 @@ export default function PassengerTrips() {
 
     const unsubscribe = base44.entities.TripRequest.subscribe((event) => {
       if (event.data?.passenger_id === user.student_id) {
-        if (event.type === 'update' && event.data.status === 'accepted') {
-          toast.success('Conductor asignado');
+        if (event.type === 'update') {
+          if (event.data.status === 'accepted_by_driver') {
+            toast.success('¡Conductor asignado!');
+          } else if (event.data.status === 'in_trip') {
+            toast.info('En camino');
+          } else if (event.data.status === 'completed') {
+            toast.success('Viaje completado');
+          }
         }
         refetch();
       }
@@ -120,7 +126,7 @@ export default function PassengerTrips() {
     }
   };
 
-  const activeRequests = requests.filter(r => ['pending', 'accepted', 'in_progress'].includes(r.status));
+  const activeRequests = requests.filter(r => ['pending', 'accepted_by_driver', 'in_trip'].includes(r.status));
   const historyRequests = requests.filter(r => ['completed', 'cancelled'].includes(r.status));
 
   return (
