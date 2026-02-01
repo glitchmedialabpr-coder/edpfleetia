@@ -49,13 +49,18 @@ Deno.serve(async (req) => {
       status: 'in_progress'
     });
 
-    // Update all accepted requests
+    // Update all accepted requests - solo si existen
     for (const req of acceptedRequests) {
-      await base44.asServiceRole.entities.TripRequest.update(req.id, {
-        status: 'in_trip',
-        started_at: timeString,
-        trip_id: trip.id
-      });
+      try {
+        await base44.asServiceRole.entities.TripRequest.update(req.id, {
+          status: 'in_trip',
+          started_at: timeString,
+          trip_id: trip.id
+        });
+      } catch (updateError) {
+        console.error(`Error updating request ${req.id}:`, updateError.message);
+        // Continuar con las demás actualizaciones
+      }
     }
 
     return Response.json({ 
