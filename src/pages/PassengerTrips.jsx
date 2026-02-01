@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
@@ -60,10 +60,13 @@ export default function PassengerTrips() {
   const { data: requests = [] } = useQuery({
     queryKey: ['trip-requests', user?.student_id],
     queryFn: () => base44.entities.TripRequest.filter({ passenger_id: user?.student_id }, '-created_date'),
-    enabled: !!user?.student_id
+    enabled: !!user?.student_id,
+    staleTime: 30000,
+    gcTime: 60000,
+    refetchInterval: 5000
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (!user?.student_id) {
       toast.error('Usuario no identificado');
@@ -104,9 +107,9 @@ export default function PassengerTrips() {
       console.error('Error detallado:', error);
       toast.error('Error al enviar la solicitud');
     }
-  };
+  }, [user, formData, queryClient]);
 
-  const handleCancel = async (request) => {
+  const handleCancel = useCallback(async (request) => {
     if (!confirm('¿Cancelar esta solicitud?')) return;
 
     try {
@@ -117,10 +120,10 @@ export default function PassengerTrips() {
       console.error('Error:', error);
       toast.error('Error al cancelar');
     }
-  };
+  }, [queryClient]);
 
-  const activeRequests = requests.filter(r => ['pending', 'accepted_by_driver', 'in_trip'].includes(r.status));
-  const historyRequests = requests.filter(r => ['completed', 'cancelled'].includes(r.status));
+  const activeRequests = useMemo(() => requests.filter(r => ['pending', 'accepted_by_driver', 'in_trip'].includes(r.status)), [requests]);
+  const historyRequests = useMemo(() => requests.filter(r => ['completed', 'cancelled'].includes(r.status)), [requests]);
 
   return (
     <div className="space-y-6">

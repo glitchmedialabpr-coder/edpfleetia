@@ -1,31 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { 
-              Bus, 
-              LayoutDashboard, 
-              Users, 
-              GraduationCap, 
-              Building2, 
-              History, 
-              Menu, 
-              X,
-              LogOut,
-              ChevronRight,
-              User,
-              Car,
-              Wrench,
-              AlertTriangle,
-              ClipboardList,
-              ShoppingCart,
-              Shield,
-              Clock,
-              Settings,
-              Bell
-            } from 'lucide-react';
+                    Bus, 
+                    LayoutDashboard, 
+                    Users, 
+                    GraduationCap, 
+                    Building2, 
+                    History, 
+                    Menu, 
+                    X,
+                    LogOut,
+                    ChevronRight,
+                    User,
+                    Car,
+                    Wrench,
+                    AlertTriangle,
+                    ClipboardList,
+                    ShoppingCart,
+                    Shield,
+                    Clock,
+                    Settings,
+                    Bell
+                  } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import NotificationCenter from './components/notifications/NotificationCenter';
 
@@ -81,14 +80,13 @@ export default function Layout({ children, currentPageName }) {
   }, []);
 
   const loadUser = () => {
-    // Check if user logged in with PIN
-    const pinUser = localStorage.getItem('pin_user');
-    if (pinUser) {
-      try {
+    try {
+      const pinUser = localStorage.getItem('pin_user');
+      if (pinUser) {
         setUser(JSON.parse(pinUser));
-      } catch (e) {
-        localStorage.removeItem('pin_user');
       }
+    } catch (e) {
+      localStorage.removeItem('pin_user');
     }
     setLoading(false);
   };
@@ -153,22 +151,25 @@ export default function Layout({ children, currentPageName }) {
   const isDriver = user?.user_type === 'driver';
   const isPassenger = !isAdmin && !isDriver;
 
-  const adminNavItems = [
-    { name: 'Dashboard', page: 'Dashboard', icon: LayoutDashboard },
-    { name: 'Viajes', page: 'Trips', icon: Bus },
-    { name: 'Viajes en Vivo', page: 'LiveTrips', icon: Bus },
-    { name: 'Vehículos', page: 'VehicleManagement', icon: Car },
-    { name: 'Choferes', page: 'Drivers', icon: Users },
-    { name: 'Servicio General', page: 'GeneralServiceJobs', icon: Wrench },
-    { name: 'Estudiantes', page: 'Students', icon: GraduationCap },
-    { name: 'Reportes', page: 'ConsolidatedReports', icon: ClipboardList },
-    { name: 'Respuestas y Notificaciones', page: 'ResponseHistory', icon: AlertTriangle },
-    { name: 'Historial', page: 'History', icon: History },
-    { name: 'Centro de Notificaciones', page: 'NotificationSettings', icon: Bell },
-    { name: 'Configuración', page: 'Settings', icon: Shield },
-  ];
-
-  const driverNavItems = [
+  const navItems = useMemo(() => {
+    if (isAdmin) {
+      return [
+        { name: 'Dashboard', page: 'Dashboard', icon: LayoutDashboard },
+        { name: 'Viajes', page: 'Trips', icon: Bus },
+        { name: 'Viajes en Vivo', page: 'LiveTrips', icon: Bus },
+        { name: 'Vehículos', page: 'VehicleManagement', icon: Car },
+        { name: 'Choferes', page: 'Drivers', icon: Users },
+        { name: 'Servicio General', page: 'GeneralServiceJobs', icon: Wrench },
+        { name: 'Estudiantes', page: 'Students', icon: GraduationCap },
+        { name: 'Reportes', page: 'ConsolidatedReports', icon: ClipboardList },
+        { name: 'Respuestas y Notificaciones', page: 'ResponseHistory', icon: AlertTriangle },
+        { name: 'Historial', page: 'History', icon: History },
+        { name: 'Centro de Notificaciones', page: 'NotificationSettings', icon: Bell },
+        { name: 'Configuración', page: 'Settings', icon: Shield },
+      ];
+    }
+    if (isDriver) {
+      return [
         { name: 'Dashboard', page: 'DriverDashboard', icon: LayoutDashboard },
         { name: 'Solicitudes', page: 'DriverRequests', icon: Bus },
         { name: 'Estudiantes Aceptados', page: 'DriverAcceptedStudents', icon: Users },
@@ -176,16 +177,9 @@ export default function Layout({ children, currentPageName }) {
         { name: 'Historial', page: 'DriverHistory', icon: History },
         { name: 'Notificaciones', page: 'NotificationSettings', icon: Settings },
       ];
-
-  const adminScheduleItems = [
-      { name: 'Horarios', page: 'DriverSchedule', icon: Bus },
-    ];
-
-  const passengerNavItems = [
-    { name: 'Mis Viajes', page: 'PassengerTrips', icon: Bus },
-  ];
-  
-  const navItems = isAdmin ? adminNavItems : isDriver ? driverNavItems : passengerNavItems;
+    }
+    return [{ name: 'Mis Viajes', page: 'PassengerTrips', icon: Bus }];
+  }, [isAdmin, isDriver]);
 
   if (loading) {
     return (
