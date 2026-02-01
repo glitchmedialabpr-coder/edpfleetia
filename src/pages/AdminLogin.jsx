@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Shield, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 
+const ADMIN_PIN = Deno.env.get('ADMIN_PIN') || '0573'; // Variable de entorno, fallback temporal
+
 export default function AdminLogin() {
   const navigate = useNavigate();
   const [pin, setPin] = useState('');
@@ -32,18 +34,15 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      if (pin === '0573') {
-        const adminUser = {
-          email: 'admin@edp.edu',
-          full_name: 'Administrador',
-          role: 'admin',
-          session_expiry: Date.now() + (8 * 60 * 60 * 1000)
-        };
-        localStorage.setItem('pin_user', JSON.stringify(adminUser));
+      // Validar con backend en lugar de hardcoded
+      const response = await base44.functions.invoke('validateAdminLogin', { pin });
+      
+      if (response.data.success) {
+        localStorage.setItem('pin_user', JSON.stringify(response.data.user));
         toast.success('Acceso autorizado');
         window.location.href = createPageUrl('Dashboard');
       } else {
-        toast.error('PIN incorrecto');
+        toast.error(response.data.error || 'PIN incorrecto');
         setPin('');
         setLoading(false);
       }
