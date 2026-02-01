@@ -3,23 +3,11 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    
-    // Obtener usuario de pin_user
-    const pinUser = localStorage?.getItem?.('pin_user');
-    let user = null;
-    
-    if (pinUser) {
-      user = JSON.parse(pinUser);
-    }
-    
-    if (!user?.student_id) {
-      return Response.json({ error: 'Usuario no autenticado' }, { status: 401 });
-    }
 
-    const { destination_type, destination_other } = await req.json();
+    const { destination_type, destination_other, student_id, student_name, student_phone } = await req.json();
 
-    if (!destination_type) {
-      return Response.json({ error: 'Invalid destination' }, { status: 400 });
+    if (!destination_type || !student_id) {
+      return Response.json({ error: 'Datos incompletos' }, { status: 400 });
     }
 
     const now = new Date();
@@ -27,9 +15,9 @@ Deno.serve(async (req) => {
     const destination = destination_type === 'otros' ? destination_other : destination_type;
 
     const tripRequest = await base44.asServiceRole.entities.TripRequest.create({
-      passenger_id: user.student_id,
-      passenger_name: user.full_name,
-      passenger_phone: user.phone || '',
+      passenger_id: student_id,
+      passenger_name: student_name,
+      passenger_phone: student_phone || '',
       origin: 'EDP University',
       destination: destination,
       destination_type: destination_type,
