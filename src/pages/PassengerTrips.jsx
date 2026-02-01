@@ -61,9 +61,9 @@ export default function PassengerTrips() {
     queryKey: ['trip-requests', user?.student_id],
     queryFn: () => base44.entities.TripRequest.filter({ passenger_id: user?.student_id }, '-created_date'),
     enabled: !!user?.student_id,
-    staleTime: 30000,
-    gcTime: 60000,
-    refetchInterval: 5000
+    staleTime: 60000,
+    gcTime: 120000,
+    refetchInterval: 15000
   });
 
   const handleSubmit = useCallback(async (e) => {
