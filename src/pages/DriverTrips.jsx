@@ -41,20 +41,19 @@ export default function DriverTrips() {
       return base44.entities.Trip.filter({ driver_id: user?.driver_id }, '-scheduled_date');
     },
     enabled: !!user?.driver_id || user?.role === 'admin',
-    staleTime: 0
+    staleTime: 0,
+    refetchInterval: false
   });
 
   useEffect(() => {
     if (!user?.driver_id && user?.role !== 'admin') return;
 
     const unsubscribe = base44.entities.Trip.subscribe((event) => {
-      if (user?.role === 'admin' || event.data?.driver_id === user?.driver_id) {
-        refetch();
-      }
+      refetch();
     });
 
     return () => unsubscribe?.();
-  }, [user?.driver_id, user?.role, refetch]);
+  }, [user?.driver_id, user?.role]);
 
   const todayTrips = trips.filter(t => t.scheduled_date === today);
   const scheduledToday = todayTrips.filter(t => t.status === 'scheduled');
@@ -62,40 +61,46 @@ export default function DriverTrips() {
   const completedToday = todayTrips.filter(t => t.status === 'completed');
 
   const handleStartTrip = async (trip) => {
+    if (!trip?.students?.length) return;
+    
     try {
       const now = format(new Date(), 'HH:mm');
-      await base44.entities.Trip.update(trip.id, {
-        status: 'in_progress',
-        departure_time: now
-      });
-
-      const updates = trip.students.map(s =>
-        base44.entities.TripRequest.update(s.request_id, {
-          status: 'in_trip',
-          started_at: now
-        })
-      );
-      await Promise.all(updates);
+      
+      await Promise.all([
+        base44.entities.Trip.update(trip.id, {
+          status: 'in_progress',
+          departure_time: now
+        }),
+        ...trip.students.map(s =>
+          base44.entities.TripRequest.update(s.request_id, {
+            status: 'in_trip',
+            started_at: now
+          })
+        )
+      ]);
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
   const handleCompleteTrip = async (trip) => {
+    if (!trip?.students?.length) return;
+    
     try {
       const now = format(new Date(), 'HH:mm');
-      await base44.entities.Trip.update(trip.id, {
-        status: 'completed',
-        arrival_time: now
-      });
-
-      const updates = trip.students.map(s =>
-        base44.entities.TripRequest.update(s.request_id, {
+      
+      await Promise.all([
+        base44.entities.Trip.update(trip.id, {
           status: 'completed',
-          completed_at: now
-        })
-      );
-      await Promise.all(updates);
+          arrival_time: now
+        }),
+        ...trip.students.map(s =>
+          base44.entities.TripRequest.update(s.request_id, {
+            status: 'completed',
+            completed_at: now
+          })
+        )
+      ]);
     } catch (error) {
       console.error('Error:', error);
     }

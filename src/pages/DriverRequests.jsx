@@ -152,8 +152,8 @@ export default function DriverRequests() {
   const { data: pendingRequests = [], refetch: refetchPending } = useQuery({
     queryKey: ['pending-requests'],
     queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' }, '-created_date', 50),
-    staleTime: 0, // Siempre fresco por subscriptions
-    refetchInterval: false // No polling, solo subscriptions
+    staleTime: Infinity,
+    refetchInterval: false
   });
 
   const { data: acceptedRequests = [], refetch: refetchAccepted } = useQuery({
@@ -163,7 +163,7 @@ export default function DriverRequests() {
       status: 'accepted_by_driver'
     }, '-created_date', 15),
     enabled: !!user?.driver_id,
-    staleTime: 0,
+    staleTime: Infinity,
     refetchInterval: false
   });
 
@@ -174,7 +174,7 @@ export default function DriverRequests() {
       status: 'in_progress'
     }, '-created_date', 5),
     enabled: !!user?.driver_id,
-    staleTime: 0,
+    staleTime: Infinity,
     refetchInterval: false
   });
 
@@ -344,6 +344,8 @@ export default function DriverRequests() {
   };
 
   const handleDeliverStudent = async (trip, studentIndex) => {
+    if (!trip?.students?.[studentIndex]) return;
+    
     try {
       const now = new Date();
       const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
@@ -355,21 +357,15 @@ export default function DriverRequests() {
         delivery_time: timeString
       };
 
-      await base44.entities.Trip.update(trip.id, {
-        students: updatedStudents
-      });
-
-      toast.success('Entregado ' + timeString);
+      await base44.entities.Trip.update(trip.id, { students: updatedStudents });
+      toast.success('✓');
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('Error al marcar');
+      toast.error('Error');
     }
   };
 
   const handleCompleteTrip = async (trip) => {
-    const allDelivered = trip.students.every(s => s.delivery_status === 'delivered');
-    
-    if (!allDelivered) {
+    if (!trip?.students?.every(s => s.delivery_status === 'delivered')) {
       toast.error('Entrega todos primero');
       return;
     }
@@ -378,23 +374,22 @@ export default function DriverRequests() {
       const now = new Date();
       const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       
-      await base44.entities.Trip.update(trip.id, {
-        status: 'completed',
-        arrival_time: timeString
-      });
-
-      const updates = trip.students.map(s =>
-        base44.entities.TripRequest.update(s.request_id, {
+      await Promise.all([
+        base44.entities.Trip.update(trip.id, {
           status: 'completed',
-          completed_at: timeString
-        })
-      );
-      await Promise.all(updates);
+          arrival_time: timeString
+        }),
+        ...trip.students.map(s =>
+          base44.entities.TripRequest.update(s.request_id, {
+            status: 'completed',
+            completed_at: timeString
+          })
+        )
+      ]);
 
       toast.success('Completado');
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('Error al completar');
+      toast.error('Error');
     }
   };
 

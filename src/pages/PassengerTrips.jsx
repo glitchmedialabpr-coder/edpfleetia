@@ -60,7 +60,7 @@ export default function PassengerTrips() {
     queryKey: ['trip-requests', user?.student_id],
     queryFn: () => base44.entities.TripRequest.filter({ passenger_id: user?.student_id }, '-created_date'),
     enabled: !!user?.student_id,
-    staleTime: 0,
+    staleTime: Infinity,
     refetchInterval: false
   });
 
