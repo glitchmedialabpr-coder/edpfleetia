@@ -152,8 +152,8 @@ export default function DriverRequests() {
   const { data: pendingRequests = [], refetch: refetchPending } = useQuery({
     queryKey: ['pending-requests'],
     queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' }, '-created_date', 50),
-    staleTime: 1000 * 60 * 2, // 2 minutos
-    refetchInterval: 45000 // 45 segundos en lugar de 30
+    staleTime: 0, // Siempre fresco por subscriptions
+    refetchInterval: false // No polling, solo subscriptions
   });
 
   const { data: acceptedRequests = [], refetch: refetchAccepted } = useQuery({
@@ -163,8 +163,8 @@ export default function DriverRequests() {
       status: 'accepted_by_driver'
     }, '-created_date', 15),
     enabled: !!user?.driver_id,
-    staleTime: 1000 * 60, // 1 minuto
-    refetchInterval: 30000
+    staleTime: 0,
+    refetchInterval: false
   });
 
   const { data: activeTrips = [], refetch: refetchActiveTrips } = useQuery({
@@ -174,8 +174,8 @@ export default function DriverRequests() {
       status: 'in_progress'
     }, '-created_date', 5),
     enabled: !!user?.driver_id,
-    staleTime: 1000 * 60, // 1 minuto
-    refetchInterval: 30000
+    staleTime: 0,
+    refetchInterval: false
   });
 
   useEffect(() => {
@@ -183,72 +183,42 @@ export default function DriverRequests() {
 
     let unsubscribeRequest;
     let unsubscribeTrip;
-    let interval;
 
     try {
       unsubscribeRequest = base44.entities.TripRequest.subscribe((event) => {
         if (event.type === 'create' && event.data?.status === 'pending' && selectedVehicle) {
-          // Create notification via backend
-          base44.functions.invoke('createNotification', {
-            driver_id: user?.driver_id,
-            type: 'new_request',
-            title: '🚗 Nueva Solicitud de Viaje',
-            message: `${event.data.passenger_name} necesita ir a ${event.data.destination}`,
-            priority: 'high'
-          }).catch(e => console.log('Notification error:', e));
-
-          notificationSound.play().catch(e => console.log('Audio play failed:', e));
+          notificationSound.play().catch(() => {});
           setHasNewRequest(true);
           setTimeout(() => setHasNewRequest(false), 3000);
           
           if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('🚗 Nueva Solicitud de Viaje', {
-              body: `${event.data.passenger_name} necesita ir a ${event.data.destination}`,
-              icon: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/303d16ba3_471231367_1006775134815986_8615529326532786364_n.jpg',
-              vibrate: [200, 100, 200],
-              requireInteraction: true
+            new Notification('🚗 Nueva Solicitud', {
+              body: `${event.data.passenger_name} → ${event.data.destination}`,
+              silent: false
             });
           }
           
-          toast.success('🔔 Nueva solicitud de viaje disponible!', {
-            duration: 5000,
-          });
-          refetchPending();
-        } else if (event.type === 'update') {
-          refetchPending();
-          refetchAccepted();
+          toast.success('Nueva solicitud disponible');
         }
+        
+        refetchPending();
+        refetchAccepted();
       });
 
       unsubscribeTrip = base44.entities.Trip.subscribe((event) => {
-        if (event.type === 'update' && event.data?.driver_id === user.driver_id) {
+        if (event.data?.driver_id === user.driver_id || event.data?.status === 'in_progress') {
           refetchActiveTrips();
         }
       });
-
-      // React Query maneja el polling automáticamente con refetchInterval
-      // No necesitamos setInterval manual
     } catch (error) {
-      console.error('Error setting up subscriptions:', error);
+      console.error('Subscription error:', error);
     }
 
     return () => {
-      if (unsubscribeRequest) {
-        try {
-          unsubscribeRequest();
-        } catch (e) {
-          console.error('Error unsubscribing request:', e);
-        }
-      }
-      if (unsubscribeTrip) {
-        try {
-          unsubscribeTrip();
-        } catch (e) {
-          console.error('Error unsubscribing trip:', e);
-        }
-      }
+      unsubscribeRequest?.();
+      unsubscribeTrip?.();
     };
-  }, [user?.driver_id, selectedVehicle, notificationSound, refetchPending, refetchAccepted, refetchActiveTrips]);
+  }, [user?.driver_id, selectedVehicle]);
 
   const handleAccept = async (request) => {
     if (!selectedVehicle) {
@@ -304,14 +274,11 @@ export default function DriverRequests() {
         destination: request.destination
       });
 
-      toast.success(`Estudiante aceptado (${acceptedRequests.length + 1}/15)`);
-      refetchPending();
-      refetchAccepted();
-
-      // Navigate to accepted students page after accepting
+      toast.success(`Aceptado (${acceptedRequests.length + 1}/${vehicleCapacity})`);
+      
       setTimeout(() => {
         navigate(createPageUrl('DriverAcceptedStudents'));
-      }, 500);
+      }, 300);
     } catch (error) {
       console.error('Error accepting request:', error);
       toast.error('Error al aceptar estudiante. Intenta nuevamente.');
@@ -338,8 +305,7 @@ export default function DriverRequests() {
         destination: request.destination
       });
 
-      toast.info('Rechazado. Quedará disponible para otros conductores.');
-      refetchPending();
+      toast.info('Rechazado');
     } catch (error) {
       console.error('Error rejecting request:', error);
       toast.error('Error al rechazar solicitud. Intenta nuevamente.');
@@ -366,9 +332,8 @@ export default function DriverRequests() {
       });
 
       if (res.data.success) {
-        toast.success(`Viaje iniciado con ${acceptedRequests.length} estudiante(s)`);
-        refetchAccepted();
-        refetchActiveTrips();
+        toast.success(`Viaje iniciado`);
+        navigate(createPageUrl('DriverTrips'));
       } else {
         toast.error(res.data.error || 'Error al iniciar viaje');
       }
@@ -394,8 +359,7 @@ export default function DriverRequests() {
         students: updatedStudents
       });
 
-      toast.success('Estudiante entregado - ' + timeString);
-      refetchActiveTrips();
+      toast.success('Entregado - ' + timeString);
     } catch (error) {
       console.error('Error delivering student:', error);
       toast.error('Error al marcar estudiante. Intenta nuevamente.');
@@ -428,8 +392,7 @@ export default function DriverRequests() {
         });
       }
 
-      toast.success('Viaje completado - ' + timeString);
-      refetchActiveTrips();
+      toast.success('Viaje completado');
     } catch (error) {
       console.error('Error completing trip:', error);
       toast.error('Error al completar viaje. Intenta nuevamente.');

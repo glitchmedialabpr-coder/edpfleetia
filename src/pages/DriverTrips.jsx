@@ -41,8 +41,20 @@ export default function DriverTrips() {
       return base44.entities.Trip.filter({ driver_id: user?.driver_id }, '-scheduled_date');
     },
     enabled: !!user?.driver_id || user?.role === 'admin',
-    staleTime: 1000 * 60 * 5
+    staleTime: 0
   });
+
+  useEffect(() => {
+    if (!user?.driver_id && user?.role !== 'admin') return;
+
+    const unsubscribe = base44.entities.Trip.subscribe((event) => {
+      if (user?.role === 'admin' || event.data?.driver_id === user?.driver_id) {
+        refetch();
+      }
+    });
+
+    return () => unsubscribe?.();
+  }, [user?.driver_id, user?.role, refetch]);
 
   const todayTrips = trips.filter(t => t.scheduled_date === today);
   const scheduledToday = todayTrips.filter(t => t.status === 'scheduled');
