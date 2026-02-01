@@ -25,7 +25,8 @@ import {
   Video,
   Loader2,
   CheckCircle,
-  Volume2
+  Volume2,
+  Trash2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import SoundSelector from '../components/notifications/SoundSelector';
