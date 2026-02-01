@@ -63,22 +63,21 @@ export default function DriverVehicleSelection() {
   };
 
   const handleSelectVehicle = (vehicle) => {
-    // Guardar selección por 24 horas
-    const vehicleSelection = {
-      vehicle_id: vehicle.id,
-      vehicle_plate: vehicle.plate,
-      vehicle_info: `${vehicle.brand} ${vehicle.model}`,
-      selected_at: Date.now(),
-      expires_at: Date.now() + (24 * 60 * 60 * 1000) // 24 horas
+    // Actualizar usuario con vehículo seleccionado
+    const updatedUser = {
+      ...user,
+      selected_vehicle_id: vehicle.id,
+      selected_vehicle_plate: vehicle.plate,
+      selected_vehicle_info: `${vehicle.brand} ${vehicle.model}`
     };
     
-    localStorage.setItem('driver_vehicle_selection', JSON.stringify(vehicleSelection));
+    localStorage.setItem('pin_user', JSON.stringify(updatedUser));
     toast.success(`Vehículo ${vehicle.plate} seleccionado`);
     
-    // Ir a las solicitudes
+    // Ir al dashboard
     setTimeout(() => {
-      navigate(createPageUrl('DriverRequests'));
-    }, 1000);
+      navigate(createPageUrl('DriverDashboard'));
+    }, 500);
   };
 
   if (loading) {

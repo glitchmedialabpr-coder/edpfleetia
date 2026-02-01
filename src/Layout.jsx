@@ -229,6 +229,12 @@ export default function Layout({ children, currentPageName }) {
     return null;
   }
 
+  // Check if driver needs to select vehicle
+  if (user.user_type === 'driver' && !user.selected_vehicle_id && currentPageName !== 'DriverVehicleSelection') {
+    window.location.href = createPageUrl('DriverVehicleSelection');
+    return null;
+  }
+
   // Route guard: Protect passenger pages
   const passengerPages = ['PassengerTrips'];
   if (passengerPages.includes(currentPageName) && user.user_type !== 'passenger') {

@@ -48,9 +48,9 @@ export default function DriverLogin() {
         localStorage.setItem('pin_user', JSON.stringify(user));
         toast.success(`¡Bienvenido ${user.full_name}!`);
         setLoading(false);
-        // Usar setTimeout para asegurar que se procese el estado antes de navegar
+        // Redirigir a selección de vehículo
         setTimeout(() => {
-          window.location.href = createPageUrl('DriverDashboard');
+          navigate(createPageUrl('DriverVehicleSelection'));
         }, 500);
       } else {
         toast.error(response.data.error || 'Conductor no encontrado');
