@@ -151,8 +151,9 @@ export default function DriverRequests() {
 
   const { data: pendingRequests = [], refetch: refetchPending } = useQuery({
     queryKey: ['pending-requests'],
-    queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' }),
-    staleTime: 1000 * 30
+    queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' }, '-created_date', 50),
+    staleTime: 1000 * 60 * 2, // 2 minutos
+    refetchInterval: 45000 // 45 segundos en lugar de 30
   });
 
   const { data: acceptedRequests = [], refetch: refetchAccepted } = useQuery({
@@ -160,9 +161,10 @@ export default function DriverRequests() {
     queryFn: () => base44.entities.TripRequest.filter({ 
       driver_id: user?.driver_id,
       status: 'accepted_by_driver'
-    }, '-created_date'),
+    }, '-created_date', 15),
     enabled: !!user?.driver_id,
-    staleTime: 1000 * 30
+    staleTime: 1000 * 60, // 1 minuto
+    refetchInterval: 30000
   });
 
   const { data: activeTrips = [], refetch: refetchActiveTrips } = useQuery({
@@ -170,9 +172,10 @@ export default function DriverRequests() {
     queryFn: () => base44.entities.Trip.filter({ 
       driver_id: user?.driver_id,
       status: 'in_progress'
-    }, '-created_date'),
+    }, '-created_date', 5),
     enabled: !!user?.driver_id,
-    staleTime: 1000 * 30
+    staleTime: 1000 * 60, // 1 minuto
+    refetchInterval: 30000
   });
 
   useEffect(() => {
@@ -223,19 +226,27 @@ export default function DriverRequests() {
         }
       });
 
-      interval = setInterval(() => {
-        refetchPending();
-        refetchAccepted();
-        refetchActiveTrips();
-      }, 30000);
+      // React Query maneja el polling automáticamente con refetchInterval
+      // No necesitamos setInterval manual
     } catch (error) {
       console.error('Error setting up subscriptions:', error);
     }
 
     return () => {
-      if (unsubscribeRequest) unsubscribeRequest();
-      if (unsubscribeTrip) unsubscribeTrip();
-      if (interval) clearInterval(interval);
+      if (unsubscribeRequest) {
+        try {
+          unsubscribeRequest();
+        } catch (e) {
+          console.error('Error unsubscribing request:', e);
+        }
+      }
+      if (unsubscribeTrip) {
+        try {
+          unsubscribeTrip();
+        } catch (e) {
+          console.error('Error unsubscribing trip:', e);
+        }
+      }
     };
   }, [user?.driver_id, selectedVehicle, notificationSound, refetchPending, refetchAccepted, refetchActiveTrips]);
 
@@ -250,9 +261,20 @@ export default function DriverRequests() {
       return;
     }
 
-    // Check limit of 15 students
-    if (acceptedRequests.length >= 15) {
-      toast.error('Máximo 15 estudiantes. Inicia el viaje primero.');
+    // Obtener capacidad real del vehículo
+    const vehicle = vehicles.find(v => v.id === selectedVehicle);
+    const vehicleCapacity = vehicle?.capacity || 15;
+    
+    if (acceptedRequests.length >= vehicleCapacity) {
+      toast.error(`Capacidad máxima alcanzada (${vehicleCapacity} estudiantes)`);
+      return;
+    }
+
+    // Verificar que la solicitud aún está pendiente (evitar race conditions)
+    const currentRequest = pendingRequests.find(r => r.id === request.id);
+    if (!currentRequest || currentRequest.status !== 'pending') {
+      toast.error('Esta solicitud ya no está disponible');
+      refetchPending();
       return;
     }
 
@@ -291,7 +313,9 @@ export default function DriverRequests() {
         navigate(createPageUrl('DriverAcceptedStudents'));
       }, 500);
     } catch (error) {
-      toast.error('Error al aceptar estudiante');
+      console.error('Error accepting request:', error);
+      toast.error('Error al aceptar estudiante. Intenta nuevamente.');
+      refetchPending();
     }
   };
 
@@ -317,7 +341,8 @@ export default function DriverRequests() {
       toast.info('Rechazado. Quedará disponible para otros conductores.');
       refetchPending();
     } catch (error) {
-      toast.error('Error al rechazar viaje');
+      console.error('Error rejecting request:', error);
+      toast.error('Error al rechazar solicitud. Intenta nuevamente.');
     }
   };
 
@@ -339,8 +364,8 @@ export default function DriverRequests() {
         refetchActiveTrips();
       }
     } catch (error) {
-      toast.error('Error al iniciar viaje');
-      console.error(error);
+      console.error('Error starting trip:', error);
+      toast.error('Error al iniciar viaje. Verifica tu conexión.');
     }
   };
 
@@ -363,7 +388,8 @@ export default function DriverRequests() {
       toast.success('Estudiante entregado - ' + timeString);
       refetchActiveTrips();
     } catch (error) {
-      toast.error('Error al marcar estudiante como entregado');
+      console.error('Error delivering student:', error);
+      toast.error('Error al marcar estudiante. Intenta nuevamente.');
     }
   };
 
@@ -396,7 +422,8 @@ export default function DriverRequests() {
       toast.success('Viaje completado - ' + timeString);
       refetchActiveTrips();
     } catch (error) {
-      toast.error('Error al completar viaje');
+      console.error('Error completing trip:', error);
+      toast.error('Error al completar viaje. Intenta nuevamente.');
     }
   };
 

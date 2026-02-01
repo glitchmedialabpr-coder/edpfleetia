@@ -76,12 +76,16 @@ export default function Students() {
     queryFn: async () => {
       const res = await base44.functions.invoke('getSecureStudents');
       return res.data.students || [];
-    }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutos
+    cacheTime: 1000 * 60 * 15 // 15 minutos en cache
   });
 
   const { data: housings = [] } = useQuery({
     queryKey: ['housings'],
-    queryFn: () => base44.entities.Housing.list()
+    queryFn: () => base44.entities.Housing.list('-created_date', 200),
+    staleTime: 1000 * 60 * 10, // 10 minutos
+    cacheTime: 1000 * 60 * 30 // 30 minutos en cache
   });
 
   const filteredStudents = students.filter(s => 

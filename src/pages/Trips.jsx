@@ -81,8 +81,9 @@ export default function Trips() {
 
   const { data: trips = [], refetch } = useQuery({
     queryKey: ['trips', formattedDate],
-    queryFn: () => base44.entities.Trip.filter({ scheduled_date: formattedDate }, '-scheduled_time'),
-    staleTime: 1000 * 60 * 5
+    queryFn: () => base44.entities.Trip.filter({ scheduled_date: formattedDate }, '-scheduled_time', 100),
+    staleTime: 1000 * 60 * 3, // 3 minutos
+    cacheTime: 1000 * 60 * 10 // 10 minutos en cache
   });
 
   const { data: allCompletedTrips = [] } = useQuery({
