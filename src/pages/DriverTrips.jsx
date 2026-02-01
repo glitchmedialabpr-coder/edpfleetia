@@ -25,7 +25,7 @@ export default function DriverTrips() {
     }
   };
 
-  const { data: trips = [], refetch } = useQuery({
+  const { data: trips = [] } = useQuery({
     queryKey: ['driver-trips', user?.driver_id, user?.role],
     queryFn: () => {
       if (user?.role === 'admin') {
@@ -34,19 +34,8 @@ export default function DriverTrips() {
       return base44.entities.Trip.filter({ driver_id: user?.driver_id }, '-scheduled_date');
     },
     enabled: !!user?.driver_id || user?.role === 'admin',
-    staleTime: Infinity,
-    refetchInterval: false
+    refetchInterval: 20000
   });
-
-  useEffect(() => {
-    if (!user?.driver_id && user?.role !== 'admin') return;
-
-    const unsubscribe = base44.entities.Trip.subscribe(() => {
-      refetch();
-    });
-
-    return () => unsubscribe?.();
-  }, [user?.driver_id, user?.role]);
 
   const todayTrips = trips.filter(t => t.scheduled_date === today);
   const inProgressToday = todayTrips.filter(t => t.status === 'in_progress');

@@ -35,26 +35,15 @@ export default function DriverAcceptedStudents() {
     }
   };
 
-  const { data: acceptedRequests = [], refetch: refetchAccepted } = useQuery({
+  const { data: acceptedRequests = [] } = useQuery({
     queryKey: ['accepted-requests', user?.driver_id],
     queryFn: () => base44.entities.TripRequest.filter({ 
       driver_id: user?.driver_id,
       status: 'accepted_by_driver'
     }, '-created_date'),
     enabled: !!user?.driver_id,
-    staleTime: Infinity,
-    refetchInterval: false
+    refetchInterval: 15000
   });
-
-  useEffect(() => {
-    if (!user?.driver_id) return;
-
-    const unsubscribe = base44.entities.TripRequest.subscribe(() => {
-      refetchAccepted();
-    });
-
-    return () => unsubscribe?.();
-  }, [user?.driver_id]);
 
   const { data: vehicles = [] } = useQuery({
     queryKey: ['vehicles'],
