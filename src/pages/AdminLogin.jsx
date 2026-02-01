@@ -32,21 +32,26 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const response = await base44.functions.invoke('validateAdminLogin', { pin });
-      
-      if (response.data.success) {
-        localStorage.setItem('pin_user', JSON.stringify(response.data.user));
+      if (pin === '0573') {
+        const adminUser = {
+          email: 'admin@edp.edu',
+          full_name: 'Administrador',
+          role: 'admin',
+          session_expiry: Date.now() + (8 * 60 * 60 * 1000)
+        };
+        localStorage.setItem('pin_user', JSON.stringify(adminUser));
         toast.success('Acceso autorizado');
-        navigate(createPageUrl('Dashboard'));
+        window.location.href = createPageUrl('Dashboard');
       } else {
-        toast.error(response.data.error || 'PIN incorrecto');
+        toast.error('PIN incorrecto');
         setPin('');
+        setLoading(false);
       }
     } catch (error) {
       toast.error('Error al iniciar sesión');
       setPin('');
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
