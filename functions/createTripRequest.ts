@@ -35,22 +35,39 @@ Deno.serve(async (req) => {
 
     const now = new Date();
     const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-    const destination = destination_type === 'otros' ? destination_other : destination_type;
+    
+    let destination = '';
+    if (destination_type === 'otros') {
+      destination = destination_other || 'Otros';
+    } else {
+      const typeNames = {
+        'biblioteca': 'Biblioteca',
+        'edp_university': 'EDP University',
+        'farmacia': 'Farmacia',
+        'hospital': 'Hospital',
+        'hospedaje': 'Hospedaje',
+        'piedras_blancas': 'Piedras Blancas',
+        'supermercado': 'Supermercado',
+        'wellness_edp': 'Wellness EDP'
+      };
+      destination = typeNames[destination_type] || destination_type;
+    }
 
-    await base44.asServiceRole.entities.TripRequest.create({
+    const newRequest = await base44.asServiceRole.entities.TripRequest.create({
       passenger_id: student_id,
       passenger_name: student_name,
       passenger_phone: student_phone || '',
       origin: 'EDP University',
       destination,
       destination_type,
-      destination_other,
+      destination_other: destination_type === 'otros' ? destination_other : '',
       passengers_count: 1,
       pickup_time: timeString,
       status: 'pending'
     });
 
-    return Response.json({ success: true });
+    console.log('✅ Solicitud creada:', newRequest.id);
+    return Response.json({ success: true, request: newRequest });
   } catch (error) {
     console.error('Error:', error);
     return Response.json({ error: 'Error al crear solicitud' }, { status: 500 });
