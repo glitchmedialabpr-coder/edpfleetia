@@ -2,16 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { 
-  Bus, 
-  Clock, 
-  CheckCircle2,
-  Calendar
-} from 'lucide-react';
+import { Bus, Clock, CheckCircle2 } from 'lucide-react';
 import TripCard from '../components/trips/TripCard';
 import EmptyState from '../components/common/EmptyState';
 import StatsCard from '../components/common/StatsCard';
@@ -56,55 +49,8 @@ export default function DriverTrips() {
   }, [user?.driver_id, user?.role]);
 
   const todayTrips = trips.filter(t => t.scheduled_date === today);
-  const scheduledToday = todayTrips.filter(t => t.status === 'scheduled');
   const inProgressToday = todayTrips.filter(t => t.status === 'in_progress');
   const completedToday = todayTrips.filter(t => t.status === 'completed');
-
-  const handleStartTrip = async (trip) => {
-    if (!trip?.students?.length) return;
-    
-    try {
-      const now = format(new Date(), 'HH:mm');
-      
-      await Promise.all([
-        base44.entities.Trip.update(trip.id, {
-          status: 'in_progress',
-          departure_time: now
-        }),
-        ...trip.students.map(s =>
-          base44.entities.TripRequest.update(s.request_id, {
-            status: 'in_trip',
-            started_at: now
-          })
-        )
-      ]);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  const handleCompleteTrip = async (trip) => {
-    if (!trip?.students?.length) return;
-    
-    try {
-      const now = format(new Date(), 'HH:mm');
-      
-      await Promise.all([
-        base44.entities.Trip.update(trip.id, {
-          status: 'completed',
-          arrival_time: now
-        }),
-        ...trip.students.map(s =>
-          base44.entities.TripRequest.update(s.request_id, {
-            status: 'completed',
-            completed_at: now
-          })
-        )
-      ]);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
 
   return (
     <div className="space-y-8">
@@ -119,13 +65,7 @@ export default function DriverTrips() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <StatsCard
-          title="Programados"
-          value={scheduledToday.length}
-          icon={Calendar}
-          color="amber"
-        />
+      <div className="grid grid-cols-2 gap-4">
         <StatsCard
           title="En Progreso"
           value={inProgressToday.length}
@@ -157,61 +97,39 @@ export default function DriverTrips() {
         </Card>
       )}
 
-      {/* Today's Trips */}
-      <Tabs defaultValue="pending" className="w-full">
-        <TabsList className="bg-slate-100 mb-4">
-          <TabsTrigger value="pending">
-            Pendientes ({scheduledToday.length + inProgressToday.length})
-          </TabsTrigger>
-          <TabsTrigger value="completed">
-            Completados ({completedToday.length})
-          </TabsTrigger>
-        </TabsList>
+      {/* Active Trips */}
+      {inProgressToday.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">Viajes Activos</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {inProgressToday.map(trip => (
+              <TripCard key={trip.id} trip={trip} />
+            ))}
+          </div>
+        </div>
+      )}
 
-        <TabsContent value="pending">
-          {scheduledToday.length === 0 && inProgressToday.length === 0 ? (
-            <Card className="border-0 shadow-sm">
-              <EmptyState
-                icon={Bus}
-                title="No tienes viajes pendientes"
-                description="Los viajes asignados aparecerán aquí"
-              />
-            </Card>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              {[...inProgressToday, ...scheduledToday].map(trip => (
-                <TripCard
-                  key={trip.id}
-                  trip={trip}
-                  onStart={handleStartTrip}
-                  onComplete={handleCompleteTrip}
-                />
-              ))}
-            </div>
-          )}
-        </TabsContent>
+      {/* Completed Trips */}
+      {completedToday.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">Completados Hoy</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {completedToday.map(trip => (
+              <TripCard key={trip.id} trip={trip} />
+            ))}
+          </div>
+        </div>
+      )}
 
-        <TabsContent value="completed">
-          {completedToday.length === 0 ? (
-            <Card className="border-0 shadow-sm">
-              <EmptyState
-                icon={CheckCircle2}
-                title="No hay viajes completados hoy"
-                description="Los viajes finalizados aparecerán aquí"
-              />
-            </Card>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              {completedToday.map(trip => (
-                <TripCard
-                  key={trip.id}
-                  trip={trip}
-                />
-              ))}
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+      {inProgressToday.length === 0 && completedToday.length === 0 && (
+        <Card className="p-8">
+          <EmptyState
+            icon={Bus}
+            title="Sin viajes hoy"
+            description="Gestiona tus viajes desde Solicitudes"
+          />
+        </Card>
+      )}
     </div>
   );
 }
