@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Shield, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 
-const ADMIN_PIN = Deno.env.get('ADMIN_PIN') || '0573'; // Variable de entorno, fallback temporal
-
 export default function AdminLogin() {
   const navigate = useNavigate();
   const [pin, setPin] = useState('');
