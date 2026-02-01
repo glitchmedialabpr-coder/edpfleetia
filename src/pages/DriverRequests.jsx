@@ -149,67 +149,31 @@ export default function DriverRequests() {
     staleTime: 1000 * 60 * 5
   });
 
-  const { data: pendingRequests = [], refetch: refetchPending } = useQuery({
+  const { data: pendingRequests = [] } = useQuery({
     queryKey: ['pending-requests'],
     queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' }, '-created_date', 50),
-    staleTime: Infinity,
-    refetchInterval: false
+    refetchInterval: 10000
   });
 
-  const { data: acceptedRequests = [], refetch: refetchAccepted } = useQuery({
+  const { data: acceptedRequests = [] } = useQuery({
     queryKey: ['accepted-requests', user?.driver_id],
     queryFn: () => base44.entities.TripRequest.filter({ 
       driver_id: user?.driver_id,
       status: 'accepted_by_driver'
     }, '-created_date', 15),
     enabled: !!user?.driver_id,
-    staleTime: Infinity,
-    refetchInterval: false
+    refetchInterval: 10000
   });
 
-  const { data: activeTrips = [], refetch: refetchActiveTrips } = useQuery({
+  const { data: activeTrips = [] } = useQuery({
     queryKey: ['active-trips', user?.driver_id],
     queryFn: () => base44.entities.Trip.filter({ 
       driver_id: user?.driver_id,
       status: 'in_progress'
     }, '-created_date', 5),
     enabled: !!user?.driver_id,
-    staleTime: Infinity,
-    refetchInterval: false
+    refetchInterval: 15000
   });
-
-  useEffect(() => {
-    if (!user?.driver_id) return;
-
-    const unsubscribeRequest = base44.entities.TripRequest.subscribe((event) => {
-      if (event.type === 'create' && event.data?.status === 'pending' && selectedVehicle) {
-        notificationSound.play().catch(() => {});
-        setHasNewRequest(true);
-        setTimeout(() => setHasNewRequest(false), 3000);
-        
-        if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('🚗 Nueva Solicitud', {
-            body: `${event.data.passenger_name} → ${event.data.destination}`,
-            silent: false
-          });
-        }
-        
-        toast.success('Nueva solicitud');
-      }
-      
-      refetchPending();
-      refetchAccepted();
-    });
-
-    const unsubscribeTrip = base44.entities.Trip.subscribe(() => {
-      refetchActiveTrips();
-    });
-
-    return () => {
-      unsubscribeRequest?.();
-      unsubscribeTrip?.();
-    };
-  }, [user?.driver_id, selectedVehicle]);
 
   const handleAccept = async (request) => {
     if (!selectedVehicle) {

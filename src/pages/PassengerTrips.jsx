@@ -56,35 +56,12 @@ export default function PassengerTrips() {
     }
   };
 
-  const { data: requests = [], refetch } = useQuery({
+  const { data: requests = [] } = useQuery({
     queryKey: ['trip-requests', user?.student_id],
     queryFn: () => base44.entities.TripRequest.filter({ passenger_id: user?.student_id }, '-created_date'),
     enabled: !!user?.student_id,
-    staleTime: Infinity,
-    refetchInterval: false
+    refetchInterval: 20000
   });
-
-  useEffect(() => {
-    if (!user?.student_id) return;
-
-    const unsubscribe = base44.entities.TripRequest.subscribe((event) => {
-      if (event.data?.passenger_id === user.student_id) {
-        refetch();
-        
-        if (event.type === 'update') {
-          if (event.data.status === 'accepted_by_driver') {
-            toast.success('Conductor asignado');
-          } else if (event.data.status === 'in_trip') {
-            toast.info('En camino');
-          } else if (event.data.status === 'completed') {
-            toast.success('Completado');
-          }
-        }
-      }
-    });
-
-    return () => unsubscribe?.();
-  }, [user?.student_id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
