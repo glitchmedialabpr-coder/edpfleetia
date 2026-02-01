@@ -181,38 +181,29 @@ export default function DriverRequests() {
   useEffect(() => {
     if (!user?.driver_id) return;
 
-    let unsubscribeRequest;
-    let unsubscribeTrip;
-
-    try {
-      unsubscribeRequest = base44.entities.TripRequest.subscribe((event) => {
-        if (event.type === 'create' && event.data?.status === 'pending' && selectedVehicle) {
-          notificationSound.play().catch(() => {});
-          setHasNewRequest(true);
-          setTimeout(() => setHasNewRequest(false), 3000);
-          
-          if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('🚗 Nueva Solicitud', {
-              body: `${event.data.passenger_name} → ${event.data.destination}`,
-              silent: false
-            });
-          }
-          
-          toast.success('Nueva solicitud disponible');
+    const unsubscribeRequest = base44.entities.TripRequest.subscribe((event) => {
+      if (event.type === 'create' && event.data?.status === 'pending' && selectedVehicle) {
+        notificationSound.play().catch(() => {});
+        setHasNewRequest(true);
+        setTimeout(() => setHasNewRequest(false), 3000);
+        
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('🚗 Nueva Solicitud', {
+            body: `${event.data.passenger_name} → ${event.data.destination}`,
+            silent: false
+          });
         }
         
-        refetchPending();
-        refetchAccepted();
-      });
+        toast.success('Nueva solicitud');
+      }
+      
+      refetchPending();
+      refetchAccepted();
+    });
 
-      unsubscribeTrip = base44.entities.Trip.subscribe((event) => {
-        if (event.data?.driver_id === user.driver_id || event.data?.status === 'in_progress') {
-          refetchActiveTrips();
-        }
-      });
-    } catch (error) {
-      console.error('Subscription error:', error);
-    }
+    const unsubscribeTrip = base44.entities.Trip.subscribe(() => {
+      refetchActiveTrips();
+    });
 
     return () => {
       unsubscribeRequest?.();

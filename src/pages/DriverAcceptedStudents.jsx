@@ -42,17 +42,15 @@ export default function DriverAcceptedStudents() {
       status: 'accepted_by_driver'
     }, '-created_date'),
     enabled: !!user?.driver_id,
-    staleTime: 0,
+    staleTime: Infinity,
     refetchInterval: false
   });
 
   useEffect(() => {
     if (!user?.driver_id) return;
 
-    const unsubscribe = base44.entities.TripRequest.subscribe((event) => {
-      if (event.data?.driver_id === user.driver_id) {
-        refetchAccepted();
-      }
+    const unsubscribe = base44.entities.TripRequest.subscribe(() => {
+      refetchAccepted();
     });
 
     return () => unsubscribe?.();

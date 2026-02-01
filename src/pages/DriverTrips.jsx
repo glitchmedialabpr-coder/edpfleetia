@@ -41,14 +41,14 @@ export default function DriverTrips() {
       return base44.entities.Trip.filter({ driver_id: user?.driver_id }, '-scheduled_date');
     },
     enabled: !!user?.driver_id || user?.role === 'admin',
-    staleTime: 0,
+    staleTime: Infinity,
     refetchInterval: false
   });
 
   useEffect(() => {
     if (!user?.driver_id && user?.role !== 'admin') return;
 
-    const unsubscribe = base44.entities.Trip.subscribe((event) => {
+    const unsubscribe = base44.entities.Trip.subscribe(() => {
       refetch();
     });
 

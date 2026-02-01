@@ -69,16 +69,17 @@ export default function PassengerTrips() {
 
     const unsubscribe = base44.entities.TripRequest.subscribe((event) => {
       if (event.data?.passenger_id === user.student_id) {
+        refetch();
+        
         if (event.type === 'update') {
           if (event.data.status === 'accepted_by_driver') {
-            toast.success('¡Conductor asignado!');
+            toast.success('Conductor asignado');
           } else if (event.data.status === 'in_trip') {
             toast.info('En camino');
           } else if (event.data.status === 'completed') {
-            toast.success('Viaje completado');
+            toast.success('Completado');
           }
         }
-        refetch();
       }
     });
 
