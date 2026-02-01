@@ -96,6 +96,9 @@ export default function Layout({ children, currentPageName }) {
   const handleLogout = () => {
     localStorage.removeItem('pin_user');
     setUser(null);
+    setTimeout(() => {
+      window.location.href = createPageUrl('Home');
+    }, 300);
   };
 
   const handlePinLogin = async (e) => {

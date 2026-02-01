@@ -43,14 +43,12 @@ export default function DriverLogin() {
       if (response.data.success) {
         const user = response.data.user;
         user.user_type = 'driver';
-        // Persistencia: guardar sesión sin expiración inmediata
-        user.session_expiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 días
+        user.session_expiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
         localStorage.setItem('pin_user', JSON.stringify(user));
         toast.success(`¡Bienvenido ${user.full_name}!`);
         setLoading(false);
-        // Redirigir a selección de vehículo
         setTimeout(() => {
-          navigate(createPageUrl('DriverVehicleSelection'));
+          window.location.href = createPageUrl('DriverVehicleSelection');
         }, 500);
       } else {
         toast.error(response.data.error || 'Conductor no encontrado');
