@@ -62,6 +62,8 @@ export default function DriverAcceptedStudents() {
       return;
     }
 
+    toast.loading('Iniciando viaje...');
+
     try {
       const firstRequest = acceptedRequests[0];
       const res = await base44.functions.invoke('createTripFromRequests', {
@@ -71,18 +73,23 @@ export default function DriverAcceptedStudents() {
         driverName: user.full_name || user.email
       });
 
-      if (res.data.success) {
+      toast.dismiss();
+
+      if (res.data?.success) {
         toast.success(`Viaje iniciado con ${acceptedRequests.length} estudiante(s)`);
         refetchAccepted();
         setTimeout(() => {
           navigate(createPageUrl('DriverRequests'));
         }, 500);
       } else {
-        toast.error(res.data.error || 'Error al iniciar viaje');
+        console.error('Error response:', res.data);
+        toast.error(res.data?.error || 'Error al iniciar viaje');
       }
     } catch (error) {
+      toast.dismiss();
       console.error('Error starting trip:', error);
-      toast.error('Error al iniciar viaje. Verifica tu conexión.');
+      console.error('Full error:', error.response?.data || error);
+      toast.error(error.response?.data?.error || 'Error al iniciar viaje. Verifica tu conexión.');
     }
   };
 
