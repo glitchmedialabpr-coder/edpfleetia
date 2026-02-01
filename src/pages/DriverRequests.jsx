@@ -229,7 +229,6 @@ export default function DriverRequests() {
       queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
       queryClient.invalidateQueries({ queryKey: ['accepted-requests'] });
       toast.success(`✓ (${acceptedRequests.length + 1}/${capacity})`);
-      setTimeout(() => navigate(createPageUrl('DriverAcceptedStudents')), 200);
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error');
