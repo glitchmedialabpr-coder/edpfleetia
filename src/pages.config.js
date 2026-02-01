@@ -83,7 +83,6 @@ import Students from './pages/Students';
 import Trips from './pages/Trips';
 import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
-import VideoSplash from './pages/VideoSplash';
 import Warnings from './pages/Warnings';
 import __Layout from './Layout.jsx';
 
@@ -125,7 +124,6 @@ export const PAGES = {
     "Trips": Trips,
     "VehicleManagement": VehicleManagement,
     "Vehicles": Vehicles,
-    "VideoSplash": VideoSplash,
     "Warnings": Warnings,
 }
 
