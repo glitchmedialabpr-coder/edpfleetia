@@ -68,7 +68,14 @@ export default function DriverTrips() {
         status: 'in_progress',
         departure_time: now
       });
-      refetch();
+
+      const updates = trip.students.map(s =>
+        base44.entities.TripRequest.update(s.request_id, {
+          status: 'in_trip',
+          started_at: now
+        })
+      );
+      await Promise.all(updates);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -81,7 +88,14 @@ export default function DriverTrips() {
         status: 'completed',
         arrival_time: now
       });
-      refetch();
+
+      const updates = trip.students.map(s =>
+        base44.entities.TripRequest.update(s.request_id, {
+          status: 'completed',
+          completed_at: now
+        })
+      );
+      await Promise.all(updates);
     } catch (error) {
       console.error('Error:', error);
     }
