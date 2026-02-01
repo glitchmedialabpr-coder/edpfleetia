@@ -255,6 +255,46 @@ export default function Settings() {
     }
   };
 
+  const handleDeleteAllTrips = async () => {
+    setPinModal({ open: true, pin: '', error: '' });
+  };
+
+  const handleVerifyPinAndDelete = async () => {
+    setPinModal(prev => ({ ...prev, error: '' }));
+    setDeletingTrips(true);
+
+    try {
+      const response = await base44.functions.invoke('validateAdminLogin', { pin: pinModal.pin });
+      
+      if (!response.data.success) {
+        setPinModal(prev => ({ ...prev, error: 'PIN incorrecto' }));
+        setDeletingTrips(false);
+        return;
+      }
+
+      // Obtener todos los viajes y eliminarlos
+      const trips = await base44.entities.Trip.list('', 1000);
+      
+      for (const trip of trips) {
+        await base44.entities.Trip.delete(trip.id);
+      }
+
+      // Obtener y eliminar todas las solicitudes de viaje
+      const tripRequests = await base44.entities.TripRequest.list('', 1000);
+      for (const request of tripRequests) {
+        await base44.entities.TripRequest.delete(request.id);
+      }
+
+      setPinModal({ open: false, pin: '', error: '' });
+      toast.success(`Se eliminaron ${trips.length} viajes exitosamente`);
+      queryClient.invalidateQueries(['trips', 'trip-requests']);
+      setDeletingTrips(false);
+    } catch (error) {
+      setPinModal(prev => ({ ...prev, error: 'Error al eliminar viajes' }));
+      setDeletingTrips(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
