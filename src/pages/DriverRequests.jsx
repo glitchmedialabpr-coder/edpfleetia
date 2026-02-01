@@ -238,6 +238,10 @@ export default function DriverRequests() {
     if (!user) return;
 
     try {
+      await base44.entities.TripRequest.update(request.id, {
+        status: 'rejected'
+      });
+
       await base44.entities.TripRequestResponse.create({
         trip_request_id: request.id,
         driver_id: user.driver_id,
@@ -250,9 +254,10 @@ export default function DriverRequests() {
       });
 
       queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
-      toast.info('Rechazado');
+      toast.success('Solicitud rechazada');
     } catch (error) {
-      toast.error('Error');
+      console.error('Error rechazando:', error);
+      toast.error('Error al rechazar');
     }
   };
 
