@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Destino requerido' }, { status: 400 });
     }
     
-    if (!student_id || student_id.length !== 4) {
+    if (!student_id) {
       return Response.json({ error: 'ID inválido' }, { status: 400 });
     }
 
