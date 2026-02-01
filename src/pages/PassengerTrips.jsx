@@ -81,37 +81,31 @@ export default function PassengerTrips() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!user) {
+    if (!user?.student_id) {
       toast.error('Usuario no identificado');
       return;
     }
 
-    if (!user.student_id) {
-      toast.error('ID de estudiante no encontrado');
-      return;
-    }
-
-    try {
-      const res = await base44.functions.invoke('createTripRequest', {
+    setModalOpen(false);
+    setFormData({
+      destination_type: '',
+      destination_other: ''
+    });
+    
+    toast.promise(
+      base44.functions.invoke('createTripRequest', {
         destination_type: formData.destination_type,
         destination_other: formData.destination_other,
         student_id: user.student_id,
         student_name: user.full_name,
         student_phone: user.phone || ''
-      });
-
-      if (res.data.success) {
-        toast.success('Solicitud enviada');
-        setModalOpen(false);
-        setFormData({
-          destination_type: '',
-          destination_other: ''
-        });
+      }),
+      {
+        loading: 'Enviando...',
+        success: 'Solicitud enviada',
+        error: 'Error al enviar'
       }
-    } catch (error) {
-      console.error('Error al crear solicitud:', error);
-      toast.error('Error al crear solicitud');
-    }
+    );
   };
 
   const handleCancel = async (request) => {
