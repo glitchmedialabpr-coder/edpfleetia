@@ -76,7 +76,7 @@ export default function DriverAcceptedStudents() {
             queryClient.invalidateQueries({ queryKey: ['accepted-requests'] });
             queryClient.invalidateQueries({ queryKey: ['active-trips'] });
             queryClient.invalidateQueries({ queryKey: ['driver-trips'] });
-            setTimeout(() => navigate(createPageUrl('DriverTrips')), 200);
+            setTimeout(() => navigate(createPageUrl('DriverRequests')), 200);
             return `${acceptedRequests.length} estudiantes`;
           },
           error: 'Error'
