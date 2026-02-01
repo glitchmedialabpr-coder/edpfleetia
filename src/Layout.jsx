@@ -197,17 +197,16 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  if (!user) {
-    // Redirect to appropriate login page
-    const loginPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin'];
-    if (!loginPages.includes(currentPageName)) {
-      // Default redirect to home
-      window.location.href = createPageUrl('Home');
-      return null;
-    }
+  // Allow login and public pages without authentication
+  const publicPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin'];
+  if (!user && !publicPages.includes(currentPageName)) {
+    window.location.href = createPageUrl('Home');
+    return null;
+  }
 
-    // Allow login pages to render
-    return children;
+  // Render login pages without layout
+  if (publicPages.includes(currentPageName)) {
+    return <ErrorBoundary>{children}</ErrorBoundary>;
   }
 
   // Route guard: Protect admin pages
