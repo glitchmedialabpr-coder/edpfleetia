@@ -1,22 +1,92 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
+// Rate limiting
+const loginAttempts = new Map();
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutos
+
+function checkLoginAttempts(driverId) {
+  const now = Date.now();
+  const attempts = loginAttempts.get(driverId);
+  
+  if (!attempts) {
+    loginAttempts.set(driverId, { count: 1, firstAttempt: now, lockedUntil: null });
+    return { allowed: true };
+  }
+  
+  // Si está bloqueado
+  if (attempts.lockedUntil && now < attempts.lockedUntil) {
+    const remainingMinutes = Math.ceil((attempts.lockedUntil - now) / 60000);
+    return { 
+      allowed: false, 
+      message: `Cuenta bloqueada. Intenta en ${remainingMinutes} minutos.` 
+    };
+  }
+  
+  // Reset si pasó el tiempo de lockout
+  if (attempts.lockedUntil && now >= attempts.lockedUntil) {
+    loginAttempts.set(driverId, { count: 1, firstAttempt: now, lockedUntil: null });
+    return { allowed: true };
+  }
+  
+  // Incrementar intentos
+  attempts.count++;
+  
+  if (attempts.count >= MAX_ATTEMPTS) {
+    attempts.lockedUntil = now + LOCKOUT_TIME;
+    return { 
+      allowed: false, 
+      message: `Demasiados intentos. Cuenta bloqueada por 15 minutos.` 
+    };
+  }
+  
+  return { allowed: true };
+}
+
+function resetLoginAttempts(driverId) {
+  loginAttempts.delete(driverId);
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const { driverId } = await req.json();
     
-    if (!driverId || driverId.length !== 3) {
+    // Validación
+    if (!driverId || typeof driverId !== 'string' || driverId.length !== 3) {
       return Response.json({ success: false, error: 'ID inválido' }, { status: 400 });
     }
     
+    // Sanitizar input
+    const sanitizedId = driverId.trim().replace(/[^0-9]/g, '').slice(0, 3);
+    
+    if (sanitizedId.length !== 3) {
+      return Response.json({ success: false, error: 'ID inválido' }, { status: 400 });
+    }
+    
+    // Verificar rate limiting
+    const attemptCheck = checkLoginAttempts(sanitizedId);
+    if (!attemptCheck.allowed) {
+      return Response.json({ 
+        success: false, 
+        error: attemptCheck.message 
+      }, { status: 429 });
+    }
+    
     const drivers = await base44.asServiceRole.entities.Driver.filter({ 
-      driver_id: driverId.trim(),
+      driver_id: sanitizedId,
       status: 'active'
     }, '', 1);
     
     if (!drivers?.length) {
-      return Response.json({ success: false, error: 'No encontrado' }, { status: 404 });
+      return Response.json({ 
+        success: false, 
+        error: 'No encontrado' 
+      }, { status: 404 });
     }
+    
+    // Login exitoso - reset intentos
+    resetLoginAttempts(sanitizedId);
     
     const driver = drivers[0];
     return Response.json({ 
@@ -31,8 +101,18 @@ Deno.serve(async (req) => {
         driver_id: driver.driver_id,
         session_expiry: Date.now() + (12 * 60 * 60 * 1000)
       }
+    }, {
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block'
+      }
     });
   } catch (error) {
-    return Response.json({ success: false, error: 'Error' }, { status: 500 });
+    console.error('[validateDriverLogin] Error:', error);
+    return Response.json({ 
+      success: false, 
+      error: 'Error en el servidor' 
+    }, { status: 500 });
   }
 });

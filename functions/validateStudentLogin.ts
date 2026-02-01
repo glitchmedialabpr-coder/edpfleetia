@@ -1,22 +1,86 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
+// Rate limiting
+const studentAttempts = new Map();
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_TIME = 10 * 60 * 1000; // 10 minutos
+
+function checkStudentAttempts(studentId) {
+  const now = Date.now();
+  const attempts = studentAttempts.get(studentId);
+  
+  if (!attempts) {
+    studentAttempts.set(studentId, { count: 1, firstAttempt: now, lockedUntil: null });
+    return { allowed: true };
+  }
+  
+  if (attempts.lockedUntil && now < attempts.lockedUntil) {
+    const remainingMinutes = Math.ceil((attempts.lockedUntil - now) / 60000);
+    return { 
+      allowed: false, 
+      message: `Bloqueado. Intenta en ${remainingMinutes} minutos.` 
+    };
+  }
+  
+  if (attempts.lockedUntil && now >= attempts.lockedUntil) {
+    studentAttempts.set(studentId, { count: 1, firstAttempt: now, lockedUntil: null });
+    return { allowed: true };
+  }
+  
+  attempts.count++;
+  
+  if (attempts.count >= MAX_ATTEMPTS) {
+    attempts.lockedUntil = now + LOCKOUT_TIME;
+    return { 
+      allowed: false, 
+      message: `Demasiados intentos. Bloqueado por 10 minutos.` 
+    };
+  }
+  
+  return { allowed: true };
+}
+
+function resetStudentAttempts(studentId) {
+  studentAttempts.delete(studentId);
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const { studentId } = await req.json();
     
-    if (!studentId || studentId.length !== 4) {
+    // Validación
+    if (!studentId || typeof studentId !== 'string' || studentId.length !== 4) {
       return Response.json({ success: false, error: 'ID inválido' }, { status: 400 });
     }
     
+    // Sanitizar input
+    const sanitizedId = studentId.trim().replace(/[^0-9]/g, '').slice(0, 4);
+    
+    if (sanitizedId.length !== 4) {
+      return Response.json({ success: false, error: 'ID inválido' }, { status: 400 });
+    }
+    
+    // Rate limiting
+    const attemptCheck = checkStudentAttempts(sanitizedId);
+    if (!attemptCheck.allowed) {
+      return Response.json({ 
+        success: false, 
+        error: attemptCheck.message 
+      }, { status: 429 });
+    }
+    
     const students = await base44.asServiceRole.entities.Student.filter({ 
-      student_id: studentId.trim(),
+      student_id: sanitizedId,
       status: 'active'
     }, '', 1);
     
     if (!students?.length) {
       return Response.json({ success: false, error: 'No encontrado' }, { status: 404 });
     }
+    
+    // Login exitoso
+    resetStudentAttempts(sanitizedId);
     
     const student = students[0];
     return Response.json({ 
@@ -33,8 +97,18 @@ Deno.serve(async (req) => {
         session_expiry: Date.now() + (5 * 60 * 1000),
         login_time: Date.now()
       }
+    }, {
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block'
+      }
     });
   } catch (error) {
-    return Response.json({ success: false, error: 'Error' }, { status: 500 });
+    console.error('[validateStudentLogin] Error:', error);
+    return Response.json({ 
+      success: false, 
+      error: 'Error en el servidor' 
+    }, { status: 500 });
   }
 });

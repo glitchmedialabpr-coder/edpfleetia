@@ -70,8 +70,20 @@ Deno.serve(async (req) => {
       status: 'pending'
     });
 
-    return Response.json({ success: true, tripRequest });
+    return Response.json({ 
+      success: true, 
+      tripRequest 
+    }, {
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block'
+      }
+    });
   } catch (error) {
-    return Response.json({ error: error.message || 'Error' }, { status: 500 });
+    console.error('[createTripRequest] Error:', error);
+    return Response.json({ 
+      error: 'Error al crear solicitud. Intenta nuevamente.' 
+    }, { status: 500 });
   }
 });
