@@ -70,6 +70,16 @@ export default function PassengerTrips() {
       return;
     }
 
+    if (!formData.destination_type) {
+      toast.error('Selecciona un destino');
+      return;
+    }
+
+    if (formData.destination_type === 'otros' && !formData.destination_other) {
+      toast.error('Especifica el destino');
+      return;
+    }
+
     const requestData = {
       destination_type: formData.destination_type,
       destination_other: formData.destination_other,
@@ -78,20 +88,16 @@ export default function PassengerTrips() {
       student_phone: user.phone || ''
     };
 
-    setModalOpen(false);
-    setFormData({ destination_type: '', destination_other: '' });
-    
-    toast.promise(
-      base44.functions.invoke('createTripRequest', requestData).then(() => {
-        queryClient.invalidateQueries({ queryKey: ['trip-requests'] });
-        queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
-      }),
-      {
-        loading: 'Enviando...',
-        success: 'Solicitud enviada',
-        error: 'Error al enviar'
-      }
-    );
+    try {
+      await base44.functions.invoke('createTripRequest', requestData);
+      queryClient.invalidateQueries({ queryKey: ['trip-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
+      setModalOpen(false);
+      setFormData({ destination_type: '', destination_other: '' });
+      toast.success('Solicitud enviada');
+    } catch (error) {
+      toast.error('Error al enviar');
+    }
   };
 
   const handleCancel = async (request) => {
