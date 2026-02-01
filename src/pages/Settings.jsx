@@ -317,7 +317,7 @@ export default function Settings() {
       </div>
 
       <Tabs defaultValue="general" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="general">
             <SettingsIcon className="w-4 h-4 mr-2" />
             General
@@ -337,6 +337,10 @@ export default function Settings() {
           <TabsTrigger value="system">
             <Shield className="w-4 h-4 mr-2" />
             Sistema
+          </TabsTrigger>
+          <TabsTrigger value="technical">
+            <Wrench className="w-4 h-4 mr-2" />
+            Técnico
           </TabsTrigger>
         </TabsList>
 
