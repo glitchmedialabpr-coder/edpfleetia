@@ -12,10 +12,12 @@ Deno.serve(async (req) => {
 
     // Fetch vehicle info - solo si existe el ID
     let vehicle = null;
-    if (selectedVehicle) {
+    const vehicleId = typeof selectedVehicle === 'string' ? selectedVehicle : selectedVehicle?.id;
+    
+    if (vehicleId) {
       try {
         const vehicles = await base44.asServiceRole.entities.Vehicle.filter({}, '', 500);
-        vehicle = vehicles?.find(v => v.id === selectedVehicle);
+        vehicle = vehicles?.find(v => v.id === vehicleId);
       } catch (e) {
         console.error('Error fetching vehicle:', e);
       }
@@ -39,7 +41,7 @@ Deno.serve(async (req) => {
     const trip = await base44.asServiceRole.entities.Trip.create({
       driver_id: driverId,
       driver_name: driverName,
-      vehicle_id: selectedVehicle,
+      vehicle_id: vehicleId,
       vehicle_info: vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '',
       scheduled_date: new Date().toISOString().split('T')[0],
       scheduled_time: timeString,
