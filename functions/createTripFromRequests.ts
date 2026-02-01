@@ -10,9 +10,16 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Parámetros inválidos' }, { status: 400 });
     }
 
-    // Fetch vehicle info
-    const vehicles = await base44.asServiceRole.entities.Vehicle.filter({ id: selectedVehicle }, '', 1);
-    const vehicle = vehicles?.[0];
+    // Fetch vehicle info - solo si existe el ID
+    let vehicle = null;
+    if (selectedVehicle) {
+      try {
+        const vehicles = await base44.asServiceRole.entities.Vehicle.filter({}, '', 500);
+        vehicle = vehicles?.find(v => v.id === selectedVehicle);
+      } catch (e) {
+        console.error('Error fetching vehicle:', e);
+      }
+    }
 
     const now = new Date();
     const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
