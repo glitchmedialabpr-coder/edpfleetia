@@ -38,6 +38,7 @@ const statusConfig = {
 };
 
 export default function DriverRequests() {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState('');
   const navigate = useNavigate();
@@ -151,8 +152,7 @@ export default function DriverRequests() {
 
   const { data: pendingRequests = [] } = useQuery({
     queryKey: ['pending-requests'],
-    queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' }, '-created_date', 50),
-    refetchInterval: 10000
+    queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' }, '-created_date', 50)
   });
 
   const { data: acceptedRequests = [] } = useQuery({
@@ -161,8 +161,7 @@ export default function DriverRequests() {
       driver_id: user?.driver_id,
       status: 'accepted_by_driver'
     }, '-created_date', 15),
-    enabled: !!user?.driver_id,
-    refetchInterval: 10000
+    enabled: !!user?.driver_id
   });
 
   const { data: activeTrips = [] } = useQuery({
@@ -171,8 +170,7 @@ export default function DriverRequests() {
       driver_id: user?.driver_id,
       status: 'in_progress'
     }, '-created_date', 5),
-    enabled: !!user?.driver_id,
-    refetchInterval: 15000
+    enabled: !!user?.driver_id
   });
 
   const handleAccept = async (request) => {
@@ -227,6 +225,8 @@ export default function DriverRequests() {
         })
       ]);
 
+      queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['accepted-requests'] });
       toast.success(`✓ (${acceptedRequests.length + 1}/${capacity})`);
       setTimeout(() => navigate(createPageUrl('DriverAcceptedStudents')), 200);
     } catch (error) {
@@ -251,6 +251,7 @@ export default function DriverRequests() {
         destination: request.destination
       });
 
+      queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
       toast.info('Rechazado');
     } catch (error) {
       toast.error('Error');
@@ -277,6 +278,9 @@ export default function DriverRequests() {
       });
 
       if (res.data.success) {
+        queryClient.invalidateQueries({ queryKey: ['accepted-requests'] });
+        queryClient.invalidateQueries({ queryKey: ['active-trips'] });
+        queryClient.invalidateQueries({ queryKey: ['driver-trips'] });
         toast.success('Viaje iniciado');
         navigate(createPageUrl('DriverTrips'));
       } else {
@@ -302,6 +306,7 @@ export default function DriverRequests() {
       };
 
       await base44.entities.Trip.update(trip.id, { students: updatedStudents });
+      queryClient.invalidateQueries({ queryKey: ['active-trips'] });
       toast.success('✓');
     } catch (error) {
       toast.error('Error');
@@ -331,6 +336,8 @@ export default function DriverRequests() {
         )
       ]);
 
+      queryClient.invalidateQueries({ queryKey: ['active-trips'] });
+      queryClient.invalidateQueries({ queryKey: ['driver-trips'] });
       toast.success('Completado');
     } catch (error) {
       toast.error('Error');

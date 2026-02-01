@@ -42,8 +42,7 @@ export default function DriverAcceptedStudents() {
       driver_id: user?.driver_id,
       status: 'accepted_by_driver'
     }, '-created_date'),
-    enabled: !!user?.driver_id,
-    refetchInterval: 15000
+    enabled: !!user?.driver_id
   });
 
   const { data: vehicles = [] } = useQuery({
@@ -74,6 +73,9 @@ export default function DriverAcceptedStudents() {
         {
           loading: 'Iniciando...',
           success: () => {
+            queryClient.invalidateQueries({ queryKey: ['accepted-requests'] });
+            queryClient.invalidateQueries({ queryKey: ['active-trips'] });
+            queryClient.invalidateQueries({ queryKey: ['driver-trips'] });
             setTimeout(() => navigate(createPageUrl('DriverTrips')), 200);
             return `${acceptedRequests.length} estudiantes`;
           },
