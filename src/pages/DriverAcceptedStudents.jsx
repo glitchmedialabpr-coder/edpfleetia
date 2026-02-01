@@ -79,7 +79,7 @@ export default function DriverAcceptedStudents() {
         toast.success(`Viaje iniciado con ${acceptedRequests.length} estudiante(s)`);
         refetchAccepted();
         setTimeout(() => {
-          navigate(createPageUrl('DriverRequests'));
+          navigate(createPageUrl('DriverTrips'));
         }, 500);
       } else {
         console.error('Error response:', res.data);
