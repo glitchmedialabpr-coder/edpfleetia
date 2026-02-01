@@ -91,57 +91,7 @@ export default function Layout({ children, currentPageName }) {
   const handleLogout = () => {
     localStorage.removeItem('pin_user');
     setUser(null);
-    setTimeout(() => {
-      window.location.href = createPageUrl('Home');
-    }, 300);
-  };
-
-  const handlePinLogin = async (e) => {
-    e.preventDefault();
-    setPinLoading(true);
-    setPinError('');
-
-    try {
-      if (pin === ADMIN_PIN) {
-        const adminUser = {
-          email: 'admin@edp.edu',
-          full_name: 'Administrador',
-          role: 'admin'
-        };
-        localStorage.setItem('pin_user', JSON.stringify(adminUser));
-        setUser(adminUser);
-        setPin('');
-      } else {
-        // Buscar estudiante por student_id (PIN)
-        const { base44 } = await import('./api/base44Client');
-        const students = await base44.entities.Student.filter({ student_id: pin });
-        
-        if (students && students.length > 0) {
-          const student = students[0];
-          const studentUser = {
-            id: student.id,
-            email: student.email || `student_${student.student_id}@edp.edu`,
-            full_name: student.full_name,
-            phone: student.phone,
-            role: 'user',
-            user_type: 'passenger',
-            student_id: student.student_id,
-            housing_name: student.housing_name
-          };
-          localStorage.setItem('pin_user', JSON.stringify(studentUser));
-          setUser(studentUser);
-          setPin('');
-        } else {
-          setPinError('ID de estudiante no encontrado');
-          setPin('');
-        }
-      }
-      setPinLoading(false);
-    } catch (error) {
-      setPinError('Error al verificar ID');
-      setPin('');
-      setPinLoading(false);
-    }
+    window.location.href = createPageUrl('Home');
   };
 
   const isAdmin = user?.role === 'admin';
