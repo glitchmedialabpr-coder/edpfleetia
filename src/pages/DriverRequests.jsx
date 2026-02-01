@@ -365,6 +365,11 @@ export default function DriverRequests() {
       <div>
         <h1 className="text-xl md:text-3xl font-bold text-slate-800">Solicitudes de Viaje</h1>
         <p className="text-sm md:text-base text-slate-500 mt-1">Acepta y gestiona viajes disponibles</p>
+        {selectedVehicle && (
+          <p className="text-xs md:text-sm text-teal-600 mt-2">
+            Vehículo: {vehicles.find(v => v.id === selectedVehicle)?.brand} {vehicles.find(v => v.id === selectedVehicle)?.model}
+          </p>
+        )}
       </div>
 
       {/* Accepted Students - Pending to Start Trip */}
