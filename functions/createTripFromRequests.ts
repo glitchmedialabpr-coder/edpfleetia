@@ -63,8 +63,10 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     console.error('[createTripFromRequests] Error:', error);
+    console.error('[createTripFromRequests] Stack:', error.stack);
     return Response.json({ 
-      error: 'Error al crear viaje. Intenta nuevamente.' 
+      error: error.message || 'Error al crear viaje. Intenta nuevamente.',
+      details: error.stack
     }, { status: 500 });
   }
 });
