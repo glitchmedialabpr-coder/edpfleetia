@@ -100,12 +100,13 @@ Deno.serve(async (req) => {
       }, { status: 429 });
     }
     
-    const students = await base44.asServiceRole.entities.Student.filter({ 
-      student_id: sanitizedId,
-      status: 'active'
-    }, '', 1);
+    // Cargar cache
+    await loadStudentCache(base44);
     
-    if (!students?.length) {
+    // Buscar en cache primero
+    const student = studentCache.get(sanitizedId);
+    
+    if (!student) {
       return Response.json({ success: false, error: 'No encontrado' }, { status: 404 });
     }
     
