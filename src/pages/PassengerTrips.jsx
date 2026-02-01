@@ -84,11 +84,12 @@ export default function PassengerTrips() {
     toast.promise(
       base44.functions.invoke('createTripRequest', requestData).then(() => {
         queryClient.invalidateQueries({ queryKey: ['trip-requests'] });
+        queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
       }),
       {
         loading: 'Enviando...',
-        success: 'Enviado',
-        error: 'Error'
+        success: 'Solicitud enviada',
+        error: 'Error al enviar'
       }
     );
   };
