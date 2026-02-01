@@ -35,6 +35,8 @@ export default function Settings() {
   const queryClient = useQueryClient();
   const [uploading, setUploading] = useState(false);
   const [videoUrl, setVideoUrl] = useState(null);
+  const [pinModal, setPinModal] = useState({ open: false, pin: '', error: '' });
+  const [deletingTrips, setDeletingTrips] = useState(false);
   const [settings, setSettings] = useState({
     // General
     app_name: 'EDP Transport',
