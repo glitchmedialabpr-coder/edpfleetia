@@ -57,20 +57,32 @@ export default function DriverAcceptedStudents() {
       return;
     }
 
+    if (!user || !user.driver_id) {
+      toast.error('Error: Usuario no autenticado');
+      return;
+    }
+
     try {
       const firstRequest = acceptedRequests[0];
       const res = await base44.functions.invoke('createTripFromRequests', {
         acceptedRequests,
-        selectedVehicle: firstRequest.vehicle_id
+        selectedVehicle: firstRequest.vehicle_id,
+        driverId: user.driver_id,
+        driverName: user.full_name || user.email
       });
 
       if (res.data.success) {
         toast.success(`Viaje iniciado con ${acceptedRequests.length} estudiante(s)`);
-        navigate(createPageUrl('DriverRequests'));
+        refetchAccepted();
+        setTimeout(() => {
+          navigate(createPageUrl('DriverRequests'));
+        }, 500);
+      } else {
+        toast.error(res.data.error || 'Error al iniciar viaje');
       }
     } catch (error) {
-      toast.error('Error al iniciar viaje');
-      console.error(error);
+      console.error('Error starting trip:', error);
+      toast.error('Error al iniciar viaje. Verifica tu conexión.');
     }
   };
 

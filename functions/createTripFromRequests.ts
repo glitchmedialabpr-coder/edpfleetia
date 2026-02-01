@@ -3,16 +3,11 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
 
-    if (!user || user.user_type !== 'driver') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { acceptedRequests, selectedVehicle, driverId, driverName } = await req.json();
 
-    const { acceptedRequests, selectedVehicle } = await req.json();
-
-    if (!acceptedRequests?.length || !selectedVehicle) {
-      return Response.json({ error: 'Invalid parameters' }, { status: 400 });
+    if (!acceptedRequests?.length || !selectedVehicle || !driverId) {
+      return Response.json({ error: 'Parámetros inválidos' }, { status: 400 });
     }
 
     // Fetch vehicle info
@@ -35,8 +30,8 @@ Deno.serve(async (req) => {
     }));
 
     const trip = await base44.asServiceRole.entities.Trip.create({
-      driver_id: user.driver_id,
-      driver_name: user.full_name || user.email,
+      driver_id: driverId,
+      driver_name: driverName,
       vehicle_id: selectedVehicle,
       vehicle_info: vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '',
       scheduled_date: new Date().toISOString().split('T')[0],
@@ -56,8 +51,20 @@ Deno.serve(async (req) => {
       });
     }
 
-    return Response.json({ success: true, trip });
+    return Response.json({ 
+      success: true, 
+      trip 
+    }, {
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block'
+      }
+    });
   } catch (error) {
-    return Response.json({ error: error.message || 'Error' }, { status: 500 });
+    console.error('[createTripFromRequests] Error:', error);
+    return Response.json({ 
+      error: 'Error al crear viaje. Intenta nuevamente.' 
+    }, { status: 500 });
   }
 });

@@ -352,16 +352,25 @@ export default function DriverRequests() {
       return;
     }
 
+    if (!user || !user.driver_id) {
+      toast.error('Error: Usuario no autenticado');
+      return;
+    }
+
     try {
       const res = await base44.functions.invoke('createTripFromRequests', {
         acceptedRequests,
-        selectedVehicle
+        selectedVehicle,
+        driverId: user.driver_id,
+        driverName: user.full_name || user.email
       });
 
       if (res.data.success) {
         toast.success(`Viaje iniciado con ${acceptedRequests.length} estudiante(s)`);
         refetchAccepted();
         refetchActiveTrips();
+      } else {
+        toast.error(res.data.error || 'Error al iniciar viaje');
       }
     } catch (error) {
       console.error('Error starting trip:', error);
