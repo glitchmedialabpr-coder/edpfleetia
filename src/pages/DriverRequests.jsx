@@ -213,66 +213,61 @@ export default function DriverRequests() {
 
   const handleAccept = async (request) => {
     if (!selectedVehicle) {
-      toast.error('Selecciona un vehículo primero');
+      toast.error('Selecciona vehículo');
       return;
     }
 
-    if (!user || !user.driver_id) {
-      toast.error('Error: ID de conductor no encontrado');
+    if (!user?.driver_id) {
+      toast.error('Error de sesión');
       return;
     }
 
-    // Obtener capacidad real del vehículo
     const vehicle = vehicles.find(v => v.id === selectedVehicle);
-    const vehicleCapacity = vehicle?.capacity || 15;
+    const capacity = vehicle?.capacity || 15;
     
-    if (acceptedRequests.length >= vehicleCapacity) {
-      toast.error(`Capacidad máxima alcanzada (${vehicleCapacity} estudiantes)`);
+    if (acceptedRequests.length >= capacity) {
+      toast.error(`Máximo ${capacity} estudiantes`);
       return;
     }
 
-    // Verificar que la solicitud aún está pendiente (evitar race conditions)
     const currentRequest = pendingRequests.find(r => r.id === request.id);
     if (!currentRequest || currentRequest.status !== 'pending') {
-      toast.error('Esta solicitud ya no está disponible');
+      toast.error('Ya no disponible');
       refetchPending();
       return;
     }
 
     try {
-      const vehicle = vehicles.find(v => v.id === selectedVehicle);
-      const now = new Date();
-      const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      const timeString = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      const vehicleInfo = vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '';
       
-      await base44.entities.TripRequest.update(request.id, {
-        status: 'accepted_by_driver',
-        driver_id: user.driver_id,
-        driver_name: user.full_name || user.email,
-        vehicle_id: selectedVehicle,
-        vehicle_info: vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '',
-        accepted_at: timeString
-      });
+      await Promise.all([
+        base44.entities.TripRequest.update(request.id, {
+          status: 'accepted_by_driver',
+          driver_id: user.driver_id,
+          driver_name: user.full_name || user.email,
+          vehicle_id: selectedVehicle,
+          vehicle_info: vehicleInfo,
+          accepted_at: timeString
+        }),
+        base44.entities.TripRequestResponse.create({
+          trip_request_id: request.id,
+          driver_id: user.driver_id,
+          driver_name: user.full_name || user.email,
+          response: 'accepted',
+          response_time: timeString,
+          vehicle_id: selectedVehicle,
+          vehicle_info: vehicleInfo,
+          passenger_name: request.passenger_name,
+          destination: request.destination
+        })
+      ]);
 
-      await base44.entities.TripRequestResponse.create({
-        trip_request_id: request.id,
-        driver_id: user.driver_id,
-        driver_name: user.full_name || user.email,
-        response: 'accepted',
-        response_time: timeString,
-        vehicle_id: selectedVehicle,
-        vehicle_info: vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '',
-        passenger_name: request.passenger_name,
-        destination: request.destination
-      });
-
-      toast.success(`Aceptado (${acceptedRequests.length + 1}/${vehicleCapacity})`);
-      
-      setTimeout(() => {
-        navigate(createPageUrl('DriverAcceptedStudents'));
-      }, 300);
+      toast.success(`✓ (${acceptedRequests.length + 1}/${capacity})`);
+      setTimeout(() => navigate(createPageUrl('DriverAcceptedStudents')), 200);
     } catch (error) {
-      console.error('Error accepting request:', error);
-      toast.error('Error al aceptar estudiante. Intenta nuevamente.');
+      console.error('Error:', error);
+      toast.error('Error');
       refetchPending();
     }
   };
@@ -281,16 +276,12 @@ export default function DriverRequests() {
     if (!user) return;
 
     try {
-      const now = new Date();
-      const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-      
-      // Save rejection in history
       await base44.entities.TripRequestResponse.create({
         trip_request_id: request.id,
         driver_id: user.driver_id,
         driver_name: user.full_name || user.email,
         response: 'rejected',
-        response_time: timeString,
+        response_time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
         vehicle_id: selectedVehicle,
         passenger_name: request.passenger_name,
         destination: request.destination
@@ -298,19 +289,18 @@ export default function DriverRequests() {
 
       toast.info('Rechazado');
     } catch (error) {
-      console.error('Error rejecting request:', error);
-      toast.error('Error al rechazar solicitud. Intenta nuevamente.');
+      toast.error('Error');
     }
   };
 
   const handleStartTrip = async () => {
-    if (acceptedRequests.length === 0) {
-      toast.error('No hay estudiantes aceptados');
+    if (!acceptedRequests.length) {
+      toast.error('No hay estudiantes');
       return;
     }
 
-    if (!user || !user.driver_id) {
-      toast.error('Error: Usuario no autenticado');
+    if (!user?.driver_id) {
+      toast.error('Error de sesión');
       return;
     }
 
@@ -323,14 +313,13 @@ export default function DriverRequests() {
       });
 
       if (res.data.success) {
-        toast.success(`Viaje iniciado`);
+        toast.success('Viaje iniciado');
         navigate(createPageUrl('DriverTrips'));
       } else {
-        toast.error(res.data.error || 'Error al iniciar viaje');
+        toast.error('Error');
       }
     } catch (error) {
-      console.error('Error starting trip:', error);
-      toast.error('Error al iniciar viaje. Verifica tu conexión.');
+      toast.error('Error');
     }
   };
 

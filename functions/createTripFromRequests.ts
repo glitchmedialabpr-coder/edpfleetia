@@ -3,40 +3,18 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-
     const { acceptedRequests, selectedVehicle, driverId, driverName } = await req.json();
 
     if (!acceptedRequests?.length || !selectedVehicle || !driverId) {
-      return Response.json({ error: 'Parámetros inválidos' }, { status: 400 });
+      return Response.json({ error: 'Datos inválidos' }, { status: 400 });
     }
 
-    // Fetch vehicle info - solo si existe el ID
-    let vehicle = null;
     const vehicleId = typeof selectedVehicle === 'string' ? selectedVehicle : selectedVehicle?.id;
-    
-    if (vehicleId) {
-      try {
-        const vehicles = await base44.asServiceRole.entities.Vehicle.filter({}, '', 500);
-        vehicle = vehicles?.find(v => v.id === vehicleId);
-      } catch (e) {
-        console.error('Error fetching vehicle:', e);
-      }
-    }
+    const vehicles = await base44.asServiceRole.entities.Vehicle.filter({}, '', 100);
+    const vehicle = vehicles?.find(v => v.id === vehicleId);
 
     const now = new Date();
     const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-
-    // Create Trip
-    const studentsData = acceptedRequests.map(req => ({
-      request_id: req.id,
-      student_id: req.passenger_id,
-      student_name: req.passenger_name,
-      housing_name: req.destination,
-      destination: req.destination,
-      destination_town: req.destination_town,
-      delivery_status: 'pending',
-      delivery_time: null
-    }));
 
     const trip = await base44.asServiceRole.entities.Trip.create({
       driver_id: driverId,
@@ -46,41 +24,31 @@ Deno.serve(async (req) => {
       scheduled_date: new Date().toISOString().split('T')[0],
       scheduled_time: timeString,
       departure_time: timeString,
-      students: studentsData,
+      students: acceptedRequests.map(req => ({
+        request_id: req.id,
+        student_id: req.passenger_id,
+        student_name: req.passenger_name,
+        housing_name: req.destination,
+        destination: req.destination,
+        destination_town: req.destination_town,
+        delivery_status: 'pending',
+        delivery_time: null
+      })),
       origin: 'EDP University',
       status: 'in_progress'
     });
 
-    // Update all accepted requests - solo si existen
-    for (const req of acceptedRequests) {
-      try {
-        await base44.asServiceRole.entities.TripRequest.update(req.id, {
-          status: 'in_trip',
-          started_at: timeString,
-          trip_id: trip.id
-        });
-      } catch (updateError) {
-        console.error(`Error updating request ${req.id}:`, updateError.message);
-        // Continuar con las demás actualizaciones
-      }
-    }
+    await Promise.all(acceptedRequests.map(req =>
+      base44.asServiceRole.entities.TripRequest.update(req.id, {
+        status: 'in_trip',
+        started_at: timeString,
+        trip_id: trip.id
+      })
+    ));
 
-    return Response.json({ 
-      success: true, 
-      trip 
-    }, {
-      headers: {
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '1; mode=block'
-      }
-    });
+    return Response.json({ success: true, trip });
   } catch (error) {
-    console.error('[createTripFromRequests] Error:', error);
-    console.error('[createTripFromRequests] Stack:', error.stack);
-    return Response.json({ 
-      error: error.message || 'Error al crear viaje. Intenta nuevamente.',
-      details: error.stack
-    }, { status: 500 });
+    console.error('Error:', error);
+    return Response.json({ error: 'Error al crear viaje' }, { status: 500 });
   }
 });

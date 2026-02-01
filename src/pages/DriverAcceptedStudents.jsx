@@ -63,33 +63,31 @@ export default function DriverAcceptedStudents() {
   });
 
   const handleStartTrip = async () => {
-    if (acceptedRequests.length === 0) {
-      toast.error('No hay estudiantes aceptados');
+    if (!acceptedRequests.length) {
+      toast.error('No hay estudiantes');
       return;
     }
 
-    if (!user || !user.driver_id) {
-      toast.error('Error: Usuario no autenticado');
+    if (!user?.driver_id) {
+      toast.error('Error de sesión');
       return;
     }
 
     try {
-      const firstRequest = acceptedRequests[0];
-      
       await toast.promise(
         base44.functions.invoke('createTripFromRequests', {
           acceptedRequests,
-          selectedVehicle: firstRequest.vehicle_id,
+          selectedVehicle: acceptedRequests[0].vehicle_id,
           driverId: user.driver_id,
           driverName: user.full_name || user.email
         }),
         {
           loading: 'Iniciando...',
           success: () => {
-            setTimeout(() => navigate(createPageUrl('DriverTrips')), 300);
-            return `Viaje con ${acceptedRequests.length} est.`;
+            setTimeout(() => navigate(createPageUrl('DriverTrips')), 200);
+            return `${acceptedRequests.length} estudiantes`;
           },
-          error: 'Error al iniciar'
+          error: 'Error'
         }
       );
     } catch (error) {

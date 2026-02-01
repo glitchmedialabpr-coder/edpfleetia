@@ -93,24 +93,23 @@ export default function PassengerTrips() {
       return;
     }
 
+    const requestData = {
+      destination_type: formData.destination_type,
+      destination_other: formData.destination_other,
+      student_id: user.student_id,
+      student_name: user.full_name,
+      student_phone: user.phone || ''
+    };
+
     setModalOpen(false);
-    setFormData({
-      destination_type: '',
-      destination_other: ''
-    });
+    setFormData({ destination_type: '', destination_other: '' });
     
     toast.promise(
-      base44.functions.invoke('createTripRequest', {
-        destination_type: formData.destination_type,
-        destination_other: formData.destination_other,
-        student_id: user.student_id,
-        student_name: user.full_name,
-        student_phone: user.phone || ''
-      }),
+      base44.functions.invoke('createTripRequest', requestData),
       {
         loading: 'Enviando...',
-        success: 'Solicitud enviada',
-        error: 'Error al enviar'
+        success: 'Enviado',
+        error: 'Error'
       }
     );
   };
