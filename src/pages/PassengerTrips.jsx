@@ -89,16 +89,19 @@ export default function PassengerTrips() {
     };
 
     try {
-      await base44.functions.invoke('createTripRequest', requestData);
-      queryClient.invalidateQueries({ queryKey: ['trip-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
-      setModalOpen(false);
-      setFormData({ destination_type: '', destination_other: '' });
-      toast.success('✅ Su solicitud ha sido enviada', {
-        description: 'Te notificaremos cuando un conductor acepte tu viaje',
-        duration: 4000
-      });
+      const response = await base44.functions.invoke('createTripRequest', requestData);
+      if (response.data.success) {
+        queryClient.invalidateQueries({ queryKey: ['trip-requests'] });
+        queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
+        setModalOpen(false);
+        setFormData({ destination_type: '', destination_other: '' });
+        toast.success('✅ Su solicitud ha sido enviada', {
+          description: 'Te notificaremos cuando un conductor acepte tu viaje',
+          duration: 4000
+        });
+      }
     } catch (error) {
+      console.error('Error detallado:', error);
       toast.error('Error al enviar la solicitud');
     }
   };
