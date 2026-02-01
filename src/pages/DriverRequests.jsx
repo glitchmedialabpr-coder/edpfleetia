@@ -153,7 +153,7 @@ export default function DriverRequests() {
   const { data: pendingRequests = [] } = useQuery({
     queryKey: ['pending-requests'],
     queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' }, '-created_date', 50),
-    refetchInterval: 2000
+    refetchInterval: 1000
   });
 
   const { data: acceptedRequests = [] } = useQuery({
