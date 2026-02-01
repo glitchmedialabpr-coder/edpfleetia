@@ -65,11 +65,15 @@ async function loadStudentCache(base44) {
         students.forEach(student => {
           studentCache.set(student.student_id, student);
         });
+        lastCacheLoad = now;
+      } else {
+        // Si la consulta retorna vacío, no actualizar el timestamp
+        // para reintentar en el próximo request
+        throw new Error('No students found in database');
       }
-      
-      lastCacheLoad = now;
     } catch (error) {
       console.error('[Cache] Error loading students:', error);
+      throw error; // Propagar el error para que se maneje en el handler
     }
   }
 }
