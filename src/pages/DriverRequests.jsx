@@ -496,14 +496,7 @@ export default function DriverRequests() {
             </Badge>
           )}
         </div>
-        {!selectedVehicle && (
-          <Card className="p-4 bg-amber-50 border-amber-200">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-amber-600" />
-              <p className="text-sm text-amber-800">Selecciona tu vehículo para aceptar viajes</p>
-            </div>
-          </Card>
-        )}
+
 
         {sortedPendingRequests.length === 0 ? (
           <Card className="p-8">
