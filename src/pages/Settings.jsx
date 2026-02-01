@@ -678,6 +678,11 @@ export default function Settings() {
           </Card>
         </TabsContent>
 
+        {/* Technical Support */}
+        <TabsContent value="technical" className="space-y-4">
+          <TechnicalSupportChat />
+        </TabsContent>
+
         {/* System Settings */}
         <TabsContent value="system">
           <Card>
