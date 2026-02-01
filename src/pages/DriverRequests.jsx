@@ -187,7 +187,7 @@ export default function DriverRequests() {
 
     const vehicle = vehicles.find(v => v.id === selectedVehicle);
     const capacity = vehicle?.capacity || 15;
-    
+
     if (acceptedRequests.length >= capacity) {
       toast.error(`Máximo ${capacity} estudiantes`);
       return;
@@ -196,14 +196,13 @@ export default function DriverRequests() {
     const currentRequest = pendingRequests.find(r => r.id === request.id);
     if (!currentRequest || currentRequest.status !== 'pending') {
       toast.error('Ya no disponible');
-      refetchPending();
       return;
     }
 
     try {
       const timeString = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       const vehicleInfo = vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '';
-      
+
       await Promise.all([
         base44.entities.TripRequest.update(request.id, {
           status: 'accepted_by_driver',
@@ -232,7 +231,6 @@ export default function DriverRequests() {
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error');
-      refetchPending();
     }
   };
 
