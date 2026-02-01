@@ -389,25 +389,43 @@ export default function DriverRequests() {
          </div>
       </div>
 
-      {/* Accepted Students - Link to dedicated page */}
+      {/* Accepted Students */}
       {acceptedRequests && acceptedRequests.length > 0 && (
-        <Card className="p-4 md:p-6 bg-gradient-to-br from-purple-50 to-white border border-purple-200">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
+        <div className="space-y-4">
+          <Card className="p-4 md:p-6 bg-gradient-to-br from-purple-50 to-white border border-purple-200">
+            <div className="mb-4">
               <h2 className="text-lg md:text-xl font-semibold text-slate-800">
                 {acceptedRequests.length} Estudiante{acceptedRequests.length > 1 ? 's' : ''} Aceptado{acceptedRequests.length > 1 ? 's' : ''}
               </h2>
               <p className="text-sm text-slate-500 mt-1">Listo para comenzar el viaje</p>
             </div>
+
+            <div className="space-y-3 mb-4">
+              {acceptedRequests.map(req => (
+                <div key={req.id} className="flex items-start gap-3 p-3 bg-white rounded-lg border border-slate-200 hover:border-purple-300 transition-colors">
+                  <div className="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-slate-800 text-sm md:text-base">{req.passenger_name}</p>
+                    <div className="flex items-center gap-1 mt-1 text-slate-600">
+                      <MapPin className="w-4 h-4 text-red-500 flex-shrink-0" />
+                      <span className="text-xs md:text-sm truncate">{req.destination}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
             <Button 
-              onClick={() => navigate(createPageUrl('DriverAcceptedStudents'))}
-              className="w-full md:w-auto bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 md:py-3 px-6"
+              onClick={handleStartTrip}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 md:py-4 text-base md:text-lg h-auto"
             >
-              <Navigation className="w-4 h-4 mr-2" />
-              Gestionar Viaje
+              <Navigation className="w-5 h-5 mr-2" />
+              Comenzar Viaje
             </Button>
-          </div>
-        </Card>
+          </Card>
+        </div>
       )}
 
       {/* Active Trips */}
