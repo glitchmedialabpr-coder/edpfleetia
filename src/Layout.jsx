@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import { 
               Bus, 
               LayoutDashboard, 
@@ -237,6 +238,7 @@ export default function Layout({ children, currentPageName }) {
   }
 
   return (
+    <ErrorBoundary>
     <div className="min-h-screen bg-slate-50">
       {/* Desktop Header */}
       <header className="hidden lg:block fixed top-0 left-72 right-0 h-16 bg-white border-b border-slate-200 z-30 px-8">
@@ -372,6 +374,7 @@ export default function Layout({ children, currentPageName }) {
           {children}
         </div>
       </main>
-    </div>
-  );
-}
+      </div>
+      </ErrorBoundary>
+      );
+      }
