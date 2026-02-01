@@ -49,6 +49,31 @@ function resetStudentAttempts(studentId) {
   studentAttempts.delete(studentId);
 }
 
+async function loadStudentCache(base44) {
+  const now = Date.now();
+  
+  // Solo recargar si pasó más de 1 hora o si el cache está vacío
+  if (studentCache.size === 0 || now - lastCacheLoad > CACHE_TTL) {
+    try {
+      const students = await base44.asServiceRole.entities.Student.filter({ 
+        status: 'active'
+      }, '', 500);
+      
+      studentCache.clear();
+      
+      if (students?.length) {
+        students.forEach(student => {
+          studentCache.set(student.student_id, student);
+        });
+      }
+      
+      lastCacheLoad = now;
+    } catch (error) {
+      console.error('[Cache] Error loading students:', error);
+    }
+  }
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
