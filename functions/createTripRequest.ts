@@ -3,10 +3,17 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-
-    if (!user || user.user_type !== 'passenger') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    
+    // Obtener usuario de pin_user
+    const pinUser = localStorage?.getItem?.('pin_user');
+    let user = null;
+    
+    if (pinUser) {
+      user = JSON.parse(pinUser);
+    }
+    
+    if (!user?.student_id) {
+      return Response.json({ error: 'Usuario no autenticado' }, { status: 401 });
     }
 
     const { destination_type, destination_other } = await req.json();
