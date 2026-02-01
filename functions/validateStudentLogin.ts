@@ -104,14 +104,22 @@ Deno.serve(async (req) => {
       }, { status: 429 });
     }
     
-    // Cargar cache
-    await loadStudentCache(base44);
+    // Cargar cache - propagar error si falla
+    try {
+      await loadStudentCache(base44);
+    } catch (cacheError) {
+      console.error('[Cache Load] Failed:', cacheError.message);
+      return Response.json({ 
+        success: false, 
+        error: 'Error cargando datos' 
+      }, { status: 500 });
+    }
     
     // Buscar en cache primero
     const student = studentCache.get(sanitizedId);
     
     if (!student) {
-      return Response.json({ success: false, error: 'No encontrado' }, { status: 404 });
+      return Response.json({ success: false, error: 'Estudiante no encontrado' }, { status: 404 });
     }
     
     // Login exitoso
