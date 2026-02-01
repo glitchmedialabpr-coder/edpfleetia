@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +33,7 @@ const statusConfig = {
 };
 
 export default function PassengerTrips() {
+  const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
@@ -59,8 +60,7 @@ export default function PassengerTrips() {
   const { data: requests = [] } = useQuery({
     queryKey: ['trip-requests', user?.student_id],
     queryFn: () => base44.entities.TripRequest.filter({ passenger_id: user?.student_id }, '-created_date'),
-    enabled: !!user?.student_id,
-    refetchInterval: 20000
+    enabled: !!user?.student_id
   });
 
   const handleSubmit = async (e) => {
@@ -82,7 +82,9 @@ export default function PassengerTrips() {
     setFormData({ destination_type: '', destination_other: '' });
     
     toast.promise(
-      base44.functions.invoke('createTripRequest', requestData),
+      base44.functions.invoke('createTripRequest', requestData).then(() => {
+        queryClient.invalidateQueries({ queryKey: ['trip-requests'] });
+      }),
       {
         loading: 'Enviando...',
         success: 'Enviado',
@@ -96,6 +98,7 @@ export default function PassengerTrips() {
 
     try {
       await base44.entities.TripRequest.update(request.id, { status: 'cancelled' });
+      queryClient.invalidateQueries({ queryKey: ['trip-requests'] });
       toast.success('Cancelado');
     } catch (error) {
       console.error('Error:', error);
