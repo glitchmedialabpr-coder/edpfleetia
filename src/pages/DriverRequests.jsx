@@ -362,34 +362,9 @@ export default function DriverRequests() {
 
   return (
     <div className="w-full space-y-4 md:space-y-6">
-      <div className="flex flex-col gap-4">
-        <div>
-          <h1 className="text-xl md:text-3xl font-bold text-slate-800">Solicitudes de Viaje</h1>
-          <p className="text-sm md:text-base text-slate-500 mt-1">Acepta y gestiona viajes disponibles</p>
-        </div>
-        <div className="w-full z-50">
-           <Select value={selectedVehicle} onValueChange={(vehicleId) => {
-             setSelectedVehicle(vehicleId);
-             // Guardar con timestamp para 24 horas
-             if (user?.driver_id) {
-               localStorage.setItem(`driver_vehicle_${user.driver_id}`, JSON.stringify({
-                 vehicleId,
-                 timestamp: Date.now()
-               }));
-             }
-           }}>
-             <SelectTrigger className="w-full">
-               <SelectValue placeholder="Selecciona tu vehículo" />
-             </SelectTrigger>
-             <SelectContent className="z-50">
-               {vehicles.map(vehicle => (
-                 <SelectItem key={vehicle.id} value={vehicle.id}>
-                   {vehicle.brand} {vehicle.model} - {vehicle.plate}
-                 </SelectItem>
-               ))}
-             </SelectContent>
-           </Select>
-         </div>
+      <div>
+        <h1 className="text-xl md:text-3xl font-bold text-slate-800">Solicitudes de Viaje</h1>
+        <p className="text-sm md:text-base text-slate-500 mt-1">Acepta y gestiona viajes disponibles</p>
       </div>
 
       {/* Accepted Students - Pending to Start Trip */}
