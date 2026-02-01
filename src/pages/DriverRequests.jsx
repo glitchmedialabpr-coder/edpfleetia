@@ -282,7 +282,6 @@ export default function DriverRequests() {
         queryClient.invalidateQueries({ queryKey: ['active-trips'] });
         queryClient.invalidateQueries({ queryKey: ['driver-trips'] });
         toast.success('Viaje iniciado');
-        navigate(createPageUrl('DriverTrips'));
       } else {
         toast.error('Error');
       }
