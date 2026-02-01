@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import SoundSelector from '../components/notifications/SoundSelector';
+import TechnicalSupportChat from '../components/agents/TechnicalSupportChat';
 
 export default function Settings() {
   const queryClient = useQueryClient();
