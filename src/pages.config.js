@@ -52,7 +52,6 @@ import AdminLogin from './pages/AdminLogin';
 import ConsolidatedReports from './pages/ConsolidatedReports';
 import DailyReports from './pages/DailyReports';
 import Dashboard from './pages/Dashboard';
-import DriverAcceptedStudents from './pages/DriverAcceptedStudents';
 import DriverDashboard from './pages/DriverDashboard';
 import DriverHistory from './pages/DriverHistory';
 import DriverLogin from './pages/DriverLogin';
@@ -93,7 +92,6 @@ export const PAGES = {
     "ConsolidatedReports": ConsolidatedReports,
     "DailyReports": DailyReports,
     "Dashboard": Dashboard,
-    "DriverAcceptedStudents": DriverAcceptedStudents,
     "DriverDashboard": DriverDashboard,
     "DriverHistory": DriverHistory,
     "DriverLogin": DriverLogin,
