@@ -727,24 +727,33 @@ export default function Settings() {
                   Zona de Peligro
                 </h4>
                 <div className="space-y-3">
-                  <Button 
-                    variant="outline" 
-                    onClick={handleResetToDefaults}
-                    className="w-full border-orange-200 hover:bg-orange-50 text-orange-700"
-                  >
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Restaurar Configuración Predeterminada
-                  </Button>
-                  
-                  <Button 
-                    variant="outline"
-                    onClick={handleExportData}
-                    className="w-full"
-                  >
-                    <Database className="w-4 h-4 mr-2" />
-                    Crear Respaldo Manual de Datos
-                  </Button>
-                </div>
+                    <Button 
+                      variant="outline" 
+                      onClick={handleResetToDefaults}
+                      className="w-full border-orange-200 hover:bg-orange-50 text-orange-700"
+                    >
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Restaurar Configuración Predeterminada
+                    </Button>
+
+                    <Button 
+                      variant="outline"
+                      onClick={handleExportData}
+                      className="w-full"
+                    >
+                      <Database className="w-4 h-4 mr-2" />
+                      Crear Respaldo Manual de Datos
+                    </Button>
+
+                    <Button 
+                      variant="outline"
+                      onClick={handleDeleteAllTrips}
+                      className="w-full border-red-200 hover:bg-red-50 text-red-700"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Eliminar Todos los Viajes
+                    </Button>
+                  </div>
               </div>
             </CardContent>
           </Card>
