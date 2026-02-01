@@ -389,8 +389,8 @@ export default function DriverRequests() {
          </div>
       </div>
 
-      {/* Accepted Students */}
-      {acceptedRequests && acceptedRequests.length > 0 && (
+      {/* Accepted Students - Pending to Start Trip */}
+      {acceptedRequests && acceptedRequests.length > 0 && activeTrips.length === 0 && (
         <div className="space-y-4">
           <Card className="p-4 md:p-6 bg-gradient-to-br from-purple-50 to-white border border-purple-200">
             <div className="mb-4">
