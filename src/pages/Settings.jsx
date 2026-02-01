@@ -759,6 +759,57 @@ export default function Settings() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
-  );
-}
+
+      {/* PIN Verification Modal */}
+      {pinModal.open && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Verificar PIN de Administrador</h3>
+            <p className="text-sm text-slate-600 mb-4">
+              Esta acción eliminará todos los viajes y solicitudes. Ingresa tu PIN para continuar.
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">PIN</label>
+                <input
+                  type="password"
+                  value={pinModal.pin}
+                  onChange={(e) => setPinModal(prev => ({ ...prev, pin: e.target.value, error: '' }))}
+                  placeholder="Ingresa PIN"
+                  maxLength="4"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-center text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  autoFocus
+                />
+              </div>
+
+              {pinModal.error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-700">{pinModal.error}</p>
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline"
+                  onClick={() => setPinModal({ open: false, pin: '', error: '' })}
+                  className="flex-1"
+                  disabled={deletingTrips}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  onClick={handleVerifyPinAndDelete}
+                  disabled={pinModal.pin.length !== 4 || deletingTrips}
+                  className="flex-1 bg-red-600 hover:bg-red-700"
+                >
+                  {deletingTrips ? 'Eliminando...' : 'Confirmar'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      </div>
+      );
+      }
