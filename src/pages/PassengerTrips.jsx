@@ -94,9 +94,12 @@ export default function PassengerTrips() {
       queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
       setModalOpen(false);
       setFormData({ destination_type: '', destination_other: '' });
-      toast.success('Solicitud enviada');
+      toast.success('✅ Su solicitud ha sido enviada', {
+        description: 'Te notificaremos cuando un conductor acepte tu viaje',
+        duration: 4000
+      });
     } catch (error) {
-      toast.error('Error al enviar');
+      toast.error('Error al enviar la solicitud');
     }
   };
 
