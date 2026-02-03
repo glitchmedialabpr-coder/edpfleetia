@@ -27,7 +27,7 @@ export default function TechnicalSupportChat() {
     try {
       setInitializing(true);
       const conv = await base44.agents.createConversation({
-        agent_name: 'TechnicalSupport',
+        agent_name: 'Glitch',
         metadata: {
           name: 'Soporte Técnico',
           description: 'Sesión de soporte técnico para resolver problemas'
@@ -92,7 +92,7 @@ export default function TechnicalSupportChat() {
   return (
     <div className="flex flex-col h-screen bg-slate-50">
       <div className="bg-white border-b border-slate-200 p-4 flex items-center justify-between">
-        <h2 className="font-semibold text-slate-800">Agente Técnico de Soporte</h2>
+        <h2 className="font-semibold text-slate-800">Glitch - Agente Técnico</h2>
         <Button
           variant="outline"
           size="sm"
