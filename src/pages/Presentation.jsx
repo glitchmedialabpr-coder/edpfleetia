@@ -268,24 +268,29 @@ export default function Presentation() {
     'Secure Authentication'
   ];
 
+  const [videoModal, setVideoModal] = useState({ open: false, url: '' });
+
   const demoVideos = [
     {
       title: 'Tour Completo del Sistema',
       description: 'Recorrido general por todas las funcionalidades principales',
       duration: '5:30',
-      thumbnail: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&h=400&fit=crop'
+      thumbnail: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&h=400&fit=crop',
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
     },
     {
       title: 'Flujo de Conductor',
       description: 'Cómo los conductores aceptan y completan viajes',
       duration: '3:45',
-      thumbnail: 'https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=600&h=400&fit=crop'
+      thumbnail: 'https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=600&h=400&fit=crop',
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
     },
     {
       title: 'Panel Administrativo',
       description: 'Gestión completa desde el dashboard de admin',
       duration: '4:20',
-      thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop'
+      thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop',
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
     }
   ];
 
@@ -634,7 +639,11 @@ export default function Presentation() {
 
             <div className="grid md:grid-cols-3 gap-8">
               {demoVideos.map((video, idx) => (
-                <Card key={idx} className="overflow-hidden hover:shadow-2xl transition-all group cursor-pointer">
+                <Card 
+                  key={idx} 
+                  className="overflow-hidden hover:shadow-2xl transition-all group cursor-pointer"
+                  onClick={() => setVideoModal({ open: true, url: video.videoUrl })}
+                >
                   <div className="relative">
                     <img 
                       src={video.thumbnail} 
@@ -642,7 +651,7 @@ export default function Presentation() {
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
-                      <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl">
+                      <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
                         <Play className="w-8 h-8 text-teal-600 ml-1" />
                       </div>
                     </div>
@@ -661,6 +670,56 @@ export default function Presentation() {
                   </div>
                 </Card>
               ))}
+            </div>
+
+            {/* Embedded Demo Section */}
+            <div className="mt-12">
+              <Card className="overflow-hidden border-2 border-teal-200">
+                <div className="bg-gradient-to-r from-teal-600 to-blue-600 p-6 text-white">
+                  <h3 className="text-2xl font-bold mb-2">Demo Interactivo en Vivo</h3>
+                  <p className="text-teal-100">Explora el sistema directamente desde aquí</p>
+                </div>
+                <div className="aspect-video bg-slate-900">
+                  <iframe
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                    title="Demo del Sistema"
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+                <div className="p-6 bg-slate-50">
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+                        <Shield className="w-5 h-5 text-teal-600" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-slate-800">Login Admin</p>
+                        <p className="text-sm text-slate-600">PIN: 0573</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <Bus className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-slate-800">Login Conductor</p>
+                        <p className="text-sm text-slate-600">ID: 001</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <GraduationCap className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-slate-800">Login Estudiante</p>
+                        <p className="text-sm text-slate-600">ID: 1234</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
             </div>
 
             {/* Live Demo CTA */}
@@ -906,6 +965,34 @@ export default function Presentation() {
           <p className="text-slate-400">© 2026 - Sistema de Gestión de Transporte Estudiantil</p>
         </div>
       </div>
+
+      {/* Video Modal */}
+      {videoModal.open && (
+        <div 
+          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4"
+          onClick={() => setVideoModal({ open: false, url: '' })}
+        >
+          <div className="relative w-full max-w-6xl" onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute -top-12 right-0 text-white hover:bg-white/10"
+              onClick={() => setVideoModal({ open: false, url: '' })}
+            >
+              <span className="text-2xl">×</span>
+            </Button>
+            <div className="aspect-video bg-black rounded-lg overflow-hidden">
+              <iframe
+                src={videoModal.url}
+                title="Video Demo"
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
