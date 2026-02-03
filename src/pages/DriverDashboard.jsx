@@ -50,62 +50,10 @@ export default function DriverDashboard() {
 
   const checkAndSetVehicleFromSchedule = async () => {
     try {
-      // Check new vehicle selection (from DriverVehicleSelection)
-      const vehicleSelection = localStorage.getItem('driver_vehicle_selection');
-      if (vehicleSelection) {
-        try {
-          const selection = JSON.parse(vehicleSelection);
-          if (Date.now() < selection.expires_at) {
-            setSelectedVehicle(selection.vehicle_id);
-            return;
-          } else {
-            localStorage.removeItem('driver_vehicle_selection');
-          }
-        } catch (e) {
-          localStorage.removeItem('driver_vehicle_selection');
-        }
-      }
-
-      const drivers = await base44.entities.Driver.filter({ driver_id: user.driver_id });
-      if (drivers && drivers.length > 0) {
-        const driver = drivers[0];
-        
-        // Verificar si está en turno
-        if (driver.shift_start_time && driver.shift_days && driver.assigned_vehicle_id) {
-          const now = new Date();
-          const currentDay = now.getDay();
-          const currentTime = now.getHours() * 60 + now.getMinutes();
-          
-          if (driver.shift_days.includes(currentDay)) {
-            const [startHour, startMin] = driver.shift_start_time.split(':').map(Number);
-            const shiftStartMinutes = startHour * 60 + startMin;
-            const shiftEndMinutes = shiftStartMinutes + (driver.shift_duration || 8) * 60;
-            
-            if (currentTime >= shiftStartMinutes && currentTime < shiftEndMinutes) {
-              setSelectedVehicle(driver.assigned_vehicle_id);
-              return;
-            }
-          }
-        }
-      }
-      
-      // Fallback a vehículo guardado si existe
-      const savedVehicle = localStorage.getItem(`driver_vehicle_${user.driver_id}`);
-      if (savedVehicle) {
-        try {
-          const { vehicleId, timestamp } = JSON.parse(savedVehicle);
-          const now = Date.now();
-          const elapsed = now - timestamp;
-          const twentyFourHours = 24 * 60 * 60 * 1000;
-          
-          if (elapsed < twentyFourHours) {
-            setSelectedVehicle(vehicleId);
-          } else {
-            localStorage.removeItem(`driver_vehicle_${user.driver_id}`);
-          }
-        } catch (e) {
-          localStorage.removeItem(`driver_vehicle_${user.driver_id}`);
-        }
+      // Usar el vehículo seleccionado durante el login
+      if (user.selected_vehicle_id) {
+        setSelectedVehicle(user.selected_vehicle_id);
+        return;
       }
     } catch (error) {
       console.error('Error checking schedule:', error);
