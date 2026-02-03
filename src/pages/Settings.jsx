@@ -759,15 +759,14 @@ export default function Settings() {
                       Crear Respaldo Manual de Datos
                     </Button>
 
-                    <Link to={createPageUrl('Presentation')} className="w-full">
-                      <Button 
-                        variant="outline"
-                        className="w-full border-teal-200 hover:bg-teal-50 text-teal-700"
-                      >
-                        <Presentation className="w-4 h-4 mr-2" />
-                        Ver Presentación del Sistema
-                      </Button>
-                    </Link>
+                    <Button 
+                      variant="outline"
+                      onClick={() => window.location.href = createPageUrl('Presentation')}
+                      className="w-full border-teal-200 hover:bg-teal-50 text-teal-700"
+                    >
+                      <Presentation className="w-4 h-4 mr-2" />
+                      Ver Presentación del Sistema
+                    </Button>
 
                     <Button 
                       variant="outline"
