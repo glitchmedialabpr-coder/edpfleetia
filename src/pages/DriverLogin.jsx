@@ -13,19 +13,9 @@ export default function DriverLogin() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Check if already logged in
-    const pinUser = localStorage.getItem('pin_user');
-    if (pinUser) {
-      try {
-        const user = JSON.parse(pinUser);
-        if (user.user_type === 'driver') {
-          navigate(createPageUrl('DriverDashboard'));
-        }
-      } catch (e) {
-        localStorage.removeItem('pin_user');
-      }
-    }
-  }, [navigate]);
+    // Clear any existing driver session on login page
+    localStorage.removeItem('pin_user');
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -43,9 +33,13 @@ export default function DriverLogin() {
       if (response.data.success) {
         const user = response.data.user;
         user.user_type = 'driver';
+        // No guardar selected_vehicle_id para forzar selección en cada login
+        delete user.selected_vehicle_id;
+        delete user.selected_vehicle_plate;
+        delete user.selected_vehicle_info;
         localStorage.setItem('pin_user', JSON.stringify(user));
         toast.success(`¡Bienvenido ${user.full_name}!`);
-        window.location.href = createPageUrl('DriverVehicleSelection');
+        navigate(createPageUrl('DriverVehicleSelection'));
       } else {
         toast.error(response.data.error || 'Conductor no encontrado');
         setDriverId('');
