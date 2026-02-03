@@ -83,6 +83,7 @@ import Trips from './pages/Trips';
 import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
+import Presentation from './pages/Presentation';
 import __Layout from './Layout.jsx';
 
 
@@ -123,6 +124,7 @@ export const PAGES = {
     "VehicleManagement": VehicleManagement,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
+    "Presentation": Presentation,
 }
 
 export const pagesConfig = {
