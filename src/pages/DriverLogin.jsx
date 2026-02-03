@@ -12,10 +12,7 @@ export default function DriverLogin() {
   const [driverId, setDriverId] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // Clear any existing driver session on login page
-    localStorage.removeItem('pin_user');
-  }, []);
+
 
   const handleLogin = async (e) => {
     e.preventDefault();

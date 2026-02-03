@@ -12,20 +12,7 @@ export default function AdminLogin() {
   const [pin, setPin] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // Check if already logged in
-    const pinUser = localStorage.getItem('pin_user');
-    if (pinUser) {
-      try {
-        const user = JSON.parse(pinUser);
-        if (user.role === 'admin') {
-          navigate(createPageUrl('Dashboard'));
-        }
-      } catch (e) {
-        localStorage.removeItem('pin_user');
-      }
-    }
-  }, [navigate]);
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -38,7 +25,7 @@ export default function AdminLogin() {
       if (response.data.success) {
         localStorage.setItem('pin_user', JSON.stringify(response.data.user));
         toast.success('Acceso autorizado');
-        window.location.href = createPageUrl('Dashboard');
+        navigate(createPageUrl('Dashboard'));
       } else {
         toast.error(response.data.error || 'PIN incorrecto');
         setPin('');

@@ -73,7 +73,7 @@ export default function DriverVehicleSelection() {
     
     localStorage.setItem('pin_user', JSON.stringify(updatedUser));
     toast.success(`Vehículo ${vehicle.plate} seleccionado`);
-    window.location.href = createPageUrl('DriverDashboard');
+    navigate(createPageUrl('DriverDashboard'));
   };
 
   if (loading) {

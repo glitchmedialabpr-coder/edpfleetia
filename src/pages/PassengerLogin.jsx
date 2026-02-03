@@ -12,20 +12,7 @@ export default function PassengerLogin() {
   const [studentId, setStudentId] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // Check if already logged in
-    const pinUser = localStorage.getItem('pin_user');
-    if (pinUser) {
-      try {
-        const user = JSON.parse(pinUser);
-        if (user.user_type === 'passenger') {
-          navigate(createPageUrl('PassengerTrips'));
-        }
-      } catch (e) {
-        localStorage.removeItem('pin_user');
-      }
-    }
-  }, [navigate]);
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -43,7 +30,7 @@ export default function PassengerLogin() {
       if (response.data.success) {
         localStorage.setItem('pin_user', JSON.stringify(response.data.user));
         toast.success(`¡Bienvenido ${response.data.user.full_name}!`);
-        window.location.href = createPageUrl('PassengerTrips');
+        navigate(createPageUrl('PassengerTrips'));
       } else {
         toast.error(response.data.error || 'Estudiante no encontrado');
         setStudentId('');
