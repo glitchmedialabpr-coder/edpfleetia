@@ -72,6 +72,7 @@ import Maintenance from './pages/Maintenance';
 import NotificationSettings from './pages/NotificationSettings';
 import PassengerLogin from './pages/PassengerLogin';
 import PassengerTrips from './pages/PassengerTrips';
+import Presentation from './pages/Presentation';
 import PurchaseReports from './pages/PurchaseReports';
 import Purchases from './pages/Purchases';
 import Reports from './pages/Reports';
@@ -83,7 +84,6 @@ import Trips from './pages/Trips';
 import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
-import Presentation from './pages/Presentation';
 import __Layout from './Layout.jsx';
 
 
@@ -113,6 +113,7 @@ export const PAGES = {
     "NotificationSettings": NotificationSettings,
     "PassengerLogin": PassengerLogin,
     "PassengerTrips": PassengerTrips,
+    "Presentation": Presentation,
     "PurchaseReports": PurchaseReports,
     "Purchases": Purchases,
     "Reports": Reports,
@@ -124,7 +125,6 @@ export const PAGES = {
     "VehicleManagement": VehicleManagement,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
-    "Presentation": Presentation,
 }
 
 export const pagesConfig = {

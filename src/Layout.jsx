@@ -224,7 +224,7 @@ export default function Layout({ children, currentPageName }) {
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="font-semibold text-slate-800">EDP Transport</span>
+          <span className="font-semibold text-slate-800">Fleetia</span>
         </div>
         <div className="flex items-center gap-2">
           {isDriver && <NotificationCenter user={user} />}
@@ -261,8 +261,8 @@ export default function Layout({ children, currentPageName }) {
               />
             </div>
             <div>
-              <h1 className="font-bold text-slate-800 text-lg">EDP Transport</h1>
-              <p className="text-xs text-slate-500">Sistema de Transporte</p>
+              <h1 className="font-bold text-slate-800 text-lg">Fleetia</h1>
+              <p className="text-xs text-slate-500">by Glitch Media Lab</p>
             </div>
           </div>
         </div>
