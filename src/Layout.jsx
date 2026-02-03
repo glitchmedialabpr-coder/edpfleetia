@@ -317,10 +317,13 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main Content */}
-      <main className="lg:pl-72 pt-16 lg:pt-16 min-h-screen">
-        <div className="p-4 lg:p-8">
+      <main className="lg:pl-72 pt-16 lg:pt-16 min-h-screen flex flex-col">
+        <div className="p-4 lg:p-8 flex-1">
           {children}
         </div>
+        <footer className="py-4 px-8 text-center text-sm text-slate-500 border-t border-slate-200 bg-white">
+          Design by <span className="font-medium text-slate-700">Glitch Media Lab</span>
+        </footer>
       </main>
       </div>
       </ErrorBoundary>
