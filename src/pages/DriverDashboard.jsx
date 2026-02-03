@@ -178,38 +178,27 @@ export default function DriverDashboard() {
         <p className="text-slate-500">Bienvenido, {user?.full_name}</p>
       </div>
 
-      {/* Vehicle Selection Card */}
-      <Card className="p-6 bg-gradient-to-br from-teal-50 to-white border-teal-200">
-        <div className="flex items-center gap-3 mb-4">
-          <Car className="w-6 h-6 text-teal-600" />
-          <h2 className="text-xl font-semibold text-slate-800">Mi Vehículo</h2>
-        </div>
-        
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium text-slate-600 mb-2 block">Selecciona tu vehículo para las próximas 24 horas</label>
-            <Select value={selectedVehicle} onValueChange={handleSelectVehicle}>
-              <SelectTrigger className="w-full text-base">
-                <SelectValue placeholder="Selecciona un vehículo" />
-              </SelectTrigger>
-              <SelectContent>
-                {vehicles.map(vehicle => (
-                  <SelectItem key={vehicle.id} value={vehicle.id}>
-                    {vehicle.brand} {vehicle.model} - {vehicle.plate}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      {/* Vehicle Info Card */}
+      {user?.selected_vehicle_plate && (
+        <Card className="p-6 bg-gradient-to-br from-teal-50 to-white border-teal-200">
+          <div className="flex items-center gap-3 mb-4">
+            <Car className="w-6 h-6 text-teal-600" />
+            <h2 className="text-xl font-semibold text-slate-800">Mi Vehículo</h2>
           </div>
-
-          {getTimeRemaining() && (
-            <div className="text-sm text-slate-600 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-teal-600" />
-              <span>Vigencia: <strong>{getTimeRemaining()}</strong></span>
+          
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-slate-600">Vehículo seleccionado:</span>
+              <Badge className="bg-teal-600 text-white text-base px-3 py-1">
+                {user.selected_vehicle_info} - {user.selected_vehicle_plate}
+              </Badge>
             </div>
-          )}
-        </div>
-      </Card>
+            <p className="text-xs text-slate-500 mt-2">
+              Seleccionado durante el inicio de sesión
+            </p>
+          </div>
+        </Card>
+      )}
 
       {/* Vehicle Details */}
       {currentVehicleData && (
