@@ -53,7 +53,8 @@ export default function AdminLogin() {
             <Shield className="w-10 h-10 text-blue-400" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Portal Administrativo</h1>
-          <p className="text-slate-300">EDP Transport - Acceso Restringido</p>
+          <p className="text-slate-300">Fleetia - Acceso Restringido</p>
+          <p className="text-slate-400 text-sm mt-2">Design by Glitch Media Lab</p>
         </div>
 
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/10 shadow-2xl">
