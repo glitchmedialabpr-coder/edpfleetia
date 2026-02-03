@@ -141,13 +141,13 @@ export default function Layout({ children, currentPageName }) {
   }
 
   // Allow login and public pages without authentication
-  const publicPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin'];
+  const publicPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection'];
   if (!user && !publicPages.includes(currentPageName)) {
     window.location.href = createPageUrl('Home');
     return null;
   }
 
-  // Render login pages without layout
+  // Render login and vehicle selection pages without layout
   if (publicPages.includes(currentPageName)) {
     return <ErrorBoundary>{children}</ErrorBoundary>;
   }

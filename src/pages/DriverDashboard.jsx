@@ -30,39 +30,25 @@ export default function DriverDashboard() {
     loadUser();
   }, []);
 
-  useEffect(() => {
-    if (user?.driver_id) {
-      checkAndSetVehicleFromSchedule();
-    }
-  }, [user?.driver_id]);
-
   const loadUser = async () => {
     try {
       const pinUser = localStorage.getItem('pin_user');
       if (pinUser) {
         const userData = JSON.parse(pinUser);
         setUser(userData);
+        // Set vehicle immediately when user loads
+        if (userData.selected_vehicle_id) {
+          setSelectedVehicle(userData.selected_vehicle_id);
+        }
       }
     } catch (error) {
       console.error('Error loading user:', error);
     }
   };
 
-  const checkAndSetVehicleFromSchedule = async () => {
-    try {
-      // Usar el vehículo seleccionado durante el login
-      if (user.selected_vehicle_id) {
-        setSelectedVehicle(user.selected_vehicle_id);
-        return;
-      }
-    } catch (error) {
-      console.error('Error checking schedule:', error);
-    }
-  };
-
   const { data: vehicles = [] } = useQuery({
     queryKey: ['vehicles'],
-    queryFn: () => base44.entities.Vehicle.filter({ status: 'available' }),
+    queryFn: () => base44.entities.Vehicle.list(),
     staleTime: 1000 * 60 * 5
   });
 
@@ -82,41 +68,13 @@ export default function DriverDashboard() {
     staleTime: 1000 * 30
   });
 
-  // Actualizar vehículo actual cuando cambia la selección
+  // Load vehicle data when selectedVehicle changes
   useEffect(() => {
     if (selectedVehicle && vehicles.length > 0) {
       const vehicle = vehicles.find(v => v.id === selectedVehicle);
       setCurrentVehicleData(vehicle);
-      
-      if (user?.driver_id) {
-        localStorage.setItem(`driver_vehicle_${user.driver_id}`, JSON.stringify({
-          vehicleId: selectedVehicle,
-          timestamp: Date.now()
-        }));
-      }
     }
-  }, [selectedVehicle, vehicles, user?.driver_id]);
-
-  const handleSelectVehicle = (vehicleId) => {
-    setSelectedVehicle(vehicleId);
-  };
-
-  const getTimeRemaining = () => {
-    if (!user?.driver_id) return null;
-    const savedVehicle = localStorage.getItem(`driver_vehicle_${user.driver_id}`);
-    if (!savedVehicle) return null;
-    
-    try {
-      const { timestamp } = JSON.parse(savedVehicle);
-      const elapsed = Date.now() - timestamp;
-      const remaining = (24 * 60 * 60 * 1000) - elapsed;
-      const hours = Math.floor(remaining / (60 * 60 * 1000));
-      const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
-      return `${hours}h ${minutes}m`;
-    } catch {
-      return null;
-    }
-  };
+  }, [selectedVehicle, vehicles]);
 
   return (
     <div className="w-full space-y-6">
