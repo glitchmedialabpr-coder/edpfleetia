@@ -27,11 +27,14 @@ import {
   CheckCircle,
   Volume2,
   Trash2,
-  Wrench
+  Wrench,
+  Presentation
 } from 'lucide-react';
 import { toast } from 'sonner';
 import SoundSelector from '../components/notifications/SoundSelector';
 import TechnicalSupportChat from '../components/agents/TechnicalSupportChat';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '../utils';
 
 export default function Settings() {
   const queryClient = useQueryClient();
@@ -755,6 +758,16 @@ export default function Settings() {
                       <Database className="w-4 h-4 mr-2" />
                       Crear Respaldo Manual de Datos
                     </Button>
+
+                    <Link to={createPageUrl('Presentation')} className="w-full">
+                      <Button 
+                        variant="outline"
+                        className="w-full border-teal-200 hover:bg-teal-50 text-teal-700"
+                      >
+                        <Presentation className="w-4 h-4 mr-2" />
+                        Ver Presentación del Sistema
+                      </Button>
+                    </Link>
 
                     <Button 
                       variant="outline"
