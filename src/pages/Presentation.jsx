@@ -53,38 +53,38 @@ export default function Presentation() {
   const features = [
     {
       icon: Bus,
-      title: 'Gestión de Viajes',
-      description: 'Sistema completo para programar, rastrear y completar viajes estudiantiles en tiempo real',
+      title: 'Gestión Centralizada e Intuitiva',
+      description: 'Dashboard administrativo con visión completa, planificación de rutas inteligente y asignación flexible de viajes',
       color: 'teal'
     },
     {
-      icon: Users,
-      title: 'Portal de Conductores',
-      description: 'Interfaz intuitiva para aceptar solicitudes, gestionar rutas y reportar entregas',
+      icon: Zap,
+      title: 'Eficiencia Operativa',
+      description: 'Optimización de recursos, automatización de tareas y reportes detallados para decisiones informadas',
       color: 'purple'
     },
     {
-      icon: GraduationCap,
-      title: 'Acceso Estudiantil',
-      description: 'Sistema simple y rápido para que estudiantes soliciten transporte a diferentes destinos',
+      icon: Shield,
+      title: 'Seguridad y Confianza',
+      description: 'Monitoreo en tiempo real, gestión completa de conductores y mantenimiento preventivo de vehículos',
       color: 'blue'
     },
     {
-      icon: Bell,
-      title: 'Notificaciones en Tiempo Real',
-      description: 'Alertas automáticas con sonido para nuevas solicitudes y cambios de estado',
+      icon: Star,
+      title: 'Experiencia Mejorada',
+      description: 'Portal para estudiantes, app para conductores y comunicación fluida con notificaciones instantáneas',
       color: 'amber'
     },
     {
       icon: BarChart3,
       title: 'Reportes y Analytics',
-      description: 'Dashboard administrativo con métricas, gráficos y reportes consolidados',
+      description: 'Reportes sobre viajes, combustible, mantenimiento, compras y rendimiento de conductores',
       color: 'emerald'
     },
     {
-      icon: Shield,
-      title: 'Seguridad y Control',
-      description: 'Sistema de autenticación por roles, rate limiting y protección de datos',
+      icon: Zap,
+      title: 'Innovación con IA',
+      description: 'Agente técnico "Glitch" disponible 24/7 para diagnosticar, resolver y verificar incidencias técnicas',
       color: 'red'
     }
   ];
@@ -173,90 +173,90 @@ export default function Presentation() {
   ];
 
   const modules = [
-    {
-      title: 'Gestión de Viajes',
-      icon: Bus,
-      color: 'teal',
-      features: [
-        'Creación y programación de viajes',
-        'Asignación automática de conductores',
-        'Seguimiento en tiempo real',
-        'Estado de entregas por estudiante',
-        'Rutas optimizadas',
-        'Historial completo'
-      ],
-      screenshot: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&h=500&fit=crop'
-    },
-    {
-      title: 'Portal de Conductores',
-      icon: Users,
-      color: 'purple',
-      features: [
-        'Dashboard personalizado',
-        'Solicitudes en tiempo real',
-        'Selección de vehículo',
-        'Sistema de aceptar/rechazar',
-        'Gestión de entregas',
-        'Notificaciones con sonido'
-      ],
-      screenshot: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=500&fit=crop'
-    },
-    {
-      title: 'Acceso Estudiantil',
-      icon: GraduationCap,
-      color: 'blue',
-      features: [
-        'Solicitud rápida de viaje',
-        'Múltiples destinos',
-        'Estado en tiempo real',
-        'Historial de viajes',
-        'Interfaz simple',
-        'Sin necesidad de registro'
-      ],
-      screenshot: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=500&fit=crop'
-    },
-    {
-      title: 'Gestión de Vehículos',
-      icon: Car,
-      color: 'emerald',
-      features: [
-        'Registro completo de vehículos',
-        'Control de mantenimiento',
-        'Alertas de servicio',
-        'Historial de reparaciones',
-        'Documentación digital',
-        'Seguimiento de kilometraje'
-      ],
-      screenshot: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&h=500&fit=crop'
-    },
-    {
-      title: 'Reportes y Analytics',
-      icon: BarChart3,
-      color: 'amber',
-      features: [
-        'Dashboard administrativo',
-        'Reportes diarios automáticos',
-        'Métricas de desempeño',
-        'Gráficos interactivos',
-        'Exportación de datos',
-        'Análisis de tendencias'
-      ],
-      screenshot: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=500&fit=crop'
-    },
-    {
-      title: 'Control de Gastos',
-      icon: DollarSign,
-      color: 'rose',
-      features: [
-        'Registro de compras',
-        'Control de combustible',
-        'Reportes financieros',
-        'Categorización de gastos',
-        'Recibos digitales',
-        'Presupuestos y alertas'
-      ],
-      screenshot: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=500&fit=crop'
-    }
+  {
+    title: 'Administración',
+    icon: Shield,
+    color: 'teal',
+    features: [
+      'Gestión de usuarios y permisos',
+      'Configuración del sistema',
+      'Reportes consolidados',
+      'Monitoreo global',
+      'Dashboard administrativo completo',
+      'Auditoría y logs del sistema'
+    ],
+    screenshot: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=500&fit=crop'
+  },
+  {
+    title: 'Transporte',
+    icon: Bus,
+    color: 'purple',
+    features: [
+      'Planificación de viajes',
+      'Asignación de rutas optimizadas',
+      'Seguimiento en vivo',
+      'Gestión de solicitudes de viaje',
+      'Estado de entregas por estudiante',
+      'Historial completo de viajes'
+    ],
+    screenshot: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&h=500&fit=crop'
+  },
+  {
+    title: 'Flota',
+    icon: Car,
+    color: 'blue',
+    features: [
+      'Control de vehículos',
+      'Mantenimiento preventivo',
+      'Registro de combustible',
+      'Gestión de accidentes',
+      'Documentos y permisos',
+      'Alertas de vencimiento'
+    ],
+    screenshot: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&h=500&fit=crop'
+  },
+  {
+    title: 'Personal',
+    icon: Users,
+    color: 'amber',
+    features: [
+      'Gestión de conductores',
+      'Base de datos de estudiantes',
+      'Historiales y desempeño',
+      'Licencias y certificaciones',
+      'Reportes de advertencias',
+      'Evaluaciones y capacitaciones'
+    ],
+    screenshot: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=500&fit=crop'
+  },
+  {
+    title: 'Finanzas',
+    icon: DollarSign,
+    color: 'emerald',
+    features: [
+      'Registro de compras',
+      'Control de costos operativos',
+      'Presupuestos y gastos',
+      'Reportes financieros',
+      'Recibos digitales',
+      'Análisis de rentabilidad'
+    ],
+    screenshot: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=500&fit=crop'
+  },
+  {
+    title: 'Soporte IA',
+    icon: Zap,
+    color: 'red',
+    features: [
+      'Agente "Glitch" 24/7',
+      'Diagnóstico automático de problemas',
+      'Resolución de incidencias',
+      'Verificación técnica',
+      'Soporte continuo',
+      'Reducción de carga de soporte humano'
+    ],
+    screenshot: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=500&fit=crop'
+  }
   ];
 
   const techStack = [
@@ -323,13 +323,13 @@ export default function Presentation() {
               <Bus className="w-12 h-12" />
             </motion.div>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 tracking-tight">
-              EDP Transport System
+              Fleetia by Glitch Media Lab
             </h1>
             <p className="text-xl md:text-3xl text-teal-100 mb-4 max-w-4xl mx-auto font-light">
-              Sistema inteligente de gestión de transporte estudiantil
+              Sistema inteligente de gestión de transporte educativo
             </p>
             <p className="text-lg text-teal-200 mb-10 max-w-2xl mx-auto">
-              Eficiencia, seguridad y control total en una sola plataforma
+              Eficiencia, seguridad e innovación con IA en una sola plataforma
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-8">
               <Badge className="bg-white/20 backdrop-blur-sm text-white px-6 py-3 text-base shadow-lg">
@@ -394,17 +394,42 @@ export default function Presentation() {
         {/* Overview Section */}
         {activeSection === 'overview' && (
           <div className="space-y-12">
-            <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-3xl font-bold text-slate-800 mb-4">
-                Transformando el Transporte Estudiantil
+            <div className="text-center max-w-4xl mx-auto">
+              <h2 className="text-4xl font-bold text-slate-800 mb-6">
+                Optimizando el Transporte Educativo: Eficiencia, Seguridad e Innovación
               </h2>
-              <p className="text-lg text-slate-600">
-                Una solución completa que conecta estudiantes, conductores y administración en un sistema 
-                eficiente, seguro y fácil de usar.
+              <p className="text-xl text-slate-600 mb-4 leading-relaxed">
+                <strong>Fleetia by Glitch Media Lab</strong> es una solución integral diseñada para transformar 
+                la administración del transporte en instituciones educativas, ofreciendo una plataforma robusta 
+                que centraliza la gestión, optimiza las rutas y mejora la experiencia general.
+              </p>
+              <p className="text-lg text-slate-600 leading-relaxed mb-6">
+                Más allá del simple seguimiento, Fleetia aborda los desafíos operativos diarios y estratégicos 
+                del transporte escolar y universitario con eficiencia, seguridad e innovación con IA.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            {/* AI Agent Highlight */}
+            <Card className="p-8 bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="w-24 h-24 bg-red-600 rounded-2xl flex items-center justify-center flex-shrink-0">
+                  <Zap className="w-12 h-12 text-white" />
+                </div>
+                <div className="flex-1 text-center md:text-left">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-2">
+                    Conoce a Glitch: Tu Asistente Técnico con IA
+                  </h3>
+                  <p className="text-slate-700 text-lg leading-relaxed">
+                    Fleetia integra un avanzado <strong>Agente de IA llamado "Glitch"</strong>, que actúa como 
+                    un técnico de soporte 24/7. Glitch puede diagnosticar, investigar, resolver y verificar 
+                    incidencias técnicas dentro de la aplicación, asegurando una resolución rápida de problemas 
+                    y garantizando una operación ininterrumpida.
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            <div className="grid md:grid-cols-4 gap-6">
               <Card className="p-6 text-center hover:shadow-lg transition-shadow">
                 <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="w-8 h-8 text-teal-600" />
@@ -425,8 +450,16 @@ export default function Presentation() {
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Zap className="w-8 h-8 text-blue-600" />
                 </div>
-                <h3 className="text-4xl font-bold text-slate-800 mb-2">Real-time</h3>
-                <p className="text-slate-600">Actualizaciones</p>
+                <h3 className="text-4xl font-bold text-slate-800 mb-2">24/7</h3>
+                <p className="text-slate-600">Soporte IA</p>
+              </Card>
+
+              <Card className="p-6 text-center hover:shadow-lg transition-shadow">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Settings className="w-8 h-8 text-red-600" />
+                </div>
+                <h3 className="text-4xl font-bold text-slate-800 mb-2">6</h3>
+                <p className="text-slate-600">Módulos Principales</p>
               </Card>
             </div>
           </div>
@@ -922,10 +955,10 @@ export default function Presentation() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              ¿Listo para transformar tu sistema de transporte?
+              ¿Listo para transformar tu transporte educativo?
             </h2>
             <p className="text-xl md:text-2xl text-teal-100 mb-10 max-w-3xl mx-auto">
-              Implementación en 48 horas • Soporte 24/7 • Resultados inmediatos
+              Implementación rápida • Soporte IA 24/7 con Glitch • Resultados inmediatos
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <Button size="lg" className="bg-white text-teal-700 hover:bg-teal-50 text-xl px-12 py-6 h-auto shadow-2xl">
@@ -960,9 +993,10 @@ export default function Presentation() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Bus className="w-8 h-8 text-teal-400" />
-            <span className="text-2xl font-bold">EDP Transport System</span>
+            <span className="text-2xl font-bold">Fleetia by Glitch Media Lab</span>
           </div>
-          <p className="text-slate-400">© 2026 - Sistema de Gestión de Transporte Estudiantil</p>
+          <p className="text-slate-400">© 2026 - Sistema Inteligente de Gestión de Transporte Educativo</p>
+          <p className="text-slate-500 text-sm mt-2">Diseñado con innovación, construido con excelencia</p>
         </div>
       </div>
 
