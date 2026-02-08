@@ -22,7 +22,7 @@ export default function Home() {
           <p className="text-xl text-slate-300">Administra servicios, conductores y operaciones desde un solo lugar</p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-4 gap-6">
           {/* Admin Login */}
           <button
             onClick={() => navigate(createPageUrl('AdminLogin'))}
@@ -39,6 +39,27 @@ export default function Home() {
               <div className="pt-4">
                 <span className="text-blue-400 font-semibold group-hover:underline">
                   Acceso con PIN →
+                </span>
+              </div>
+            </div>
+          </button>
+
+          {/* Employee Complaints Login */}
+          <button
+            onClick={() => navigate(createPageUrl('EmployeeLogin'))}
+            className="group relative bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+          >
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="w-20 h-20 bg-purple-600/20 rounded-full flex items-center justify-center group-hover:bg-purple-600/30 transition-colors">
+                <Shield className="w-10 h-10 text-purple-400" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-2">Quejas</h3>
+                <p className="text-sm text-slate-400">Portal de empleados</p>
+              </div>
+              <div className="pt-4">
+                <span className="text-purple-400 font-semibold group-hover:underline">
+                  Acceso con Código →
                 </span>
               </div>
             </div>
