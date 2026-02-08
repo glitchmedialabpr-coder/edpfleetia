@@ -87,6 +87,13 @@ export default function Layout({ children, currentPageName }) {
     return () => clearInterval(interval);
   }, []);
 
+  // Redirect to Home if no user on protected pages
+  useEffect(() => {
+    if (!loading && !user && !['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'].includes(currentPageName)) {
+      navigate(createPageUrl('Home'), { replace: true });
+    }
+  }, [loading, user, currentPageName, navigate]);
+
   const loadUser = () => {
     try {
       const pinUser = localStorage.getItem('pin_user');
