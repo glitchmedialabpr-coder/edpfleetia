@@ -32,8 +32,10 @@ import {
   Car
 } from 'lucide-react';
 import EmptyState from '../components/common/EmptyState';
+import MobileCard, { MobileCardRow, MobileCardSection } from '../components/common/MobileCard';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 
 const statusConfig = {
   scheduled: { label: 'Programado', color: 'bg-amber-100 text-amber-700' },
@@ -152,7 +154,9 @@ export default function History() {
             description="Los viajes completados aparecerán aquí"
           />
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          {/* Desktop Table */}
+          <div className="hidden lg:block overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="bg-slate-50">
@@ -235,6 +239,77 @@ export default function History() {
               </TableBody>
             </Table>
           </div>
+
+          {/* Mobile Card View */}
+          <div className="lg:hidden divide-y">
+            {filteredTrips.map(trip => {
+              const status = statusConfig[trip.status] || statusConfig.scheduled;
+              return (
+                <MobileCard key={trip.id} className="border-0 rounded-none shadow-none">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Calendar className="w-4 h-4 text-slate-400 select-none" />
+                        <p className="font-medium text-slate-800">
+                          {trip.scheduled_date ? format(new Date(trip.scheduled_date), 'd MMM yyyy', { locale: es }) : '-'}
+                        </p>
+                      </div>
+                      {trip.scheduled_time && (
+                        <p className="text-xs text-slate-500 ml-6">{trip.scheduled_time}</p>
+                      )}
+                    </div>
+                    <Badge className={cn("select-none", status.color)}>
+                      {status.label}
+                    </Badge>
+                  </div>
+
+                  <MobileCardSection>
+                    <MobileCardRow 
+                      icon={User}
+                      label="Chofer"
+                      value={trip.driver_name || 'Sin asignar'}
+                    />
+                    <MobileCardRow 
+                      icon={Car}
+                      label="Vehículo"
+                      value={trip.vehicle_info || '-'}
+                    />
+                    <MobileCardRow 
+                      icon={Users}
+                      label="Estudiantes"
+                      value={trip.students?.length || 0}
+                    />
+                    {trip.route_name && (
+                      <div className="flex items-center justify-between py-2">
+                        <span className="text-sm text-slate-500 select-none">Ruta</span>
+                        <span className="text-sm font-medium text-slate-800">{trip.route_name}</span>
+                      </div>
+                    )}
+                  </MobileCardSection>
+
+                  {(trip.departure_time || trip.arrival_time) && (
+                    <div className="pt-3 mt-3 border-t space-y-1">
+                      {trip.departure_time && (
+                        <div className="flex items-center gap-2 text-sm">
+                          <Clock className="w-3 h-3 text-slate-400 select-none" />
+                          <span className="text-slate-500 select-none">Salida:</span>
+                          <span className="text-slate-700">{trip.departure_time}</span>
+                        </div>
+                      )}
+                      {trip.arrival_time && (
+                        <div className="flex items-center gap-2 text-sm">
+                          <Clock className="w-3 h-3 text-emerald-500 select-none" />
+                          <span className="text-slate-500 select-none">Llegada:</span>
+                          <span className="text-emerald-600">{trip.arrival_time}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </MobileCard>
+              );
+            })}
+          </div>
+          </>
         )}
       </Card>
     </div>

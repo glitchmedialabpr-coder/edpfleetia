@@ -58,6 +58,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 import EmptyState from '../components/common/EmptyState';
 import StatsCard from '../components/common/StatsCard';
+import MobileCard, { MobileCardRow, MobileCardSection } from '../components/common/MobileCard';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -520,7 +521,9 @@ export default function Drivers() {
             actionLabel="Agregar Chofer"
           />
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          {/* Desktop Table */}
+          <div className="hidden lg:block overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="bg-slate-50">
@@ -640,6 +643,90 @@ export default function Drivers() {
               </TableBody>
             </Table>
           </div>
+          
+          {/* Mobile Card View */}
+          <div className="lg:hidden divide-y">
+            {filteredDrivers.map(driver => {
+              const alert = getLicenseAlert(driver);
+              const status = statusConfig[driver.status] || statusConfig.active;
+              
+              return (
+                <MobileCard key={driver.id} className="border-0 rounded-none shadow-none">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center select-none">
+                        {driver.photo_url ? (
+                          <img src={driver.photo_url} alt={driver.full_name} className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                          <User className="w-5 h-5 text-teal-600" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium text-slate-800">{driver.full_name}</p>
+                        <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200 font-mono text-xs mt-1">
+                          {driver.driver_id || '-'}
+                        </Badge>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => openEditModal(driver)}
+                      className="select-none"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  <MobileCardSection>
+                    <MobileCardRow 
+                      icon={CreditCard}
+                      label="Licencia"
+                      value={driver.license_number}
+                    />
+                    <MobileCardRow 
+                      icon={BadgeIcon}
+                      label="Categoría"
+                      value={`Categoría ${driver.license_category}`}
+                    />
+                    {driver.license_expiry && (
+                      <div className="flex items-center justify-between py-2">
+                        <div className="flex items-center gap-2 text-sm text-slate-500 select-none">
+                          <Calendar className="w-4 h-4" />
+                          <span>Vencimiento</span>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-medium text-slate-800">
+                            {format(parseISO(driver.license_expiry), 'd MMM yyyy', { locale: es })}
+                          </p>
+                          {alert && (
+                            <p className={cn(
+                              "text-xs font-medium mt-0.5",
+                              alert.type === 'danger' ? 'text-red-600' : 'text-amber-600'
+                            )}>
+                              {alert.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </MobileCardSection>
+
+                  <div className="flex items-center justify-between pt-3 mt-3 border-t">
+                    <Badge variant="outline" className={cn("font-medium border select-none", status.color)}>
+                      {status.label}
+                    </Badge>
+                    {allAccidents.filter(a => a.driver_id === driver.id).length > 0 && (
+                      <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 text-xs select-none">
+                        {allAccidents.filter(a => a.driver_id === driver.id).length} accidente{allAccidents.filter(a => a.driver_id === driver.id).length > 1 ? 's' : ''}
+                      </Badge>
+                    )}
+                  </div>
+                </MobileCard>
+              );
+            })}
+          </div>
+          </>
         )}
       </Card>
         </TabsContent>

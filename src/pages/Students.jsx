@@ -42,6 +42,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import EmptyState from '../components/common/EmptyState';
+import MobileCard, { MobileCardRow, MobileCardSection } from '../components/common/MobileCard';
 import { useQueryClient } from '@tanstack/react-query';
 
 export default function Students() {
@@ -279,7 +280,9 @@ export default function Students() {
             actionLabel="Agregar Estudiante"
           />
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          {/* Desktop Table */}
+          <div className="hidden lg:block overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="bg-slate-50">
@@ -356,6 +359,80 @@ export default function Students() {
               </TableBody>
             </Table>
           </div>
+
+          {/* Mobile Card View */}
+          <div className="lg:hidden divide-y">
+            {filteredStudents.map(student => (
+              <MobileCard key={student.id} className="border-0 rounded-none shadow-none">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center select-none">
+                      <span className="font-semibold text-purple-600">
+                        {student.full_name?.charAt(0) || '?'}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-800">{student.full_name}</p>
+                      <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 font-mono text-xs mt-1 select-none">
+                        {student.student_id}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => openEditModal(student)}
+                      className="select-none"
+                    >
+                      <Pencil className="w-4 h-4 text-slate-400" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => handleDelete(student)}
+                      className="select-none"
+                    >
+                      <Trash2 className="w-4 h-4 text-red-400" />
+                    </Button>
+                  </div>
+                </div>
+
+                <MobileCardSection>
+                  {student.housing_name && (
+                    <MobileCardRow 
+                      icon={Building2}
+                      label="Hospedaje"
+                      value={student.housing_name}
+                    />
+                  )}
+                  {student.phone && (
+                    <MobileCardRow 
+                      icon={Phone}
+                      label="Teléfono"
+                      value={student.phone}
+                    />
+                  )}
+                  {student.email && (
+                    <MobileCardRow 
+                      icon={Mail}
+                      label="Email"
+                      value={<span className="text-xs truncate">{student.email}</span>}
+                    />
+                  )}
+                </MobileCardSection>
+
+                <div className="pt-3 mt-3 border-t">
+                  <Badge variant={student.status === 'active' ? 'default' : 'secondary'}
+                    className={cn("select-none", student.status === 'active' ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100' : '')}
+                  >
+                    {student.status === 'active' ? 'Activo' : 'Inactivo'}
+                  </Badge>
+                </div>
+              </MobileCard>
+            ))}
+          </div>
+          </>
         )}
       </Card>
         </TabsContent>

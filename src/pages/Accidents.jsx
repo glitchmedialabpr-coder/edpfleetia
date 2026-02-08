@@ -45,6 +45,7 @@ import {
 } from 'lucide-react';
 import EmptyState from '../components/common/EmptyState';
 import StatsCard from '../components/common/StatsCard';
+import MobileCard, { MobileCardRow, MobileCardSection } from '../components/common/MobileCard';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -310,7 +311,9 @@ export default function Accidents() {
             actionLabel="Reportar Accidente"
           />
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          {/* Desktop Table */}
+          <div className="hidden lg:block overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="bg-slate-50">
@@ -399,6 +402,74 @@ export default function Accidents() {
               </TableBody>
             </Table>
           </div>
+
+          {/* Mobile Card View */}
+          <div className="lg:hidden divide-y">
+            {filteredAccidents.map(accident => {
+              const severity = accident.severity && severityConfig[accident.severity] ? severityConfig[accident.severity] : severityConfig.minor;
+              const status = accident.status && statusConfig[accident.status] ? statusConfig[accident.status] : statusConfig.reported;
+              
+              return (
+                <MobileCard key={accident.id} className="border-0 rounded-none shadow-none">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Calendar className="w-4 h-4 text-slate-400 select-none" />
+                        <p className="font-medium text-slate-800">
+                          {accident.accident_date ? format(new Date(accident.accident_date), 'd MMM yyyy', { locale: es }) : '-'}
+                        </p>
+                      </div>
+                      {accident.accident_time && (
+                        <p className="text-xs text-slate-500 ml-6">{accident.accident_time}</p>
+                      )}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => openEditModal(accident)}
+                      className="select-none"
+                    >
+                      Ver
+                    </Button>
+                  </div>
+
+                  <MobileCardSection>
+                    <MobileCardRow 
+                      icon={User}
+                      label="Chofer"
+                      value={accident.driver_name}
+                    />
+                    <MobileCardRow 
+                      icon={Car}
+                      label="Vehículo"
+                      value={accident.vehicle_info || '-'}
+                    />
+                    <MobileCardRow 
+                      icon={MapPin}
+                      label="Ubicación"
+                      value={accident.location || '-'}
+                    />
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-sm text-slate-500 select-none">Costo Estimado</span>
+                      <span className="text-sm font-semibold text-red-600">
+                        ${accident.estimated_cost?.toFixed(2) || '0.00'}
+                      </span>
+                    </div>
+                  </MobileCardSection>
+
+                  <div className="flex items-center justify-between pt-3 mt-3 border-t">
+                    <Badge variant="outline" className={cn("font-medium border select-none", severity.color)}>
+                      {severity.label}
+                    </Badge>
+                    <Badge className={cn("select-none", status.color)}>
+                      {status.label}
+                    </Badge>
+                  </div>
+                </MobileCard>
+              );
+            })}
+          </div>
+          </>
         )}
       </Card>
 
