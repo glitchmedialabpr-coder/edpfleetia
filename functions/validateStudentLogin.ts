@@ -93,8 +93,11 @@ Deno.serve(async (req) => {
     const { studentId } = await req.json();
     
     // Validación
-    if (!studentId || typeof studentId !== 'string' || studentId.length !== 4) {
-      return Response.json({ success: false, error: 'ID inválido' }, { status: 400 });
+     if (!studentId || typeof studentId !== 'string' || studentId.length !== 4) {
+      return Response.json({ success: false, error: 'ID inválido' }, { 
+        status: 400,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
     }
     
     // Sanitizar input
