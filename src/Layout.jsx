@@ -270,9 +270,17 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-72 right-0 h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-40 px-4 flex items-center justify-between select-none">
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-40 px-4 flex items-center justify-between select-none">
         <div className="flex items-center gap-3 select-none">
-          {needsBackButton() ? (
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="select-none"
+          >
+            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </Button>
+          {needsBackButton() && (
             <Button
               variant="ghost"
               size="icon"
@@ -281,10 +289,9 @@ export default function Layout({ children, currentPageName }) {
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
-          ) : (
-            <>
-              <span className="font-semibold text-slate-800 dark:text-slate-100 select-none">Fleetia</span>
-            </>
+          )}
+          {!needsBackButton() && (
+            <span className="font-semibold text-slate-800 dark:text-slate-100 select-none">Fleetia</span>
           )}
         </div>
         <div className="flex items-center gap-2">
@@ -292,6 +299,14 @@ export default function Layout({ children, currentPageName }) {
           {isDriver && <NotificationCenter user={user} />}
         </div>
       </header>
+
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
       {/* Sidebar */}
       <aside className={cn(
