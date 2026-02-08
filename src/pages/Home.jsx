@@ -59,7 +59,7 @@ export default function Home() {
               </div>
               <div className="pt-4">
                 <span className="text-purple-400 font-semibold group-hover:underline">
-                  Acceso con Código →
+                  Acceso →
                 </span>
               </div>
             </div>
