@@ -35,14 +35,14 @@ export default function DriverDashboard() {
     try {
       const pinUser = localStorage.getItem('pin_user');
       if (!pinUser) {
-        window.location.href = createPageUrl('DriverLogin');
+        navigate(createPageUrl('DriverLogin'));
         return;
       }
       
       const userData = JSON.parse(pinUser);
       
       if (!userData.selected_vehicle_id) {
-        window.location.href = createPageUrl('DriverVehicleSelection');
+        navigate(createPageUrl('DriverVehicleSelection'));
         return;
       }
       
@@ -50,7 +50,7 @@ export default function DriverDashboard() {
       setSelectedVehicle(userData.selected_vehicle_id);
     } catch (error) {
       console.error('Error loading user:', error);
-      window.location.href = createPageUrl('DriverLogin');
+      navigate(createPageUrl('DriverLogin'));
     }
   };
 

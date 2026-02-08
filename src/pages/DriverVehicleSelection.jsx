@@ -81,7 +81,7 @@ export default function DriverVehicleSelection() {
     toast.success(`Vehículo ${vehicle.plate} seleccionado`);
     
     setTimeout(() => {
-      window.location.href = createPageUrl('DriverDashboard');
+      navigate(createPageUrl('DriverDashboard'));
     }, 500);
   };
 
