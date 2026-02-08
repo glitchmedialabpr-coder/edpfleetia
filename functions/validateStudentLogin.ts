@@ -111,12 +111,15 @@ Deno.serve(async (req) => {
     }
     
     // Rate limiting
-    const attemptCheck = checkStudentAttempts(sanitizedId);
+     const attemptCheck = checkStudentAttempts(sanitizedId);
     if (!attemptCheck.allowed) {
       return Response.json({ 
         success: false, 
         error: attemptCheck.message 
-      }, { status: 429 });
+      }, { 
+        status: 429,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
     }
     
     // Cargar cache - propagar error si falla
