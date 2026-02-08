@@ -37,7 +37,8 @@ import {
   Loader2,
   FileSpreadsheet,
   MapPin,
-  Phone
+  Phone,
+  Mail
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
