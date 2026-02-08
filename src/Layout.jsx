@@ -409,8 +409,17 @@ export default function Layout({ children, currentPageName }) {
             </motion.div>
           </AnimatePresence>
         )}
-        <footer className="py-4 px-8 text-center text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-        Design by <span className="font-medium text-slate-700 dark:text-slate-300 select-none">Glitch Media Lab</span>
+        <footer className="py-4 px-8 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+          <div>Design by <span className="font-medium text-slate-700 dark:text-slate-300 select-none">Glitch Media Lab</span></div>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => navigate(createPageUrl(isAdmin ? 'Dashboard' : isDriver ? 'DriverDashboard' : 'PassengerTrips'))}
+            className="text-slate-600 dark:text-slate-300 hover:text-teal-600 select-none"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Volver
+          </Button>
         </footer>
       </main>
 
