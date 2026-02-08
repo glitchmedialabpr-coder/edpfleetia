@@ -20,13 +20,11 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import WebSocketNotificationClient from '@/components/notifications/WebSocketNotificationClient';
-import VehicleSelectionModal from '@/components/vehicles/VehicleSelectionModal';
 
 export default function DriverDashboard() {
   const [user, setUser] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState('');
   const [currentVehicleData, setCurrentVehicleData] = useState(null);
-  const [vehicleModalOpen, setVehicleModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
