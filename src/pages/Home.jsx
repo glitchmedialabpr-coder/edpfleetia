@@ -18,7 +18,7 @@ export default function Home() {
               className="w-full h-full object-contain"
             />
           </div>
-          <h1 className="text-5xl font-bold text-white mb-4">Fleetia</h1>
+          <h1 className="text-5xl font-bold text-white mb-4">Fleetia by Glitch Media Lab</h1>
           <p className="text-xl text-slate-300">Administra servicios, conductores y operaciones desde un solo lugar</p>
         </div>
 
