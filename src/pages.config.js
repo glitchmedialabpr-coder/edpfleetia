@@ -51,6 +51,7 @@ import Accidents from './pages/Accidents';
 import AdminLogin from './pages/AdminLogin';
 import ConsolidatedReports from './pages/ConsolidatedReports';
 import DailyReports from './pages/DailyReports';
+import Dashboard from './pages/Dashboard';
 import DriverDashboard from './pages/DriverDashboard';
 import DriverHistory from './pages/DriverHistory';
 import DriverLogin from './pages/DriverLogin';
@@ -88,7 +89,6 @@ import Trips from './pages/Trips';
 import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
-import Dashboard from './pages/Dashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -97,6 +97,7 @@ export const PAGES = {
     "AdminLogin": AdminLogin,
     "ConsolidatedReports": ConsolidatedReports,
     "DailyReports": DailyReports,
+    "Dashboard": Dashboard,
     "DriverDashboard": DriverDashboard,
     "DriverHistory": DriverHistory,
     "DriverLogin": DriverLogin,
@@ -134,7 +135,6 @@ export const PAGES = {
     "VehicleManagement": VehicleManagement,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
-    "Dashboard": Dashboard,
 }
 
 export const pagesConfig = {

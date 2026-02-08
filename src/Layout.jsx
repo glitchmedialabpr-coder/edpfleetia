@@ -204,13 +204,7 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // If no user on protected pages, redirect to Home (but wait for loading to finish)
-  if (!loading && !user) {
-    navigate(createPageUrl('Home'), { replace: true });
-    return null;
-  }
-
-  // Don't render protected content while loading
+  // Show loading while checking localStorage
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -222,6 +216,12 @@ export default function Layout({ children, currentPageName }) {
         </div>
       </div>
     );
+  }
+
+  // If no user on protected pages, redirect to Home
+  if (!user) {
+    navigate(createPageUrl('Home'), { replace: true });
+    return null;
   }
 
   // Route guard: Protect admin pages
