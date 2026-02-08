@@ -18,9 +18,12 @@ Deno.serve(async (req) => {
     const sessionToken = generateSessionToken();
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 5 * 60 * 60 * 1000); // 5 horas
+    
+    // Generar ID único para el usuario si no existe
+    const userId = userData.id || userData.user_id || `user_${crypto.getRandomUUID()}`;
 
     const session = await base44.asServiceRole.entities.UserSession.create({
-      user_id: userData.id || userData.user_id,
+      user_id: userId,
       full_name: userData.full_name,
       email: userData.email,
       phone: userData.phone,
