@@ -50,14 +50,12 @@ function resetStudentAttempts(studentId) {
 }
 
 async function loadStudentCache(base44) {
-  const now = Date.now();
-  
-  // Solo recargar si pasó más de 1 hora o si el cache está vacío
-  if (studentCache.size === 0 || now - lastCacheLoad > CACHE_TTL) {
-    try {
-      const students = await base44.asServiceRole.entities.Student.filter({ 
-        status: 'active'
-      }, '', 500);
+   const now = Date.now();
+
+   // Solo recargar si pasó más de 1 hora o si el cache está vacío
+   if (studentCache.size === 0 || now - lastCacheLoad > CACHE_TTL) {
+     try {
+       const students = await base44.asServiceRole.entities.Student.list();
       
       studentCache.clear();
       
