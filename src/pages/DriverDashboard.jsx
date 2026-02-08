@@ -41,16 +41,11 @@ export default function DriverDashboard() {
       
       const userData = JSON.parse(pinUser);
       
-      // Priorizar vehículo del usuario guardado
-      let vehicleId = userData.selected_vehicle_id;
-      
-      if (!vehicleId) {
-        navigate(createPageUrl('DriverVehicleSelection'));
-        return;
-      }
-      
       setUser(userData);
-      setSelectedVehicle(vehicleId);
+      // Usar vehículo guardado si existe
+      if (userData.selected_vehicle_id) {
+        setSelectedVehicle(userData.selected_vehicle_id);
+      }
     } catch (error) {
       console.error('Error loading user:', error);
       navigate(createPageUrl('DriverLogin'));
