@@ -15,7 +15,7 @@ export default function Home() {
             <img 
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/303d16ba3_471231367_1006775134815986_8615529326532786364_n.jpg" 
               alt="EDP University"
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover rounded-full"
             />
           </div>
           <h1 className="text-5xl font-bold text-white mb-4">Fleetia by Glitch Media Lab</h1>
