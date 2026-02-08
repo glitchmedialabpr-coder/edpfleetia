@@ -85,6 +85,21 @@ export default function DriverDashboard() {
     }
   }, [selectedVehicle, vehicles]);
 
+  const handleVehicleSelect = (vehicle) => {
+    const updatedUser = {
+      ...user,
+      selected_vehicle_id: vehicle.id,
+      selected_vehicle_plate: vehicle.plate,
+      selected_vehicle_info: `${vehicle.brand} ${vehicle.model}`
+    };
+    
+    localStorage.setItem('pin_user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    setSelectedVehicle(vehicle.id);
+    setShowVehicleModal(false);
+    toast.success(`Vehículo ${vehicle.plate} seleccionado`);
+  };
+
   if (!user) {
     return (
       <div className="w-full flex items-center justify-center min-h-screen">
