@@ -50,14 +50,30 @@ export default function Layout({ children, currentPageName }) {
   // No automatic redirects - Home is always accessible
   // Users stay where they are regardless of login status
 
-  const loadUser = () => {
+  const loadUser = async () => {
     try {
-      const pinUser = localStorage.getItem('pin_user');
-      if (pinUser) {
-        setUser(JSON.parse(pinUser));
+      const sessionToken = sessionStorage.getItem('session_token');
+      if (sessionToken) {
+        // Validar token en servidor
+        const response = await fetch(
+          `${window.location.origin}/api/base44/functions/validateSessionToken`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_token: sessionToken })
+          }
+        );
+        
+        const data = await response.json();
+        if (data?.success) {
+          setUser(data.user);
+        } else {
+          sessionStorage.removeItem('session_token');
+        }
       }
     } catch (e) {
-      localStorage.removeItem('pin_user');
+      console.error('Error loading user:', e);
+      sessionStorage.removeItem('session_token');
     }
     setLoading(false);
   };
