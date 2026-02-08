@@ -143,14 +143,15 @@ export default function Layout({ children, currentPageName }) {
   }
 
   // Allow login and public pages without authentication
-  const publicPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection'];
+  const publicPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
   if (!user && !publicPages.includes(currentPageName)) {
     window.location.href = createPageUrl('Home');
     return null;
   }
 
-  // Render login and vehicle selection pages without layout
-  if (publicPages.includes(currentPageName)) {
+  // Render login and employee pages without layout
+  const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
+  if (noLayoutPages.includes(currentPageName)) {
     return <ErrorBoundary>{children}</ErrorBoundary>;
   }
 
