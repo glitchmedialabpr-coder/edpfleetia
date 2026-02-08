@@ -59,7 +59,6 @@ import DriverNotificationSettings from './pages/DriverNotificationSettings';
 import DriverRequests from './pages/DriverRequests';
 import DriverSchedule from './pages/DriverSchedule';
 import DriverTrips from './pages/DriverTrips';
-import DriverVehicleSelection from './pages/DriverVehicleSelection';
 import Drivers from './pages/Drivers';
 import EmployeeComplaintForm from './pages/EmployeeComplaintForm';
 import EmployeeComplaintHistory from './pages/EmployeeComplaintHistory';
@@ -105,7 +104,6 @@ export const PAGES = {
     "DriverRequests": DriverRequests,
     "DriverSchedule": DriverSchedule,
     "DriverTrips": DriverTrips,
-    "DriverVehicleSelection": DriverVehicleSelection,
     "Drivers": Drivers,
     "EmployeeComplaintForm": EmployeeComplaintForm,
     "EmployeeComplaintHistory": EmployeeComplaintHistory,

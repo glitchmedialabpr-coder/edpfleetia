@@ -200,7 +200,7 @@ export default function Layout({ children, currentPageName }) {
   }
 
   // Public pages without layout (Home is always shown as-is regardless of user state)
-  const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
+  const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
   if (currentPageName === 'Home' || noLayoutPages.includes(currentPageName)) {
     return (
       <ErrorBoundary>
