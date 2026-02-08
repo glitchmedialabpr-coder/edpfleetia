@@ -241,7 +241,7 @@ export default function Layout({ children, currentPageName }) {
 
   // Check if driver needs to select vehicle (always required, no bypass)
   if (user?.user_type === 'driver' && !user?.selected_vehicle_id && currentPageName !== 'DriverVehicleSelection') {
-    navigate(createPageUrl('DriverVehicleSelection'), { replace: true });
+    window.location.href = createPageUrl('DriverVehicleSelection');
     return null;
   }
 
