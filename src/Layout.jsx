@@ -222,13 +222,24 @@ export default function Layout({ children, currentPageName }) {
   // Render login and employee pages without layout
   const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
   if (noLayoutPages.includes(currentPageName)) {
-    return <ErrorBoundary>{children}</ErrorBoundary>;
+    return (
+      <ErrorBoundary>
+        {children}
+      </ErrorBoundary>
+    );
   }
 
-  // Allow login and public pages without authentication
+  // If no user and not on a public page, show loading or placeholder
   const publicPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
   if (!user && !publicPages.includes(currentPageName)) {
-    return <ErrorBoundary>{children}</ErrorBoundary>;
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="animate-pulse text-center">
+          <div className="w-16 h-16 bg-slate-200 rounded-full mx-auto mb-4"></div>
+          <p className="text-slate-500">Cargando...</p>
+        </div>
+      </div>
+    );
   }
 
   // Route guard: Protect admin pages
