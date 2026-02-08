@@ -92,22 +92,21 @@ export default function Layout({ children, currentPageName }) {
       const pinUser = localStorage.getItem('pin_user');
       if (pinUser) {
         setUser(JSON.parse(pinUser));
-      } else {
-        // Si no hay usuario y estamos en ruta protegida, ir a Home
-        const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
-        if (!noLayoutPages.includes(currentPageName)) {
-          navigate(createPageUrl('Home'), { replace: true });
-        }
       }
     } catch (e) {
       localStorage.removeItem('pin_user');
-      const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
-      if (!noLayoutPages.includes(currentPageName)) {
-        navigate(createPageUrl('Home'), { replace: true });
-      }
     }
     setLoading(false);
   };
+
+  // Redirect to Home if no user and not on public pages
+  useEffect(() => {
+    const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
+    
+    if (!user && !loading && !noLayoutPages.includes(currentPageName)) {
+      navigate(createPageUrl('Home'), { replace: true });
+    }
+  }, [user, loading, currentPageName, navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('pin_user');
