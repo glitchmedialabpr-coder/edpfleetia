@@ -235,7 +235,8 @@ export default function Layout({ children, currentPageName }) {
 
   // Check if driver needs to select vehicle (always required, no bypass)
   if (user?.user_type === 'driver' && !user?.selected_vehicle_id && currentPageName !== 'DriverVehicleSelection') {
-    return <ErrorBoundary>{children}</ErrorBoundary>;
+    navigate(createPageUrl('DriverVehicleSelection'), { replace: true });
+    return null;
   }
 
   // Route guard: Protect passenger pages
