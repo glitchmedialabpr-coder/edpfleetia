@@ -55,6 +55,13 @@ export default function DriverRequests() {
     requestNotificationPermission();
   }, []);
 
+  // Sincronizar vehículo cuando el usuario se carga
+  useEffect(() => {
+    if (user && user.selected_vehicle_id && !selectedVehicle) {
+      setSelectedVehicle(user.selected_vehicle_id);
+    }
+  }, [user?.driver_id]);
+
   useEffect(() => {
     if (user?.driver_id) {
       checkAndSetVehicleFromSchedule();
