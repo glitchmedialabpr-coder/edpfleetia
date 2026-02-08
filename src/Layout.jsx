@@ -32,6 +32,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import NotificationCenter from './components/notifications/NotificationCenter';
+import ThemeToggle from './components/common/ThemeToggle';
 
 const ADMIN_PIN = '0573';
 
@@ -45,25 +46,11 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     loadUser();
     
-    // Monitor system color scheme changes and apply dark mode
+    // Set initial dark mode state from system preference
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleColorSchemeChange = (e) => {
-      if (e.matches) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    };
-    
-    // Set initial dark mode state
     if (mediaQuery.matches) {
       document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
     }
-    
-    // Listen for changes
-    mediaQuery.addEventListener('change', handleColorSchemeChange);
     
     // Check session expiry for all users every 30 seconds
     const interval = setInterval(async () => {
@@ -101,7 +88,6 @@ export default function Layout({ children, currentPageName }) {
     }, 30000); // Check every 30 seconds
     
     // Cleanup
-    mediaQuery.removeEventListener('change', handleColorSchemeChange);
     return () => clearInterval(interval);
     }, []);
 
@@ -293,6 +279,7 @@ export default function Layout({ children, currentPageName }) {
       {/* Desktop Header */}
       <header className="hidden lg:block fixed top-0 left-72 right-0 h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-30 px-8">
         <div className="flex items-center justify-end h-full gap-4">
+          <ThemeToggle />
           {isDriver && <NotificationCenter user={user} />}
           <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-700 select-none">
             <div className="w-9 h-9 bg-slate-200 dark:bg-slate-600 rounded-full flex items-center justify-center">
@@ -342,6 +329,7 @@ export default function Layout({ children, currentPageName }) {
           )}
         </div>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           {isDriver && <NotificationCenter user={user} />}
           {!isDriver && (
             <Button 
