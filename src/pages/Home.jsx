@@ -55,7 +55,7 @@ export default function Home() {
               </div>
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">Solicitudes</h3>
-                <p className="text-sm text-slate-400">Portal de empleados</p>
+                <p className="text-sm text-slate-400">Solicitudes Estructurales</p>
               </div>
               <div className="pt-4">
                 <span className="text-purple-400 font-semibold group-hover:underline">
