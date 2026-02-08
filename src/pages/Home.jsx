@@ -54,7 +54,7 @@ export default function Home() {
                 <Shield className="w-10 h-10 text-purple-400" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-white mb-2">Quejas</h3>
+                <h3 className="text-2xl font-bold text-white mb-2">Solicitudes</h3>
                 <p className="text-sm text-slate-400">Portal de empleados</p>
               </div>
               <div className="pt-4">

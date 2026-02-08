@@ -51,8 +51,8 @@ export default function EmployeeComplaintHistory() {
       <div className="max-w-5xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">Mis Quejas</h1>
-            <p className="text-slate-600">Historial de quejas presentadas</p>
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">Mis Solicitudes</h1>
+            <p className="text-slate-600">Historial de solicitudes presentadas</p>
           </div>
           <div className="flex gap-2">
             <Button
@@ -60,7 +60,7 @@ export default function EmployeeComplaintHistory() {
               className="bg-purple-600 hover:bg-purple-700"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Nueva Queja
+              Nueva Solicitud
             </Button>
             <Button
               onClick={() => navigate(createPageUrl('Home'))}
@@ -96,13 +96,13 @@ export default function EmployeeComplaintHistory() {
             <CardContent className="py-12 text-center">
               <AlertCircle className="w-12 h-12 text-slate-300 mx-auto mb-4" />
               <p className="text-slate-600 mb-4">
-                {emailFilter ? 'No se encontraron quejas con ese correo' : 'No hay quejas registradas'}
+                {emailFilter ? 'No se encontraron solicitudes con ese correo' : 'No hay solicitudes registradas'}
               </p>
               <Button
                 onClick={() => navigate(createPageUrl('EmployeeComplaintForm'))}
                 variant="outline"
               >
-                Registrar Primera Queja
+                Registrar Primera Solicitud
               </Button>
             </CardContent>
           </Card>

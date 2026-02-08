@@ -59,10 +59,10 @@ export default function EmployeeComplaintForm() {
         status: 'pendiente'
       });
 
-      toast.success('Queja enviada exitosamente');
+      toast.success('Solicitud enviada exitosamente');
       navigate(createPageUrl('EmployeeComplaintHistory'));
     } catch (error) {
-      toast.error('Error al enviar la queja');
+      toast.error('Error al enviar la solicitud');
       setSubmitting(false);
     }
   };
@@ -71,15 +71,15 @@ export default function EmployeeComplaintForm() {
     <div className="min-h-screen bg-slate-50 p-4 lg:p-8">
       <div className="max-w-3xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">Registrar Queja</h1>
-          <p className="text-slate-600">Complete el formulario para registrar su queja</p>
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">Registrar Solicitud</h1>
+          <p className="text-slate-600">Complete el formulario para registrar su solicitud</p>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-purple-600" />
-              Información de la Queja
+              Información de la Solicitud
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -168,7 +168,7 @@ export default function EmployeeComplaintForm() {
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Título de la Queja *
+                  Título de la Solicitud *
                 </label>
                 <Input
                   value={formData.complaint_title}
@@ -185,7 +185,7 @@ export default function EmployeeComplaintForm() {
                 <Textarea
                   value={formData.complaint_description}
                   onChange={(e) => setFormData({...formData, complaint_description: e.target.value})}
-                  placeholder="Describa su queja con el mayor detalle posible..."
+                  placeholder="Describa su solicitud con el mayor detalle posible..."
                   rows={6}
                   required
                 />
@@ -250,7 +250,7 @@ export default function EmployeeComplaintForm() {
                   disabled={submitting}
                   className="flex-1 bg-purple-600 hover:bg-purple-700"
                 >
-                  {submitting ? 'Enviando...' : 'Enviar Queja'}
+                  {submitting ? 'Enviando...' : 'Enviar Solicitud'}
                 </Button>
               </div>
             </form>
