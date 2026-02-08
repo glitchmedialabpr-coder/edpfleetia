@@ -207,9 +207,9 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Public pages without layout
+  // Public pages without layout (Home is always shown as-is regardless of user state)
   const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
-  if (noLayoutPages.includes(currentPageName)) {
+  if (currentPageName === 'Home' || noLayoutPages.includes(currentPageName)) {
     return (
       <ErrorBoundary>
         {children}
@@ -239,11 +239,8 @@ export default function Layout({ children, currentPageName }) {
     return <ErrorBoundary>{children}</ErrorBoundary>;
   }
 
-  // Check if driver needs to select vehicle (always required, no bypass)
-  if (user?.user_type === 'driver' && !user?.selected_vehicle_id && currentPageName !== 'DriverVehicleSelection') {
-    window.location.href = createPageUrl('DriverVehicleSelection');
-    return null;
-  }
+  // Driver vehicle selection is skipped - go straight to Home
+  // Home page handles redirects based on user state
 
   // Route guard: Protect passenger pages
   const passengerPages = ['PassengerTrips'];
