@@ -89,7 +89,7 @@ export default function Home() {
 
         <div className="text-center mt-12">
           <p className="text-sm text-slate-500">
-            © 2026 EDP University - Sistema de Transporte
+            © By Glitch Media Lab - Fleetia
           </p>
         </div>
       </div>
