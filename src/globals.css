@@ -48,6 +48,18 @@
   }
 }
 
+/* Prevent scrolling interference on Android */
+@media (max-width: 1024px) {
+  body {
+    overscroll-behavior: none;
+  }
+  
+  main {
+    overscroll-behavior-y: auto;
+    touch-action: pan-y;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
