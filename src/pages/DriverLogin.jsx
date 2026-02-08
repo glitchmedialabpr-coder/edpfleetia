@@ -35,8 +35,8 @@ export default function DriverLogin() {
         localStorage.setItem('pin_user', JSON.stringify(user));
         
         toast.success(`¡Bienvenido ${user.full_name}!`);
-        // Navegar después de guardar
-        navigate(createPageUrl('Home'));
+        // Forzar recarga con datos guardados
+        window.location.href = createPageUrl('Home');
       } else {
         toast.error(response?.data?.error || 'Conductor no encontrado');
         setLoading(false);
