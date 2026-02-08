@@ -81,7 +81,10 @@ Deno.serve(async (req) => {
       return Response.json({ 
         success: false, 
         error: attemptCheck.message 
-      }, { status: 429 });
+      }, { 
+        status: 429,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
     }
     
     const ADMIN_PIN = Deno.env.get('ADMIN_PIN');
