@@ -16,6 +16,7 @@ export default function EmployeeComplaintForm() {
     employee_name: '',
     employee_email: '',
     location: '',
+    category: '',
     complaint_title: '',
     complaint_description: ''
   });
@@ -108,29 +109,55 @@ export default function EmployeeComplaintForm() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Ubicación del Incidente
-                </label>
-                <Select
-                  value={formData.location}
-                  onValueChange={(value) => setFormData({...formData, location: value})}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccione una ubicación" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="edp_hato_rey">EDP - Hato Rey</SelectItem>
-                    <SelectItem value="edp_manati">EDP - Manatí</SelectItem>
-                    <SelectItem value="edp_san_sebastian">EDP - San Sebastián</SelectItem>
-                    <SelectItem value="edp_villalba">EDP - Villalba</SelectItem>
-                    <SelectItem value="wellness_hato_rey">Wellness - Hato Rey</SelectItem>
-                    <SelectItem value="wellness_manati">Wellness - Manatí</SelectItem>
-                    <SelectItem value="wellness_san_sebastian">Wellness - San Sebastián</SelectItem>
-                    <SelectItem value="wellness_villalba">Wellness - Villalba</SelectItem>
-                    <SelectItem value="otro">Otro</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Ubicación del Incidente
+                  </label>
+                  <Select
+                    value={formData.location}
+                    onValueChange={(value) => setFormData({...formData, location: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccione una ubicación" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="edp_hato_rey">EDP - Hato Rey</SelectItem>
+                      <SelectItem value="edp_manati">EDP - Manatí</SelectItem>
+                      <SelectItem value="edp_san_sebastian">EDP - San Sebastián</SelectItem>
+                      <SelectItem value="edp_villalba">EDP - Villalba</SelectItem>
+                      <SelectItem value="wellness_hato_rey">Wellness - Hato Rey</SelectItem>
+                      <SelectItem value="wellness_manati">Wellness - Manatí</SelectItem>
+                      <SelectItem value="wellness_san_sebastian">Wellness - San Sebastián</SelectItem>
+                      <SelectItem value="wellness_villalba">Wellness - Villalba</SelectItem>
+                      <SelectItem value="otro">Otro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Categoría de la Queja
+                  </label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => setFormData({...formData, category: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccione una categoría" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="acoso_laboral">Acoso Laboral</SelectItem>
+                      <SelectItem value="discriminacion">Discriminación</SelectItem>
+                      <SelectItem value="condiciones_laborales">Condiciones Laborales</SelectItem>
+                      <SelectItem value="seguridad">Seguridad</SelectItem>
+                      <SelectItem value="salario_beneficios">Salario/Beneficios</SelectItem>
+                      <SelectItem value="gestion_supervision">Gestión/Supervisión</SelectItem>
+                      <SelectItem value="ambiente_trabajo">Ambiente de Trabajo</SelectItem>
+                      <SelectItem value="otro">Otro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div>
