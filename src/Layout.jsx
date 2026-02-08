@@ -40,51 +40,11 @@ const ADMIN_PIN = '0573';
 export default function Layout({ children, currentPageName }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState(null);
+  const { user, loading, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadUser();
-  }, []);
-
-  const loadUser = async () => {
-    try {
-      const sessionToken = sessionStorage.getItem('session_token');
-      if (sessionToken) {
-        const response = await base44.functions.invoke('getCurrentUser', { session_token: sessionToken });
-        
-        if (response?.data?.success) {
-          setUser(response.data.user);
-          console.log('User loaded successfully:', response.data.user);
-        } else {
-          console.log('Session invalid or expired:', response?.data?.error);
-          sessionStorage.removeItem('session_token');
-          setUser(null);
-        }
-      } else {
-        setUser(null);
-      }
-    } catch (e) {
-      console.error('Error loading user:', e);
-      sessionStorage.removeItem('session_token');
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
 
   const handleLogout = async () => {
-    const sessionToken = sessionStorage.getItem('session_token');
-    try {
-      await base44.functions.invoke('logout', { session_token: sessionToken });
-    } catch (e) {
-      console.error('Error logging out:', e);
-    }
-    sessionStorage.removeItem('session_token');
-    setUser(null);
+    await logout();
     window.location.href = createPageUrl('Home');
   };
 
