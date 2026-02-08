@@ -45,11 +45,6 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     loadUser();
-
-    // Start in light mode by default
-    if (document.documentElement) {
-      document.documentElement.classList.remove('dark');
-    }
   }, []);
 
   // No automatic redirects - Home is always accessible
