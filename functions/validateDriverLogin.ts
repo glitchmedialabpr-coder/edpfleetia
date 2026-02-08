@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
     const drivers = await base44.asServiceRole.entities.Driver.filter({ 
       driver_id: sanitizedId,
       status: 'active'
-    }, '', 1);
+    });
     
     if (!drivers?.length) {
       return Response.json({ 
