@@ -93,7 +93,10 @@ Deno.serve(async (req) => {
       return Response.json({ 
         success: false, 
         error: 'PIN incorrecto' 
-      }, { status: 401 });
+      }, { 
+        status: 401,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
     }
     
     // Login exitoso
