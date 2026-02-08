@@ -40,6 +40,8 @@ export default function DriverDashboard() {
       }
       
       const userData = JSON.parse(pinUser);
+      // Asegurar que user_type sea 'driver'
+      userData.user_type = 'driver';
       
       setUser(userData);
       // Usar vehículo guardado si existe
