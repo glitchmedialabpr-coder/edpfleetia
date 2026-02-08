@@ -52,16 +52,8 @@ export default function Layout({ children, currentPageName }) {
     }
   }, []);
 
-  // Redirect logic: If no user and trying to access protected page, go to Home
-  useEffect(() => {
-    if (loading) return;
-    
-    const publicPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
-    
-    if (!user && !publicPages.includes(currentPageName)) {
-      window.location.href = createPageUrl('Home');
-    }
-  }, [loading, user, currentPageName]);
+  // No automatic redirects - Home is always accessible
+  // Users stay where they are regardless of login status
 
   const loadUser = () => {
     try {
