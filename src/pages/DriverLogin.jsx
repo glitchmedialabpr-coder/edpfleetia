@@ -30,13 +30,13 @@ export default function DriverLogin() {
       if (response?.data?.success) {
         const user = response.data.user;
         user.user_type = 'driver';
-        
+
         // Guardar datos de login inmediatamente
         localStorage.setItem('pin_user', JSON.stringify(user));
-        
+
         toast.success(`¡Bienvenido ${user.full_name}!`);
-        // Forzar recarga con datos guardados
-        window.location.href = createPageUrl('Home');
+        setLoading(false);
+        navigate(createPageUrl('DriverDashboard'));
       } else {
         toast.error(response?.data?.error || 'Conductor no encontrado');
         setLoading(false);
