@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import Home from './pages/Home';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { AnimatePresence, motion } from 'framer-motion';
 import TabContainer from './components/mobile/TabContainer';
@@ -236,11 +235,11 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Show Home if no user on protected pages
+  // If no user on protected pages, render children as-is (will show the page without layout)
   if (!user) {
     return (
       <ErrorBoundary>
-        <Home />
+        {children}
       </ErrorBoundary>
     );
   }
