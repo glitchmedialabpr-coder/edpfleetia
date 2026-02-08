@@ -22,20 +22,24 @@ Deno.serve(async (req) => {
     // Generar ID único para el usuario si no existe
     const userId = userData.id || userData.user_id || `user_${generateSessionToken()}`;
 
-    const session = await base44.asServiceRole.entities.UserSession.create({
+    const sessionData = {
       user_id: userId,
-      full_name: userData.full_name,
-      email: userData.email,
-      phone: userData.phone,
-      role: userData.role,
-      user_type: userData.user_type,
+      full_name: userData.full_name || 'Usuario',
+      email: userData.email || '',
+      role: userData.role || 'user',
       session_token: sessionToken,
-      student_id: userData.student_id,
-      driver_id: userData.driver_id,
-      housing_name: userData.housing_name,
       last_activity: now.toISOString(),
       expires_at: expiresAt.toISOString()
-    });
+    };
+
+    // Solo agregar campos opcionales si existen
+    if (userData.phone) sessionData.phone = userData.phone;
+    if (userData.user_type) sessionData.user_type = userData.user_type;
+    if (userData.student_id) sessionData.student_id = userData.student_id;
+    if (userData.driver_id) sessionData.driver_id = userData.driver_id;
+    if (userData.housing_name) sessionData.housing_name = userData.housing_name;
+
+    const session = await base44.asServiceRole.entities.UserSession.create(sessionData);
 
     return Response.json({
       success: true,
