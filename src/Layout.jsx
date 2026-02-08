@@ -81,13 +81,7 @@ export default function Layout({ children, currentPageName }) {
 
 
   const handleLogout = () => {
-    localStorage.removeItem('pin_user');
-    // Limpiar datos de vehículos temporales
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('driver_vehicle_')) {
-        localStorage.removeItem(key);
-      }
-    });
+    sessionStorage.removeItem('session_token');
     setUser(null);
     window.location.href = createPageUrl('Home');
   };
