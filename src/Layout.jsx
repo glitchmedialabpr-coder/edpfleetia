@@ -46,11 +46,8 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     loadUser();
     
-    // Set initial dark mode state from system preference
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    if (mediaQuery.matches) {
-      document.documentElement.classList.add('dark');
-    }
+    // Start in light mode by default
+    document.documentElement.classList.remove('dark');
     
     // Check session expiry for all users every 30 seconds
     const interval = setInterval(async () => {
