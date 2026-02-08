@@ -248,12 +248,12 @@ export default function Layout({ children, currentPageName }) {
           <ThemeToggle />
           {isDriver && <NotificationCenter user={user} />}
           <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-700 select-none">
-              <div className="w-9 h-9 bg-slate-200 dark:bg-slate-600 rounded-full flex items-center justify-center select-none">
+              <div className="w-9 h-9 bg-slate-200 dark:bg-slate-600 rounded-full flex items-center justify-center">
                 <User className="w-5 h-5 text-slate-500 dark:text-slate-300" />
               </div>
-              <div className="flex-1 min-w-0 select-none">
-                <p className="font-medium text-slate-800 dark:text-slate-100 truncate text-sm select-none">{user.full_name || user.email}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 capitalize select-none">
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-slate-800 dark:text-slate-100 truncate text-sm">{user.full_name || user.email}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
                   {isAdmin ? 'Administrador' : isDriver ? 'Conductor' : 'Pasajero'}
                 </p>
               </div>
@@ -324,7 +324,7 @@ export default function Layout({ children, currentPageName }) {
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="hidden lg:block p-6 border-b border-slate-100 dark:border-slate-700 flex-shrink-0 select-none">
-            <div className="flex items-center gap-3 select-none">
+            <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl overflow-hidden">
                 <img 
                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/a12aa5730_Addaheading.jpg" 
@@ -332,9 +332,9 @@ export default function Layout({ children, currentPageName }) {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="select-none">
-                <h1 className="font-bold text-slate-800 dark:text-slate-100 text-lg select-none">Fleetia</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 select-none">by Glitch Media Lab</p>
+              <div>
+                <h1 className="font-bold text-slate-800 dark:text-slate-100 text-lg">Fleetia</h1>
+                <p className="text-xs text-slate-500 dark:text-slate-400">by Glitch Media Lab</p>
               </div>
             </div>
           </div>
@@ -358,7 +358,7 @@ export default function Layout({ children, currentPageName }) {
                   "w-5 h-5 transition-colors flex-shrink-0",
                   isActive ? "text-white" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"
                 )} />
-                <span className="font-medium select-none">{item.name}</span>
+                <span className="font-medium">{item.name}</span>
                 {isActive && <ChevronRight className="w-4 h-4 ml-auto flex-shrink-0" />}
               </Link>
             );
@@ -367,12 +367,12 @@ export default function Layout({ children, currentPageName }) {
 
         <div className="lg:hidden p-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800">
           <div className="flex items-center gap-3 px-3 py-2 mb-3 bg-slate-50 dark:bg-slate-700 rounded-lg select-none">
-            <div className="w-10 h-10 bg-slate-200 dark:bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0 select-none">
+            <div className="w-10 h-10 bg-slate-200 dark:bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
               <User className="w-5 h-5 text-slate-500 dark:text-slate-300" />
             </div>
-            <div className="flex-1 min-w-0 select-none">
-              <p className="font-medium text-slate-800 dark:text-slate-100 truncate text-sm select-none">{user.full_name || user.email}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 capitalize select-none">
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-slate-800 dark:text-slate-100 truncate text-sm">{user.full_name || user.email}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
                 {isAdmin ? 'Administrador' : isDriver ? 'Conductor' : 'Pasajero'}
               </p>
             </div>

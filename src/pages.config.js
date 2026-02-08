@@ -59,6 +59,7 @@ import DriverNotificationSettings from './pages/DriverNotificationSettings';
 import DriverRequests from './pages/DriverRequests';
 import DriverSchedule from './pages/DriverSchedule';
 import DriverTrips from './pages/DriverTrips';
+import DriverVehicleSelection from './pages/DriverVehicleSelection';
 import Drivers from './pages/Drivers';
 import EmployeeComplaintForm from './pages/EmployeeComplaintForm';
 import EmployeeComplaintHistory from './pages/EmployeeComplaintHistory';
@@ -88,7 +89,6 @@ import Trips from './pages/Trips';
 import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
-import DriverVehicleSelection from './pages/DriverVehicleSelection';
 import __Layout from './Layout.jsx';
 
 
@@ -105,6 +105,7 @@ export const PAGES = {
     "DriverRequests": DriverRequests,
     "DriverSchedule": DriverSchedule,
     "DriverTrips": DriverTrips,
+    "DriverVehicleSelection": DriverVehicleSelection,
     "Drivers": Drivers,
     "EmployeeComplaintForm": EmployeeComplaintForm,
     "EmployeeComplaintHistory": EmployeeComplaintHistory,
@@ -134,7 +135,6 @@ export const PAGES = {
     "VehicleManagement": VehicleManagement,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
-    "DriverVehicleSelection": DriverVehicleSelection,
 }
 
 export const pagesConfig = {
