@@ -107,22 +107,69 @@ export default function Settings() {
           </div>
         </Card>
 
-        {/* Logout */}
+        {/* Delete Account */}
         <Card className="p-6 bg-red-50 border-red-200">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-4">
-              <LogOut className="w-5 h-5 text-red-600 mt-1" />
+              <Trash2 className="w-5 h-5 text-red-600 mt-1" />
               <div>
-                <h3 className="font-semibold text-red-700">Cerrar Sesión</h3>
-                <p className="text-sm text-red-600 mt-1">Termina tu sesión actual</p>
+                <h3 className="font-semibold text-red-700">Eliminar Cuenta</h3>
+                <p className="text-sm text-red-600 mt-1">Esta acción no se puede deshacer</p>
               </div>
             </div>
-            <Button variant="destructive" size="sm" onClick={handleLogout}>
+            <Button 
+              variant="destructive" 
+              size="sm" 
+              onClick={() => setShowDeleteDialog(true)}
+              disabled={deleteLoading}
+            >
+              {deleteLoading ? 'Eliminando...' : 'Eliminar'}
+            </Button>
+          </div>
+        </Card>
+
+        {/* Logout */}
+        <Card className="p-6 bg-amber-50 border-amber-200">
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-4">
+              <LogOut className="w-5 h-5 text-amber-600 mt-1" />
+              <div>
+                <h3 className="font-semibold text-amber-700">Cerrar Sesión</h3>
+                <p className="text-sm text-amber-600 mt-1">Termina tu sesión actual</p>
+              </div>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleLogout}
+              className="border-amber-200 text-amber-700 hover:bg-amber-50"
+            >
               Cerrar Sesión
             </Button>
           </div>
         </Card>
       </div>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Eliminar cuenta permanentemente</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción eliminará tu cuenta y todos los datos asociados. No se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteLoading}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteAccount}
+              disabled={deleteLoading}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {deleteLoading ? 'Eliminando...' : 'Eliminar cuenta'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
