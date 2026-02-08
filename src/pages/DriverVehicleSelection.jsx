@@ -28,7 +28,7 @@ export default function DriverVehicleSelection() {
   const loadUser = () => {
     const pinUser = localStorage.getItem('pin_user');
     if (!pinUser) {
-      navigate(createPageUrl('DriverLogin'));
+      navigate(createPageUrl('Home'));
       return;
     }
     try {
@@ -36,7 +36,7 @@ export default function DriverVehicleSelection() {
       setUser(userData);
     } catch (e) {
       localStorage.removeItem('pin_user');
-      navigate(createPageUrl('DriverLogin'));
+      navigate(createPageUrl('Home'));
     }
   };
 
@@ -81,8 +81,8 @@ export default function DriverVehicleSelection() {
     
     toast.success(`Vehículo ${vehicle.plate} seleccionado`);
     
-    // Navegar al dashboard
-    navigate(createPageUrl('DriverDashboard'));
+    // Navegar a Home
+    navigate(createPageUrl('Home'));
   };
 
   if (loading) {
@@ -166,7 +166,7 @@ export default function DriverVehicleSelection() {
             className="flex-1 text-teal-200 border border-teal-400/30 hover:bg-white/10"
             onClick={() => {
               localStorage.removeItem('pin_user');
-              navigate(createPageUrl('DriverLogin'));
+              navigate(createPageUrl('Home'));
             }}
           >
             Cambiar Conductor
