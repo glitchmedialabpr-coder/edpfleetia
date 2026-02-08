@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,6 +40,7 @@ export default function PassengerTrips() {
     destination_type: '',
     destination_other: ''
   });
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     loadUser();
@@ -64,6 +65,50 @@ export default function PassengerTrips() {
     staleTime: 60000,
     gcTime: 120000,
     refetchInterval: 15000
+  });
+
+  const createRequestMutation = useMutation({
+    mutationFn: async (requestData) => {
+      const response = await base44.functions.invoke('createTripRequest', requestData);
+      return response.data;
+    },
+    onMutate: async (requestData) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['trip-requests', user?.student_id] });
+
+      // Snapshot previous value
+      const previousRequests = queryClient.getQueryData(['trip-requests', user?.student_id]);
+
+      // Optimistically update
+      const optimisticRequest = {
+        id: 'temp-' + Date.now(),
+        ...requestData,
+        status: 'pending',
+        created_date: new Date().toISOString(),
+        origin: 'EDP University'
+      };
+
+      queryClient.setQueryData(['trip-requests', user?.student_id], (old = []) => [optimisticRequest, ...old]);
+
+      return { previousRequests };
+    },
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context?.previousRequests) {
+        queryClient.setQueryData(['trip-requests', user?.student_id], context.previousRequests);
+      }
+      toast.error('Error al enviar la solicitud');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['trip-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
+      setModalOpen(false);
+      setFormData({ destination_type: '', destination_other: '' });
+      toast.success('✅ Su solicitud ha sido enviada', {
+        description: 'Te notificaremos cuando un conductor acepte tu viaje',
+        duration: 4000
+      });
+    }
   });
 
   const handleSubmit = useCallback(async (e) => {
@@ -91,23 +136,8 @@ export default function PassengerTrips() {
       student_phone: user.phone || ''
     };
 
-    try {
-      const response = await base44.functions.invoke('createTripRequest', requestData);
-      if (response.data.success) {
-        queryClient.invalidateQueries({ queryKey: ['trip-requests'] });
-        queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
-        setModalOpen(false);
-        setFormData({ destination_type: '', destination_other: '' });
-        toast.success('✅ Su solicitud ha sido enviada', {
-          description: 'Te notificaremos cuando un conductor acepte tu viaje',
-          duration: 4000
-        });
-      }
-    } catch (error) {
-      console.error('Error detallado:', error);
-      toast.error('Error al enviar la solicitud');
-    }
-  }, [user, formData, queryClient]);
+    createRequestMutation.mutate(requestData);
+  }, [user, formData, createRequestMutation]);
 
   const handleCancel = useCallback(async (request) => {
     if (!confirm('¿Cancelar esta solicitud?')) return;
@@ -125,8 +155,64 @@ export default function PassengerTrips() {
   const activeRequests = useMemo(() => requests.filter(r => ['pending', 'accepted_by_driver', 'in_trip'].includes(r.status)), [requests]);
   const historyRequests = useMemo(() => requests.filter(r => ['completed', 'cancelled'].includes(r.status)), [requests]);
 
+  const handlePullToRefresh = useCallback(async () => {
+    if (refreshing) return;
+    setRefreshing(true);
+    await queryClient.invalidateQueries({ queryKey: ['trip-requests'] });
+    setTimeout(() => setRefreshing(false), 1000);
+  }, [refreshing, queryClient]);
+
+  useEffect(() => {
+    let startY = 0;
+    let currentY = 0;
+    const threshold = 80;
+
+    const handleTouchStart = (e) => {
+      if (window.scrollY === 0) {
+        startY = e.touches[0].pageY;
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (startY === 0) return;
+      currentY = e.touches[0].pageY;
+      const diff = currentY - startY;
+      
+      if (diff > 0 && window.scrollY === 0) {
+        e.preventDefault();
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (startY === 0) return;
+      const diff = currentY - startY;
+      
+      if (diff > threshold && window.scrollY === 0) {
+        handlePullToRefresh();
+      }
+      
+      startY = 0;
+      currentY = 0;
+    };
+
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [handlePullToRefresh]);
+
   return (
     <div className="space-y-6">
+      {refreshing && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-teal-600 text-white px-4 py-2 rounded-full shadow-lg">
+          Actualizando...
+        </div>
+      )}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">Mis Viajes</h1>

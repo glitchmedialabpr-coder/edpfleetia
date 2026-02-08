@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Card } from '@/components/ui/card';
@@ -42,6 +42,7 @@ export default function DriverRequests() {
   const [user, setUser] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState('');
   const navigate = useNavigate();
+  const [refreshing, setRefreshing] = useState(false);
   const [notificationSound] = useState(() => {
     const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUKnl87RiGwU7k9n0yHInBSh+zPLaizsKFF+28ud2URwMTKXh8bllHAU2jdTxy3ksiCV8zPDbjzsKEly18O2jUBsMSqPf8r1nHwU6kdnzxnErBSh+zvPaiTwKEV619Oy+aCAGL47V8tWTQwsVYLXp7JhPEAxMovTyvmsiBTaO1vLNdSYEJ4HO8tiJOAgZaLzu551NEQxPqOT0s2IcBTiQ2PPLeSgEKH7N8tmJPAoUXrXy77hVGApFnuHytW0hBSuCz/PaiDUHGWi78OWcTQ0OUKjk87NhHAU7k9jzy3krBCiAz/PaiD0GEly08uq5Vx0LRZP0yHMnBSh9zfDcjD4HEly18uq5V+0LPJrc8shzJwUng87y2Ik3CBpouPDmnk0PDlCo5fKzYhwFOpPZ88t5KwQogc7y2Yk3CBlopfHvnU0QDFGr5PK0YRsFO5TZ88p5LAUpgdDx14c5CBdltO3qnFENDlGp5fO0YRoFPJTY88p5TAUAAAAAAAA=');
     audio.volume = 0.5;
@@ -174,6 +175,65 @@ export default function DriverRequests() {
     enabled: !!user?.driver_id
   });
 
+  const acceptRequestMutation = useMutation({
+    mutationFn: async ({ request, vehicle, vehicleInfo }) => {
+      const timeString = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      
+      await Promise.all([
+        base44.entities.TripRequest.update(request.id, {
+          status: 'accepted_by_driver',
+          driver_id: user.driver_id,
+          driver_name: user.full_name || user.email,
+          vehicle_id: selectedVehicle,
+          vehicle_info: vehicleInfo,
+          accepted_at: timeString
+        }),
+        base44.entities.TripRequestResponse.create({
+          trip_request_id: request.id,
+          driver_id: user.driver_id,
+          driver_name: user.full_name || user.email,
+          response: 'accepted',
+          response_time: timeString,
+          vehicle_id: selectedVehicle,
+          vehicle_info: vehicleInfo,
+          passenger_name: request.passenger_name,
+          destination: request.destination
+        })
+      ]);
+      return { request, capacity: vehicle?.capacity || 15 };
+    },
+    onMutate: async ({ request }) => {
+      await queryClient.cancelQueries({ queryKey: ['pending-requests'] });
+      await queryClient.cancelQueries({ queryKey: ['accepted-requests'] });
+
+      const previousPending = queryClient.getQueryData(['pending-requests']);
+      const previousAccepted = queryClient.getQueryData(['accepted-requests', user?.driver_id]);
+
+      // Optimistically update
+      queryClient.setQueryData(['pending-requests'], (old = []) => old.filter(r => r.id !== request.id));
+      queryClient.setQueryData(['accepted-requests', user?.driver_id], (old = []) => [
+        { ...request, status: 'accepted_by_driver', driver_id: user.driver_id },
+        ...old
+      ]);
+
+      return { previousPending, previousAccepted };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousPending) {
+        queryClient.setQueryData(['pending-requests'], context.previousPending);
+      }
+      if (context?.previousAccepted) {
+        queryClient.setQueryData(['accepted-requests', user?.driver_id], context.previousAccepted);
+      }
+      toast.error('Error');
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['accepted-requests'] });
+      toast.success(`✓ (${acceptedRequests.length + 1}/${data.capacity})`);
+    }
+  });
+
   const handleAccept = async (request) => {
     if (!selectedVehicle) {
       toast.error('Selecciona vehículo');
@@ -199,39 +259,8 @@ export default function DriverRequests() {
       return;
     }
 
-    try {
-      const timeString = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-      const vehicleInfo = vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '';
-
-      await Promise.all([
-        base44.entities.TripRequest.update(request.id, {
-          status: 'accepted_by_driver',
-          driver_id: user.driver_id,
-          driver_name: user.full_name || user.email,
-          vehicle_id: selectedVehicle,
-          vehicle_info: vehicleInfo,
-          accepted_at: timeString
-        }),
-        base44.entities.TripRequestResponse.create({
-          trip_request_id: request.id,
-          driver_id: user.driver_id,
-          driver_name: user.full_name || user.email,
-          response: 'accepted',
-          response_time: timeString,
-          vehicle_id: selectedVehicle,
-          vehicle_info: vehicleInfo,
-          passenger_name: request.passenger_name,
-          destination: request.destination
-        })
-      ]);
-
-      queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['accepted-requests'] });
-      toast.success(`✓ (${acceptedRequests.length + 1}/${capacity})`);
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Error');
-    }
+    const vehicleInfo = vehicle ? `${vehicle.brand} ${vehicle.model} - ${vehicle.plate}` : '';
+    acceptRequestMutation.mutate({ request, vehicle, vehicleInfo });
   };
 
   const handleReject = async (request) => {
@@ -360,8 +389,68 @@ export default function DriverRequests() {
       return { ...request, waitingTime };
     });
 
+  const handlePullToRefresh = useCallback(async () => {
+    if (refreshing) return;
+    setRefreshing(true);
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['pending-requests'] }),
+      queryClient.invalidateQueries({ queryKey: ['accepted-requests'] }),
+      queryClient.invalidateQueries({ queryKey: ['active-trips'] })
+    ]);
+    setTimeout(() => setRefreshing(false), 1000);
+  }, [refreshing, queryClient]);
+
+  useEffect(() => {
+    let startY = 0;
+    let currentY = 0;
+    const threshold = 80;
+
+    const handleTouchStart = (e) => {
+      if (window.scrollY === 0) {
+        startY = e.touches[0].pageY;
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (startY === 0) return;
+      currentY = e.touches[0].pageY;
+      const diff = currentY - startY;
+      
+      if (diff > 0 && window.scrollY === 0) {
+        e.preventDefault();
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (startY === 0) return;
+      const diff = currentY - startY;
+      
+      if (diff > threshold && window.scrollY === 0) {
+        handlePullToRefresh();
+      }
+      
+      startY = 0;
+      currentY = 0;
+    };
+
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [handlePullToRefresh]);
+
   return (
     <div className="w-full space-y-4 md:space-y-6">
+      {refreshing && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-teal-600 text-white px-4 py-2 rounded-full shadow-lg select-none">
+          Actualizando...
+        </div>
+      )}
       <div>
         <h1 className="text-xl md:text-3xl font-bold text-slate-800">Solicitudes de Viaje</h1>
         <p className="text-sm md:text-base text-slate-500 mt-1">Acepta y gestiona viajes disponibles</p>

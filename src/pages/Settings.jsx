@@ -310,42 +310,90 @@ export default function Settings() {
     setDeleteAccountModal(prev => ({ ...prev, error: '', deleting: true }));
 
     try {
-      const response = await base44.functions.invoke('validateAdminLogin', { pin: deleteAccountModal.pin });
-      
-      if (!response.data.success) {
-        setDeleteAccountModal(prev => ({ ...prev, error: 'PIN incorrecto', deleting: false }));
+      // Get current user from localStorage
+      const pinUser = localStorage.getItem('pin_user');
+      if (!pinUser) {
+        setDeleteAccountModal(prev => ({ ...prev, error: 'Usuario no identificado', deleting: false }));
         return;
       }
 
-      // Delete all data
-      const [trips, requests, students, drivers, vehicles, maintenance, accidents, purchases] = await Promise.all([
-        base44.entities.Trip.list('', 5000),
-        base44.entities.TripRequest.list('', 5000),
-        base44.entities.Student.list('', 5000),
-        base44.entities.Driver.list('', 5000),
-        base44.entities.Vehicle.list('', 5000),
-        base44.entities.MaintenanceRecord.list('', 5000),
-        base44.entities.VehicleAccident.list('', 5000),
-        base44.entities.Purchase.list('', 5000)
-      ]);
+      const userData = JSON.parse(pinUser);
 
-      // Delete all records
-      for (const trip of trips) await base44.entities.Trip.delete(trip.id);
-      for (const request of requests) await base44.entities.TripRequest.delete(request.id);
-      for (const student of students) await base44.entities.Student.delete(student.id);
-      for (const driver of drivers) await base44.entities.Driver.delete(driver.id);
-      for (const vehicle of vehicles) await base44.entities.Vehicle.delete(vehicle.id);
-      for (const record of maintenance) await base44.entities.MaintenanceRecord.delete(record.id);
-      for (const accident of accidents) await base44.entities.VehicleAccident.delete(accident.id);
-      for (const purchase of purchases) await base44.entities.Purchase.delete(purchase.id);
+      // Admin: validate PIN and delete everything
+      if (userData.role === 'admin') {
+        const response = await base44.functions.invoke('validateAdminLogin', { pin: deleteAccountModal.pin });
+        
+        if (!response.data.success) {
+          setDeleteAccountModal(prev => ({ ...prev, error: 'PIN incorrecto', deleting: false }));
+          return;
+        }
+
+        // Delete all data
+        const [trips, requests, students, drivers, vehicles, maintenance, accidents, purchases] = await Promise.all([
+          base44.entities.Trip.list('', 5000),
+          base44.entities.TripRequest.list('', 5000),
+          base44.entities.Student.list('', 5000),
+          base44.entities.Driver.list('', 5000),
+          base44.entities.Vehicle.list('', 5000),
+          base44.entities.MaintenanceRecord.list('', 5000),
+          base44.entities.VehicleAccident.list('', 5000),
+          base44.entities.Purchase.list('', 5000)
+        ]);
+
+        for (const trip of trips) await base44.entities.Trip.delete(trip.id);
+        for (const request of requests) await base44.entities.TripRequest.delete(request.id);
+        for (const student of students) await base44.entities.Student.delete(student.id);
+        for (const driver of drivers) await base44.entities.Driver.delete(driver.id);
+        for (const vehicle of vehicles) await base44.entities.Vehicle.delete(vehicle.id);
+        for (const record of maintenance) await base44.entities.MaintenanceRecord.delete(record.id);
+        for (const accident of accidents) await base44.entities.VehicleAccident.delete(accident.id);
+        for (const purchase of purchases) await base44.entities.Purchase.delete(purchase.id);
+
+        toast.success('Todos los datos han sido eliminados');
+      }
+      // Driver: validate driver ID and delete only driver-related data
+      else if (userData.user_type === 'driver') {
+        const response = await base44.functions.invoke('validateDriverLogin', { driver_id: deleteAccountModal.pin });
+        
+        if (!response.data.success || response.data.driver_id !== userData.driver_id) {
+          setDeleteAccountModal(prev => ({ ...prev, error: 'ID de conductor incorrecto', deleting: false }));
+          return;
+        }
+
+        // Delete driver's trips and requests
+        const [driverTrips, driverRequests] = await Promise.all([
+          base44.entities.Trip.filter({ driver_id: userData.driver_id }, '', 5000),
+          base44.entities.TripRequest.filter({ driver_id: userData.driver_id }, '', 5000)
+        ]);
+
+        for (const trip of driverTrips) await base44.entities.Trip.delete(trip.id);
+        for (const request of driverRequests) await base44.entities.TripRequest.delete(request.id);
+
+        toast.success('Tus datos han sido eliminados');
+      }
+      // Student: validate student ID and delete only student-related data
+      else if (userData.user_type === 'passenger') {
+        const response = await base44.functions.invoke('validateStudentLogin', { student_id: deleteAccountModal.pin });
+        
+        if (!response.data.success || response.data.student_id !== userData.student_id) {
+          setDeleteAccountModal(prev => ({ ...prev, error: 'ID de estudiante incorrecto', deleting: false }));
+          return;
+        }
+
+        // Delete student's trip requests
+        const studentRequests = await base44.entities.TripRequest.filter({ passenger_id: userData.student_id }, '', 5000);
+        for (const request of studentRequests) await base44.entities.TripRequest.delete(request.id);
+
+        toast.success('Tus datos han sido eliminados');
+      }
 
       setDeleteAccountModal({ open: false, pin: '', error: '', deleting: false });
-      toast.success('Todos los datos han sido eliminados');
       setTimeout(() => {
         localStorage.clear();
         window.location.href = '/';
       }, 2000);
     } catch (error) {
+      console.error('Delete account error:', error);
       setDeleteAccountModal(prev => ({ ...prev, error: 'Error al eliminar datos', deleting: false }));
     }
   };
@@ -846,20 +894,45 @@ export default function Settings() {
       {deleteAccountModal.open && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Eliminar Cuenta Completa</h3>
+            <h3 className="text-lg font-bold text-slate-800 mb-4">
+              {(() => {
+                const pinUser = localStorage.getItem('pin_user');
+                if (!pinUser) return 'Eliminar Cuenta';
+                const userData = JSON.parse(pinUser);
+                if (userData.role === 'admin') return 'Eliminar Cuenta Completa';
+                if (userData.user_type === 'driver') return 'Eliminar Mis Datos';
+                return 'Eliminar Mi Cuenta';
+              })()}
+            </h3>
             <p className="text-sm text-slate-600 mb-4">
-              <strong className="text-red-600">ADVERTENCIA:</strong> Esta acción eliminará PERMANENTEMENTE todos los datos del sistema incluyendo viajes, conductores, vehículos, estudiantes y registros. Esta acción NO se puede deshacer.
+              <strong className="text-red-600">ADVERTENCIA:</strong> Esta acción eliminará PERMANENTEMENTE {(() => {
+                const pinUser = localStorage.getItem('pin_user');
+                if (!pinUser) return 'tus datos';
+                const userData = JSON.parse(pinUser);
+                if (userData.role === 'admin') return 'todos los datos del sistema incluyendo viajes, conductores, vehículos, estudiantes y registros';
+                if (userData.user_type === 'driver') return 'todos tus viajes y solicitudes';
+                return 'todas tus solicitudes de viaje';
+              })()}. Esta acción NO se puede deshacer.
             </p>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">PIN de Administrador</label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  {(() => {
+                    const pinUser = localStorage.getItem('pin_user');
+                    if (!pinUser) return 'Código de Verificación';
+                    const userData = JSON.parse(pinUser);
+                    if (userData.role === 'admin') return 'PIN de Administrador';
+                    if (userData.user_type === 'driver') return 'ID de Conductor';
+                    return 'ID de Estudiante';
+                  })()}
+                </label>
                 <input
                   type="password"
                   value={deleteAccountModal.pin}
                   onChange={(e) => setDeleteAccountModal(prev => ({ ...prev, pin: e.target.value, error: '' }))}
-                  placeholder="Ingresa PIN"
-                  maxLength="4"
+                  placeholder="Ingresa tu código"
+                  maxLength="6"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-center text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-red-500"
                   autoFocus
                 />
@@ -882,10 +955,10 @@ export default function Settings() {
                 </Button>
                 <Button 
                   onClick={handleVerifyPinAndDeleteAccount}
-                  disabled={deleteAccountModal.pin.length !== 4 || deleteAccountModal.deleting}
+                  disabled={deleteAccountModal.pin.length < 3 || deleteAccountModal.deleting}
                   className="flex-1 bg-red-600 hover:bg-red-700"
                 >
-                  {deleteAccountModal.deleting ? 'Eliminando...' : 'Eliminar Todo'}
+                  {deleteAccountModal.deleting ? 'Eliminando...' : 'Eliminar'}
                 </Button>
               </div>
             </div>
