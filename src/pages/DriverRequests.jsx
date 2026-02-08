@@ -396,9 +396,7 @@ export default function DriverRequests() {
       currentY = e.touches[0].pageY;
       const diff = currentY - startY;
       
-      // Only prevent default on initial pull-to-refresh gesture (at top of page)
-      // Allow normal scrolling once motion is detected
-      if (diff > 0 && window.scrollY === 0 && diff < threshold) {
+      if (diff > 0 && window.scrollY === 0) {
         e.preventDefault();
       }
     };
