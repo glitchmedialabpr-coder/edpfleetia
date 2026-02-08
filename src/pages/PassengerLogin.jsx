@@ -30,10 +30,18 @@ export default function PassengerLogin() {
       if (response?.data?.success) {
         const userData = response.data.user;
         userData.user_type = 'passenger';
-        localStorage.setItem('pin_user', JSON.stringify(userData));
-        toast.success(`¡Bienvenido ${userData.full_name}!`);
-        setLoading(false);
-        navigate(createPageUrl('PassengerTrips'));
+        
+        // Guardar en Base44 en lugar de localStorage
+        const sessionResponse = await base44.functions.invoke('createUserSession', userData);
+        if (sessionResponse?.data?.success) {
+          sessionStorage.setItem('session_token', sessionResponse.data.session_token);
+          toast.success(`¡Bienvenido ${userData.full_name}!`);
+          setLoading(false);
+          navigate(createPageUrl('PassengerTrips'));
+        } else {
+          toast.error('Error al crear sesión');
+          setLoading(false);
+        }
       } else {
         toast.error(response?.data?.error || 'Estudiante no encontrado');
         setStudentId('');
