@@ -100,8 +100,8 @@ export default function DriverDashboard() {
         <p className="text-slate-500">Bienvenido, {user?.full_name}</p>
       </div>
 
-      {/* Vehicle Info Card */}
-      {user?.selected_vehicle_plate && (
+      {/* Vehicle Selection or Info */}
+      {user?.selected_vehicle_plate ? (
         <Card className="p-6 bg-gradient-to-br from-teal-50 to-white border-teal-200">
           <div className="flex items-center gap-3 mb-4">
             <Car className="w-6 h-6 text-teal-600" />
@@ -116,8 +116,31 @@ export default function DriverDashboard() {
               </Badge>
             </div>
             <p className="text-xs text-slate-500 mt-2">
-              Seleccionado durante el inicio de sesión
+              {vehicles.length > 0 && (
+                <button 
+                  onClick={() => navigate(createPageUrl('DriverVehicleSelection'))}
+                  className="text-teal-600 hover:underline font-medium"
+                >
+                  Cambiar vehículo
+                </button>
+              )}
             </p>
+          </div>
+        </Card>
+      ) : (
+        <Card className="p-6 bg-red-50 border-red-200">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-red-900 mb-2">Selecciona un Vehículo</h3>
+              <p className="text-sm text-red-700 mb-3">Debes seleccionar un vehículo para aceptar solicitudes de viaje.</p>
+              <Button 
+                onClick={() => navigate(createPageUrl('DriverVehicleSelection'))}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Seleccionar Vehículo
+              </Button>
+            </div>
           </div>
         </Card>
       )}
