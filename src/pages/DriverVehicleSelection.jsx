@@ -42,12 +42,10 @@ export default function DriverVehicleSelection() {
 
   const loadVehicles = async () => {
     try {
-      const allVehicles = await base44.entities.Vehicle.filter({
-        status: { $in: ['available', 'in_use'] }
-      });
+      const allVehicles = await base44.entities.Vehicle.list();
       
       // Si el conductor tiene vehículo asignado, priorizarlo
-      if (user.assigned_vehicle_id) {
+      if (user?.assigned_vehicle_id) {
         const assigned = allVehicles.find(v => v.id === user.assigned_vehicle_id);
         if (assigned) {
           setVehicles([assigned, ...allVehicles.filter(v => v.id !== user.assigned_vehicle_id)]);
@@ -58,6 +56,7 @@ export default function DriverVehicleSelection() {
         setVehicles(allVehicles);
       }
     } catch (error) {
+      console.error('Error cargando vehículos:', error);
       toast.error('Error al cargar vehículos');
     }
     setLoading(false);
