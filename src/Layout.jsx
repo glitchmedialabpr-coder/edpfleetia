@@ -117,11 +117,45 @@ export default function Layout({ children, currentPageName }) {
     return [];
   }, [isDriver]);
 
+  // Check if current page is a main tab
+  const isMainTab = useMemo(() => {
+    return mobileNavItems.some(item => item.page === currentPageName);
+  }, [mobileNavItems, currentPageName]);
+
+  // Handle mobile tab navigation with state preservation
+  const handleMobileTabClick = (e, page) => {
+    if (window.innerWidth >= 1024) return; // Only for mobile
+    
+    e.preventDefault();
+    navigate(createPageUrl(page), { replace: false });
+  };
+
   // Check if current page needs back button
   const needsBackButton = () => {
+    if (isDriver && isMainTab) return false; // Main tabs don't need back button
     const mainPages = ['DriverDashboard', 'Dashboard', 'PassengerTrips'];
     return !mainPages.includes(currentPageName);
   };
+
+  // Intercept browser back button on mobile for proper tab navigation
+  useEffect(() => {
+    if (!isDriver || window.innerWidth >= 1024) return;
+
+    const handlePopState = (e) => {
+      const path = location.pathname;
+      const isTabPage = mobileNavItems.some(item => 
+        path.includes(item.page) || path === createPageUrl(item.page)
+      );
+      
+      if (isTabPage) {
+        // Allow normal navigation for tab pages
+        return;
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [isDriver, location, mobileNavItems]);
 
   const navItems = useMemo(() => {
     if (isAdmin) {
@@ -371,10 +405,10 @@ export default function Layout({ children, currentPageName }) {
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: isMainTab ? 0 : 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, y: isMainTab ? 0 : -10 }}
+            transition={{ duration: isMainTab ? 0.15 : 0.2 }}
             className="p-4 lg:p-8 flex-1"
           >
             {children}
@@ -387,27 +421,30 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Bottom Tab Bar - Mobile Only for Drivers */}
       {isDriver && mobileNavItems.length > 0 && (
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 z-50 select-none safe-area-bottom">
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 z-50 select-none" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           <div className="flex justify-around items-center h-16 px-2">
             {mobileNavItems.map((item) => {
               const isActive = currentPageName === item.page;
               return (
-                <Link
+                <button
                   key={item.page}
-                  to={createPageUrl(item.page)}
+                  onClick={(e) => handleMobileTabClick(e, item.page)}
                   className={cn(
-                    "flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors select-none",
+                    "flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-all duration-200 select-none active:scale-95",
                     isActive 
                       ? "text-teal-600 dark:text-teal-400" 
                       : "text-slate-500 dark:text-slate-400"
                   )}
                 >
                   <item.icon className={cn(
-                    "w-6 h-6",
-                    isActive && "text-teal-600 dark:text-teal-400"
+                    "w-6 h-6 transition-transform",
+                    isActive && "text-teal-600 dark:text-teal-400 scale-110"
                   )} />
                   <span className="text-xs font-medium">{item.name}</span>
-                </Link>
+                  {isActive && (
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-teal-600 dark:bg-teal-400 rounded-t-full" />
+                  )}
+                </button>
               );
             })}
           </div>
