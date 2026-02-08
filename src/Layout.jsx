@@ -190,7 +190,7 @@ export default function Layout({ children, currentPageName }) {
           { name: 'Choferes', page: 'Drivers', icon: Users },
           { name: 'Servicio General', page: 'GeneralServiceJobs', icon: Wrench },
           { name: 'Estudiantes', page: 'Students', icon: GraduationCap },
-          { name: 'Quejas', page: 'EmployeeComplaints', icon: AlertCircle },
+          { name: 'Solicitudes', page: 'EmployeeComplaints', icon: AlertCircle },
           { name: 'Reportes', page: 'ConsolidatedReports', icon: ClipboardList },
           { name: 'Respuestas y Notificaciones', page: 'ResponseHistory', icon: AlertTriangle },
           { name: 'Historial', page: 'History', icon: History },
