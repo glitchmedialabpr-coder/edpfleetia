@@ -79,14 +79,7 @@ export default function Layout({ children, currentPageName }) {
   const handleLogout = async () => {
     const sessionToken = sessionStorage.getItem('session_token');
     try {
-      await fetch(
-        `${window.location.origin}/api/base44/functions/logout`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ session_token: sessionToken })
-        }
-      );
+      await base44.functions.invoke('logout', { session_token: sessionToken });
     } catch (e) {
       console.error('Error logging out:', e);
     }
