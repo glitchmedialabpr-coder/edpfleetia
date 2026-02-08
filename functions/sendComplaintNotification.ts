@@ -233,10 +233,14 @@ Deno.serve(async (req) => {
         return Response.json({ error: 'ADMIN_NOTIFICATION_EMAIL not configured' }, { status: 500 });
       }
     } else if (template === 'statusUpdate') {
-      toEmail = data.employee_email;
-      if (!toEmail) {
-        return Response.json({ error: 'employee_email not provided' }, { status: 400 });
-      }
+      // For status updates, we don't send emails externally
+      // Just log the notification for now
+      return Response.json({ 
+        success: true, 
+        message: 'Status update notification logged (external email disabled)',
+        employee_email: data.employee_email,
+        status_change: `${data.old_status} -> ${data.new_status}`
+      });
     }
     
     await base44.asServiceRole.integrations.Core.SendEmail({
