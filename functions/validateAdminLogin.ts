@@ -69,7 +69,10 @@ Deno.serve(async (req) => {
       return Response.json({ 
         success: false, 
         error: 'PIN inválido' 
-      }, { status: 400 });
+      }, { 
+        status: 400,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
     }
     
     // Rate limiting
