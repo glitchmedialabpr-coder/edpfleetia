@@ -96,11 +96,6 @@ export default function DriverDashboard() {
 
   return (
     <div className="w-full space-y-6">
-      {/* Notification Client */}
-      <div className="absolute -top-20">
-        <WebSocketNotificationClient user={user} />
-      </div>
-
       {/* Header */}
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold text-slate-800">Mi Dashboard</h1>

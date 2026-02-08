@@ -24,7 +24,10 @@ export default function AdminLogin() {
       if (response?.data?.success) {
         localStorage.setItem('pin_user', JSON.stringify(response.data.user));
         toast.success('Acceso autorizado');
-        window.location.href = createPageUrl('Dashboard');
+        // Delay para asegurar que se guarde en localStorage antes de navegar
+        setTimeout(() => {
+          window.location.href = createPageUrl('Dashboard');
+        }, 100);
       } else {
         toast.error(response?.data?.error || 'PIN incorrecto');
         setPin('');

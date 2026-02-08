@@ -122,7 +122,6 @@ export default function Layout({ children, currentPageName }) {
     if (isPassenger) {
       return [
         { name: 'Viajes', page: 'PassengerTrips', icon: Bus },
-        { name: 'Ajustes', page: 'Settings', icon: SettingsIcon },
       ];
     }
     if (isAdmin) {
@@ -203,8 +202,13 @@ export default function Layout({ children, currentPageName }) {
         { name: 'Notificaciones', page: 'NotificationSettings', icon: SettingsIcon },
       ];
     }
-    return [{ name: 'Mis Viajes', page: 'PassengerTrips', icon: Bus }];
-  }, [isAdmin, isDriver]);
+    if (isPassenger) {
+      return [
+        { name: 'Mis Viajes', page: 'PassengerTrips', icon: Bus },
+      ];
+    }
+    return [];
+  }, [isAdmin, isDriver, isPassenger]);
 
   if (loading) {
     return (
