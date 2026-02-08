@@ -30,10 +30,10 @@ export default function AdminLogin() {
         if (sessionResponse?.data?.success) {
           sessionStorage.setItem('session_token', sessionResponse.data.session_token);
           toast.success('Acceso autorizado');
-          setLoading(false);
           navigate(createPageUrl('Dashboard'), { replace: true });
         } else {
           toast.error('Error al crear sesión');
+          setPin('');
           setLoading(false);
         }
       } else {

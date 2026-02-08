@@ -36,10 +36,10 @@ export default function DriverLogin() {
         if (sessionResponse?.data?.success) {
           sessionStorage.setItem('session_token', sessionResponse.data.session_token);
           toast.success(`¡Bienvenido ${user.full_name}!`);
-          setLoading(false);
           navigate(createPageUrl('DriverDashboard'));
         } else {
           toast.error('Error al crear sesión');
+          setDriverId('');
           setLoading(false);
         }
       } else {

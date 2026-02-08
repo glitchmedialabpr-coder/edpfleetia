@@ -36,10 +36,10 @@ export default function PassengerLogin() {
         if (sessionResponse?.data?.success) {
           sessionStorage.setItem('session_token', sessionResponse.data.session_token);
           toast.success(`¡Bienvenido ${userData.full_name}!`);
-          setLoading(false);
           navigate(createPageUrl('PassengerTrips'));
         } else {
           toast.error('Error al crear sesión');
+          setStudentId('');
           setLoading(false);
         }
       } else {
