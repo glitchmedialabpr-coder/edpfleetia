@@ -20,11 +20,13 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import WebSocketNotificationClient from '@/components/notifications/WebSocketNotificationClient';
+import VehicleSelectionModal from '@/components/vehicles/VehicleSelectionModal';
 
 export default function DriverDashboard() {
   const [user, setUser] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState('');
   const [currentVehicleData, setCurrentVehicleData] = useState(null);
+  const [vehicleModalOpen, setVehicleModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,6 +47,9 @@ export default function DriverDashboard() {
       // Usar vehículo guardado si existe
       if (userData.selected_vehicle_id) {
         setSelectedVehicle(userData.selected_vehicle_id);
+      } else {
+        // Abrir modal si no hay vehículo seleccionado
+        setVehicleModalOpen(true);
       }
     } catch (error) {
       console.error('Error loading user:', error);
@@ -118,7 +123,7 @@ export default function DriverDashboard() {
             <p className="text-xs text-slate-500 mt-2">
               {vehicles.length > 0 && (
                 <button 
-                  onClick={() => navigate(createPageUrl('DriverVehicleSelection'))}
+                  onClick={() => setVehicleModalOpen(true)}
                   className="text-teal-600 hover:underline font-medium"
                 >
                   Cambiar vehículo
@@ -135,7 +140,7 @@ export default function DriverDashboard() {
               <h3 className="font-semibold text-red-900 mb-2">Selecciona un Vehículo</h3>
               <p className="text-sm text-red-700 mb-3">Debes seleccionar un vehículo para aceptar solicitudes de viaje.</p>
               <Button 
-                onClick={() => navigate(createPageUrl('DriverVehicleSelection'))}
+                onClick={() => setVehicleModalOpen(true)}
                 className="bg-red-600 hover:bg-red-700 text-white"
               >
                 Seleccionar Vehículo
@@ -257,6 +262,19 @@ export default function DriverDashboard() {
           <ChevronRight className="w-4 h-4 ml-auto" />
         </Button>
       </div>
+
+      {/* Vehicle Selection Modal */}
+      <VehicleSelectionModal 
+        open={vehicleModalOpen}
+        onOpenChange={setVehicleModalOpen}
+        user={user}
+        onVehicleSelected={(updatedUser) => {
+          setUser(updatedUser);
+          if (updatedUser.selected_vehicle_id) {
+            setSelectedVehicle(updatedUser.selected_vehicle_id);
+          }
+        }}
+      />
     </div>
   );
 }
