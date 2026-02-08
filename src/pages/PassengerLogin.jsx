@@ -32,7 +32,7 @@ export default function PassengerLogin() {
         userData.user_type = 'passenger';
         localStorage.setItem('pin_user', JSON.stringify(userData));
         toast.success(`¡Bienvenido ${userData.full_name}!`);
-        navigate(createPageUrl('Home'));
+        window.location.href = createPageUrl('Home');
       } else {
         toast.error(response?.data?.error || 'Estudiante no encontrado');
         setStudentId('');
