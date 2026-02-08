@@ -17,6 +17,7 @@ import {
                     Car,
                     Wrench,
                     AlertTriangle,
+                    AlertCircle,
                     ClipboardList,
                     ShoppingCart,
                     Shield,
@@ -100,21 +101,22 @@ export default function Layout({ children, currentPageName }) {
 
   const navItems = useMemo(() => {
     if (isAdmin) {
-      return [
-        { name: 'Dashboard', page: 'Dashboard', icon: LayoutDashboard },
-        { name: 'Viajes', page: 'Trips', icon: Bus },
-        { name: 'Viajes en Vivo', page: 'LiveTrips', icon: Bus },
-        { name: 'Vehículos', page: 'VehicleManagement', icon: Car },
-        { name: 'Choferes', page: 'Drivers', icon: Users },
-        { name: 'Servicio General', page: 'GeneralServiceJobs', icon: Wrench },
-        { name: 'Estudiantes', page: 'Students', icon: GraduationCap },
-        { name: 'Reportes', page: 'ConsolidatedReports', icon: ClipboardList },
-        { name: 'Respuestas y Notificaciones', page: 'ResponseHistory', icon: AlertTriangle },
-        { name: 'Historial', page: 'History', icon: History },
-        { name: 'Centro de Notificaciones', page: 'NotificationSettings', icon: Bell },
-        { name: 'Configuración', page: 'Settings', icon: Shield },
-      ];
-    }
+        return [
+          { name: 'Dashboard', page: 'Dashboard', icon: LayoutDashboard },
+          { name: 'Viajes', page: 'Trips', icon: Bus },
+          { name: 'Viajes en Vivo', page: 'LiveTrips', icon: Bus },
+          { name: 'Vehículos', page: 'VehicleManagement', icon: Car },
+          { name: 'Choferes', page: 'Drivers', icon: Users },
+          { name: 'Servicio General', page: 'GeneralServiceJobs', icon: Wrench },
+          { name: 'Estudiantes', page: 'Students', icon: GraduationCap },
+          { name: 'Quejas', page: 'EmployeeComplaints', icon: AlertCircle },
+          { name: 'Reportes', page: 'ConsolidatedReports', icon: ClipboardList },
+          { name: 'Respuestas y Notificaciones', page: 'ResponseHistory', icon: AlertTriangle },
+          { name: 'Historial', page: 'History', icon: History },
+          { name: 'Centro de Notificaciones', page: 'NotificationSettings', icon: Bell },
+          { name: 'Configuración', page: 'Settings', icon: Shield },
+        ];
+      }
     if (isDriver) {
       return [
         { name: 'Dashboard', page: 'DriverDashboard', icon: LayoutDashboard },
@@ -153,7 +155,7 @@ export default function Layout({ children, currentPageName }) {
   }
 
   // Route guard: Protect admin pages
-  const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'Maintenance', 'LiveTrips', 'ConsolidatedReports'];
+  const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'Maintenance', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
   if (adminPages.includes(currentPageName) && user.role !== 'admin') {
     window.location.href = createPageUrl('Dashboard');
     return null;
