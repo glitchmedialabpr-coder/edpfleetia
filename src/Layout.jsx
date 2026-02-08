@@ -56,28 +56,25 @@ export default function Layout({ children, currentPageName }) {
       const pinUser = localStorage.getItem('pin_user');
       if (pinUser) {
         try {
-          const user = JSON.parse(pinUser);
+          const userData = JSON.parse(pinUser);
           
           // Check if session has session_expiry
-          if (user.session_expiry) {
-            if (Date.now() > user.session_expiry) {
+          if (userData.session_expiry) {
+            if (Date.now() > userData.session_expiry) {
               localStorage.removeItem('pin_user');
-              const loginPage = user.role === 'admin' ? 'AdminLogin' 
-                : user.user_type === 'driver' ? 'DriverLogin' 
-                : 'PassengerLogin';
-              navigate(createPageUrl(loginPage));
+              setUser(null);
               return;
             }
           }
           
           // Legacy check for old sessions without token
-          if (user.user_type === 'passenger' && user.login_time && !user.session_expiry) {
-            const elapsed = Date.now() - user.login_time;
+          if (userData.user_type === 'passenger' && userData.login_time && !userData.session_expiry) {
+            const elapsed = Date.now() - userData.login_time;
             const fiveMinutes = 5 * 60 * 1000;
             
             if (elapsed >= fiveMinutes) {
               localStorage.removeItem('pin_user');
-              navigate(createPageUrl('PassengerLogin'));
+              setUser(null);
             }
           }
         } catch (e) {
@@ -222,50 +219,44 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Allow login and public pages without authentication
-  const publicPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
-  if (!user && !publicPages.includes(currentPageName)) {
-    navigate(createPageUrl('Home'));
-    return null;
-  }
-
   // Render login and employee pages without layout
   const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
   if (noLayoutPages.includes(currentPageName)) {
     return <ErrorBoundary>{children}</ErrorBoundary>;
   }
 
+  // Allow login and public pages without authentication
+  const publicPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
+  if (!user && !publicPages.includes(currentPageName)) {
+    return <ErrorBoundary>{children}</ErrorBoundary>;
+  }
+
   // Route guard: Protect admin pages
   const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'Maintenance', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
-  if (adminPages.includes(currentPageName) && user.role !== 'admin') {
-    navigate(createPageUrl('Dashboard'));
-    return null;
+  if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
+    return <ErrorBoundary>{children}</ErrorBoundary>;
   }
 
   // Route guard: Protect NotificationSettings (admin + drivers only)
-  if (currentPageName === 'NotificationSettings' && user.role !== 'admin' && user.user_type !== 'driver') {
-    navigate(createPageUrl('Home'));
-    return null;
+  if (currentPageName === 'NotificationSettings' && user?.role !== 'admin' && user?.user_type !== 'driver') {
+    return <ErrorBoundary>{children}</ErrorBoundary>;
   }
 
   // Route guard: Protect driver pages (but NotificationSettings is allowed for admins too)
   const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory'];
-  if (driverPages.includes(currentPageName) && user.user_type !== 'driver') {
-    navigate(createPageUrl('Home'));
-    return null;
+  if (driverPages.includes(currentPageName) && user?.user_type !== 'driver') {
+    return <ErrorBoundary>{children}</ErrorBoundary>;
   }
 
   // Check if driver needs to select vehicle (always required, no bypass)
-  if (user.user_type === 'driver' && !user.selected_vehicle_id && currentPageName !== 'DriverVehicleSelection') {
-    navigate(createPageUrl('DriverVehicleSelection'));
-    return null;
+  if (user?.user_type === 'driver' && !user?.selected_vehicle_id && currentPageName !== 'DriverVehicleSelection') {
+    return <ErrorBoundary>{children}</ErrorBoundary>;
   }
 
   // Route guard: Protect passenger pages
   const passengerPages = ['PassengerTrips'];
-  if (passengerPages.includes(currentPageName) && user.user_type !== 'passenger') {
-    navigate(createPageUrl('Dashboard'));
-    return null;
+  if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger') {
+    return <ErrorBoundary>{children}</ErrorBoundary>;
   }
 
   return (
