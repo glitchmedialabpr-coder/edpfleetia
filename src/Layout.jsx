@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { base44 } from '@/api/base44Client';
+import { useAuth } from './components/auth/AuthContext';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { AnimatePresence, motion } from 'framer-motion';
 import TabContainer from './components/mobile/TabContainer';
