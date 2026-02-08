@@ -80,7 +80,7 @@ export default function Home() {
               </div>
               <div className="pt-4">
                 <span className="text-teal-400 font-semibold group-hover:underline">
-                  Acceso con Email →
+                  Acceso con ID →
                 </span>
               </div>
             </div>
