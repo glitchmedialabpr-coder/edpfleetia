@@ -123,15 +123,11 @@ export default function EmployeeComplaintForm() {
                       <SelectValue placeholder="Seleccione una ubicación" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="edp_hato_rey">EDP - Hato Rey</SelectItem>
-                      <SelectItem value="edp_manati">EDP - Manatí</SelectItem>
-                      <SelectItem value="edp_san_sebastian">EDP - San Sebastián</SelectItem>
-                      <SelectItem value="edp_villalba">EDP - Villalba</SelectItem>
-                      <SelectItem value="wellness_hato_rey">Wellness - Hato Rey</SelectItem>
-                      <SelectItem value="wellness_manati">Wellness - Manatí</SelectItem>
-                      <SelectItem value="wellness_san_sebastian">Wellness - San Sebastián</SelectItem>
-                      <SelectItem value="wellness_villalba">Wellness - Villalba</SelectItem>
-                      <SelectItem value="otro">Otro</SelectItem>
+                      <SelectItem value="edificio_principal">Edificio Principal</SelectItem>
+                      <SelectItem value="anexo">Anexo</SelectItem>
+                      <SelectItem value="anexo_2">Anexo 2</SelectItem>
+                      <SelectItem value="san_juan_school_of_design">San Juan School of Design</SelectItem>
+                      <SelectItem value="piedras_blancas">Piedras Blancas</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
