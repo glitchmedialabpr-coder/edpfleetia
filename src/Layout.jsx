@@ -225,7 +225,7 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Render login and employee pages without layout
+  // Public pages without layout
   const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
   if (noLayoutPages.includes(currentPageName)) {
     return (
@@ -235,12 +235,18 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // If no user on protected pages, render children as-is (will show the page without layout)
+  // If no user, redirect to Home
   if (!user) {
+    navigate(createPageUrl('Home'), { replace: true });
     return (
-      <ErrorBoundary>
-        {children}
-      </ErrorBoundary>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center gap-4">
+          <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center">
+            <Bus className="w-8 h-8 text-white" />
+          </div>
+          <div className="h-2 w-24 bg-slate-200 rounded"></div>
+        </div>
+      </div>
     );
   }
 
