@@ -2,6 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Text Selection Utilities */
+@layer components {
+  /* Selectable text - only for readable content */
+  .select-text {
+    @apply select-auto;
+  }
+
+  /* Non-selectable - for navigation and UI elements */
+  .select-none {
+    @apply select-none -webkit-user-select-none -webkit-touch-callout-none;
+  }
+
+  /* Apply to interactive elements by default */
+  button,
+  a,
+  nav,
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"] {
+    @apply select-none -webkit-user-select-none -webkit-touch-callout-none;
+  }
+
+  /* Headers and labels */
+  h1, h2, h3, h4, h5, h6,
+  header,
+  footer {
+    @apply select-none -webkit-user-select-none;
+  }
+
+  /* Tab bar and navigation tabs */
+  [role="tablist"],
+  .tab-bar,
+  .nav-tabs {
+    @apply select-none -webkit-user-select-none -webkit-touch-callout-none;
+  }
+
+  /* Readable content areas */
+  p,
+  span,
+  div[data-content="true"],
+  article,
+  section:not([role="tablist"]) {
+    @apply select-auto;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
