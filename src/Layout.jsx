@@ -248,16 +248,16 @@ export default function Layout({ children, currentPageName }) {
           <ThemeToggle />
           {isDriver && <NotificationCenter user={user} />}
           <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-700 select-none">
-            <div className="w-9 h-9 bg-slate-200 dark:bg-slate-600 rounded-full flex items-center justify-center">
-              <User className="w-5 h-5 text-slate-500 dark:text-slate-300" />
+              <div className="w-9 h-9 bg-slate-200 dark:bg-slate-600 rounded-full flex items-center justify-center select-none">
+                <User className="w-5 h-5 text-slate-500 dark:text-slate-300" />
+              </div>
+              <div className="flex-1 min-w-0 select-none">
+                <p className="font-medium text-slate-800 dark:text-slate-100 truncate text-sm select-none">{user.full_name || user.email}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 capitalize select-none">
+                  {isAdmin ? 'Administrador' : isDriver ? 'Conductor' : 'Pasajero'}
+                </p>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-slate-800 dark:text-slate-100 truncate text-sm">{user.full_name || user.email}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
-                {isAdmin ? 'Administrador' : isDriver ? 'Conductor' : 'Pasajero'}
-              </p>
-            </div>
-          </div>
           <Button 
             variant="ghost" 
             size="icon"
@@ -271,7 +271,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-40 px-4 flex items-center justify-between select-none">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 select-none">
           {needsBackButton() ? (
             <Button
               variant="ghost"
@@ -290,7 +290,7 @@ export default function Layout({ children, currentPageName }) {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <span className="font-semibold text-slate-800 dark:text-slate-100">Fleetia</span>
+              <span className="font-semibold text-slate-800 dark:text-slate-100 select-none">Fleetia</span>
             </>
           )}
         </div>
@@ -324,20 +324,20 @@ export default function Layout({ children, currentPageName }) {
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="hidden lg:block p-6 border-b border-slate-100 dark:border-slate-700 flex-shrink-0 select-none">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl overflow-hidden">
-              <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/a12aa5730_Addaheading.jpg" 
-                alt="EDP Fleetia"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div>
-              <h1 className="font-bold text-slate-800 dark:text-slate-100 text-lg">Fleetia</h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">by Glitch Media Lab</p>
+            <div className="flex items-center gap-3 select-none">
+              <div className="w-11 h-11 rounded-xl overflow-hidden">
+                <img 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/a12aa5730_Addaheading.jpg" 
+                  alt="EDP Fleetia"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="select-none">
+                <h1 className="font-bold text-slate-800 dark:text-slate-100 text-lg select-none">Fleetia</h1>
+                <p className="text-xs text-slate-500 dark:text-slate-400 select-none">by Glitch Media Lab</p>
+              </div>
             </div>
           </div>
-        </div>
 
         <nav className="flex-1 overflow-y-auto p-4 space-y-1">
           {navItems.map((item) => {
@@ -358,7 +358,7 @@ export default function Layout({ children, currentPageName }) {
                   "w-5 h-5 transition-colors flex-shrink-0",
                   isActive ? "text-white" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"
                 )} />
-                <span className="font-medium">{item.name}</span>
+                <span className="font-medium select-none">{item.name}</span>
                 {isActive && <ChevronRight className="w-4 h-4 ml-auto flex-shrink-0" />}
               </Link>
             );
@@ -367,23 +367,23 @@ export default function Layout({ children, currentPageName }) {
 
         <div className="lg:hidden p-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800">
           <div className="flex items-center gap-3 px-3 py-2 mb-3 bg-slate-50 dark:bg-slate-700 rounded-lg select-none">
-            <div className="w-10 h-10 bg-slate-200 dark:bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 bg-slate-200 dark:bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0 select-none">
               <User className="w-5 h-5 text-slate-500 dark:text-slate-300" />
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-slate-800 dark:text-slate-100 truncate text-sm">{user.full_name || user.email}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
+            <div className="flex-1 min-w-0 select-none">
+              <p className="font-medium text-slate-800 dark:text-slate-100 truncate text-sm select-none">{user.full_name || user.email}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 capitalize select-none">
                 {isAdmin ? 'Administrador' : isDriver ? 'Conductor' : 'Pasajero'}
               </p>
             </div>
           </div>
           <Button 
             variant="ghost" 
-            className="w-full justify-start text-slate-600 dark:text-slate-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 select-none"
+            className="w-full justify-start text-slate-600 dark:text-slate-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
             onClick={handleLogout}
           >
             <LogOut className="w-4 h-4 mr-2" />
-            Cerrar Sesión
+            <span className="select-none">Cerrar Sesión</span>
           </Button>
         </div>
       </aside>
@@ -417,8 +417,8 @@ export default function Layout({ children, currentPageName }) {
             </motion.div>
           </AnimatePresence>
         )}
-        <footer className="py-4 px-8 text-center text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 select-none">
-          Design by <span className="font-medium text-slate-700 dark:text-slate-300">Glitch Media Lab</span>
+        <footer className="py-4 px-8 text-center text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+        Design by <span className="font-medium text-slate-700 dark:text-slate-300 select-none">Glitch Media Lab</span>
         </footer>
       </main>
 
