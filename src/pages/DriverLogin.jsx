@@ -36,7 +36,7 @@ export default function DriverLogin() {
 
         toast.success(`¡Bienvenido ${user.full_name}!`);
         setLoading(false);
-        navigate(createPageUrl('DriverVehicleSelection'));
+        navigate(createPageUrl('DriverDashboard'));
       } else {
         toast.error(response?.data?.error || 'Conductor no encontrado');
         setLoading(false);
