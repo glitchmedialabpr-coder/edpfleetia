@@ -52,23 +52,18 @@ export default function Layout({ children, currentPageName }) {
     try {
       const sessionToken = sessionStorage.getItem('session_token');
       if (sessionToken) {
-        const response = await fetch(
-          `${window.location.origin}/api/base44/functions/getCurrentUser`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ session_token: sessionToken })
-          }
-        );
+        const response = await base44.functions.invoke('getCurrentUser', { session_token: sessionToken });
         
-        const data = await response.json();
-        if (data?.success) {
-          setUser(data.user);
+        if (response?.data?.success) {
+          setUser(response.data.user);
+          console.log('User loaded successfully:', response.data.user);
         } else {
-          // Session inválida - limpiar token
+          console.log('Session invalid or expired:', response?.data?.error);
           sessionStorage.removeItem('session_token');
           setUser(null);
         }
+      } else {
+        setUser(null);
       }
     } catch (e) {
       console.error('Error loading user:', e);
