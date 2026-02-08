@@ -19,6 +19,7 @@ import {
   Fuel
 } from 'lucide-react';
 import { toast } from 'sonner';
+import WebSocketNotificationClient from '@/components/notifications/WebSocketNotificationClient';
 
 export default function DriverDashboard() {
   const [user, setUser] = useState(null);
@@ -39,10 +40,17 @@ export default function DriverDashboard() {
         // Set vehicle immediately when user loads
         if (userData.selected_vehicle_id) {
           setSelectedVehicle(userData.selected_vehicle_id);
+        } else {
+          // If no vehicle selected, redirect to vehicle selection
+          navigate(createPageUrl('DriverVehicleSelection'));
         }
+      } else {
+        // If not logged in, redirect to login
+        navigate(createPageUrl('DriverLogin'));
       }
     } catch (error) {
       console.error('Error loading user:', error);
+      navigate(createPageUrl('DriverLogin'));
     }
   };
 
@@ -76,8 +84,23 @@ export default function DriverDashboard() {
     }
   }, [selectedVehicle, vehicles]);
 
+  if (!user) {
+    return (
+      <div className="w-full flex items-center justify-center min-h-screen">
+        <div className="animate-pulse">
+          <div className="w-16 h-16 bg-slate-200 rounded-full"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full space-y-6">
+      {/* Notification Client */}
+      <div className="absolute -top-20">
+        <WebSocketNotificationClient user={user} />
+      </div>
+
       {/* Header */}
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold text-slate-800">Mi Dashboard</h1>
