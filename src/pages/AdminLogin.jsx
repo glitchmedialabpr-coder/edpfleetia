@@ -27,7 +27,7 @@ export default function AdminLogin() {
         localStorage.setItem('pin_user', JSON.stringify(userData));
         toast.success('Acceso autorizado');
         setLoading(false);
-        navigate(createPageUrl('Drivers'), { replace: true });
+        navigate(createPageUrl('Dashboard'), { replace: true });
       } else {
         toast.error(response?.data?.error || 'PIN incorrecto');
         setPin('');
