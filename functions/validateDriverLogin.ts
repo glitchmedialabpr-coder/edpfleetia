@@ -75,7 +75,10 @@ Deno.serve(async (req) => {
     const sanitizedId = driverId.trim().replace(/[^0-9]/g, '').slice(0, 3);
     
     if (sanitizedId.length !== 3) {
-      return Response.json({ success: false, error: 'ID inválido' }, { status: 400 });
+      return Response.json({ success: false, error: 'ID inválido' }, { 
+        status: 400,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
     }
     
     // Verificar rate limiting
