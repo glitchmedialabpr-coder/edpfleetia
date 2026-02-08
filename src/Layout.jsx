@@ -104,7 +104,7 @@ export default function Layout({ children, currentPageName }) {
     const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
     
     if (!loading && !user && !noLayoutPages.includes(currentPageName)) {
-      window.location.href = createPageUrl('Home');
+      window.location.href = '/';
     }
   }, [user, loading, currentPageName]);
 
@@ -244,7 +244,7 @@ export default function Layout({ children, currentPageName }) {
 
   // Redirect if no user on protected pages
   if (!user) {
-    window.location.href = createPageUrl('Home');
+    window.location.href = '/';
     return null;
   }
 
