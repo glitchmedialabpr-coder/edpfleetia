@@ -42,13 +42,11 @@ export default function DriverLogin() {
         }, 100);
       } else {
         toast.error(response?.data?.error || 'Conductor no encontrado');
-        setDriverId('');
         setLoading(false);
       }
     } catch (error) {
       console.error('Login error:', error);
       toast.error('Error al verificar conductor');
-      setDriverId('');
       setLoading(false);
     }
   };
