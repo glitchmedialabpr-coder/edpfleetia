@@ -87,12 +87,14 @@ export default function Layout({ children, currentPageName }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Redirect to Home if no user on protected pages
+  // Redirect to Home if no user on ANY protected pages (including Dashboard)
   useEffect(() => {
-    if (!loading && !user && !['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'].includes(currentPageName)) {
-      navigate(createPageUrl('Home'), { replace: true });
+    const publicPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
+    
+    if (!loading && !user && !publicPages.includes(currentPageName)) {
+      window.location.href = createPageUrl('Home');
     }
-  }, [loading, user, currentPageName, navigate]);
+  }, [loading, user, currentPageName]);
 
   const loadUser = () => {
     try {
