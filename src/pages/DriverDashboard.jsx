@@ -136,7 +136,7 @@ export default function DriverDashboard() {
             <p className="text-xs text-slate-500 mt-2">
               {vehicles.length > 0 && (
                 <button 
-                  onClick={() => navigate(createPageUrl('DriverVehicleSelection'))}
+                  onClick={() => setShowVehicleModal(true)}
                   className="text-teal-600 hover:underline font-medium"
                 >
                   Cambiar vehículo
@@ -153,7 +153,7 @@ export default function DriverDashboard() {
               <h3 className="font-semibold text-red-900 mb-2">Selecciona un Vehículo</h3>
               <p className="text-sm text-red-700 mb-3">Debes seleccionar un vehículo para aceptar solicitudes de viaje.</p>
               <Button 
-               onClick={() => navigate(createPageUrl('DriverVehicleSelection'))}
+               onClick={() => setShowVehicleModal(true)}
                className="bg-red-600 hover:bg-red-700 text-white"
               >
                Seleccionar Vehículo
@@ -162,6 +162,36 @@ export default function DriverDashboard() {
           </div>
         </Card>
       )}
+
+      {/* Vehicle Selection Modal */}
+      <Dialog open={showVehicleModal} onOpenChange={setShowVehicleModal}>
+        <DialogContent className="max-w-2xl max-h-96 overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Selecciona un Vehículo</DialogTitle>
+            <DialogDescription>
+              Elige el vehículo con el que trabajarás hoy
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {vehicles.map((vehicle) => (
+              <div
+                key={vehicle.id}
+                onClick={() => handleVehicleSelect(vehicle)}
+                className="p-4 border border-slate-200 rounded-lg hover:bg-teal-50 hover:border-teal-400 cursor-pointer transition-all"
+              >
+                <div className="flex items-start gap-3">
+                  <Car className="w-6 h-6 text-teal-600 flex-shrink-0 mt-1" />
+                  <div className="flex-1">
+                    <p className="font-semibold text-slate-800">{vehicle.brand} {vehicle.model}</p>
+                    <p className="text-sm text-slate-600">Placa: <Badge className="bg-slate-100 text-slate-700 ml-1">{vehicle.plate}</Badge></p>
+                    <p className="text-xs text-slate-500 mt-1">Capacidad: {vehicle.capacity} personas</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Vehicle Details */}
       {currentVehicleData && (
