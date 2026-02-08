@@ -1,3 +1,5 @@
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+
 // Rate limiting para admin
 const adminAttempts = new Map();
 const MAX_ATTEMPTS = 3;
