@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from './utils';
+import Home from './pages/Home';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { AnimatePresence, motion } from 'framer-motion';
 import TabContainer from './components/mobile/TabContainer';
@@ -99,14 +100,7 @@ export default function Layout({ children, currentPageName }) {
     setLoading(false);
   };
 
-  // Redirect to Home if no user and not on public pages
-  useEffect(() => {
-    const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
-    
-    if (!loading && !user && !noLayoutPages.includes(currentPageName)) {
-      window.location.href = '/';
-    }
-  }, [user, loading, currentPageName]);
+
 
   const handleLogout = () => {
     localStorage.removeItem('pin_user');
@@ -242,10 +236,13 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Redirect if no user on protected pages
+  // Show Home if no user on protected pages
   if (!user) {
-    window.location.href = '/';
-    return null;
+    return (
+      <ErrorBoundary>
+        <Home />
+      </ErrorBoundary>
+    );
   }
 
   // Route guard: Protect admin pages
