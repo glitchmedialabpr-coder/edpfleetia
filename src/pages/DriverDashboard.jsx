@@ -123,7 +123,7 @@ export default function DriverDashboard() {
             <p className="text-xs text-slate-500 mt-2">
               {vehicles.length > 0 && (
                 <button 
-                  onClick={() => setVehicleModalOpen(true)}
+                  onClick={() => navigate(createPageUrl('DriverVehicleSelection'))}
                   className="text-teal-600 hover:underline font-medium"
                 >
                   Cambiar vehículo
@@ -140,7 +140,10 @@ export default function DriverDashboard() {
               <h3 className="font-semibold text-red-900 mb-2">Selecciona un Vehículo</h3>
               <p className="text-sm text-red-700 mb-3">Debes seleccionar un vehículo para aceptar solicitudes de viaje.</p>
               <Button 
-                onClick={() => setVehicleModalOpen(true)}
+                onClick={() => {
+                  setVehicleModalOpen(false);
+                  navigate(createPageUrl('DriverVehicleSelection'));
+                }}
                 className="bg-red-600 hover:bg-red-700 text-white"
               >
                 Seleccionar Vehículo
@@ -263,18 +266,7 @@ export default function DriverDashboard() {
         </Button>
       </div>
 
-      {/* Vehicle Selection Modal */}
-      <VehicleSelectionModal 
-        open={vehicleModalOpen}
-        onOpenChange={setVehicleModalOpen}
-        user={user}
-        onVehicleSelected={(updatedUser) => {
-          setUser(updatedUser);
-          if (updatedUser.selected_vehicle_id) {
-            setSelectedVehicle(updatedUser.selected_vehicle_id);
-          }
-        }}
-      />
+
     </div>
   );
 }
