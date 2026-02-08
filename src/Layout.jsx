@@ -270,7 +270,7 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-40 px-4 flex items-center justify-between select-none">
+      <header className="lg:hidden fixed top-0 left-72 right-0 h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-40 px-4 flex items-center justify-between select-none">
         <div className="flex items-center gap-3 select-none">
           {needsBackButton() ? (
             <Button
@@ -283,13 +283,6 @@ export default function Layout({ children, currentPageName }) {
             </Button>
           ) : (
             <>
-              <div className="w-9 h-9 rounded-lg overflow-hidden">
-                <img 
-                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/a12aa5730_Addaheading.jpg" 
-                  alt="EDP Fleetia"
-                  className="w-full h-full object-cover"
-                />
-              </div>
               <span className="font-semibold text-slate-800 dark:text-slate-100 select-none">Fleetia</span>
             </>
           )}
@@ -297,31 +290,13 @@ export default function Layout({ children, currentPageName }) {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           {isDriver && <NotificationCenter user={user} />}
-          {!isDriver && (
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="select-none"
-            >
-              {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </Button>
-          )}
         </div>
       </header>
 
-      {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <div 
-          className="lg:hidden fixed inset-0 bg-black/50 z-40"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-16 left-0 bottom-0 w-72 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 z-50 transform transition-transform duration-300 lg:top-0 lg:translate-x-0 flex flex-col",
-        sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        "fixed top-16 left-0 bottom-0 w-72 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 z-50 flex flex-col",
+        "lg:top-0"
       )}>
         <div className="hidden lg:block p-6 border-b border-slate-100 dark:border-slate-700 flex-shrink-0 select-none">
             <div className="flex items-center gap-3">
