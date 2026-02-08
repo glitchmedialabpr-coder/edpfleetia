@@ -45,18 +45,14 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     loadUser();
-  }, [location.pathname]);
-
-  // No automatic redirects - Home is always accessible
-  // Users stay where they are regardless of login status
+  }, []);
 
   const loadUser = async () => {
     try {
       const sessionToken = sessionStorage.getItem('session_token');
       if (sessionToken) {
-        // Validar token en servidor
         const response = await fetch(
-          `${window.location.origin}/api/base44/functions/validateSessionToken`,
+          `${window.location.origin}/api/base44/functions/getCurrentUser`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -68,19 +64,36 @@ export default function Layout({ children, currentPageName }) {
         if (data?.success) {
           setUser(data.user);
         } else {
+          // Session inválida - limpiar token
           sessionStorage.removeItem('session_token');
+          setUser(null);
         }
       }
     } catch (e) {
       console.error('Error loading user:', e);
       sessionStorage.removeItem('session_token');
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
 
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const sessionToken = sessionStorage.getItem('session_token');
+    try {
+      await fetch(
+        `${window.location.origin}/api/base44/functions/logout`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_token: sessionToken })
+        }
+      );
+    } catch (e) {
+      console.error('Error logging out:', e);
+    }
     sessionStorage.removeItem('session_token');
     setUser(null);
     window.location.href = createPageUrl('Home');
@@ -204,9 +217,9 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Public pages without layout (Home is always shown as-is regardless of user state)
+  // Public pages without layout
   const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
-  if (currentPageName === 'Home' || noLayoutPages.includes(currentPageName)) {
+  if (noLayoutPages.includes(currentPageName)) {
     return (
       <ErrorBoundary>
         {children}
@@ -214,10 +227,10 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Show loading while checking localStorage
+  // Block rendering until session validation completes
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="animate-pulse flex flex-col items-center gap-4">
           <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center">
             <Bus className="w-8 h-8 text-white" />
@@ -228,37 +241,32 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // If no user on protected pages, redirect to Home
+  // Protected pages - redirect to Home if no valid session
   if (!user) {
     navigate(createPageUrl('Home'), { replace: true });
     return null;
   }
 
-  // Route guard: Protect admin pages
-  const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'Maintenance', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
+  // Enforce role-based routing
+  const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
   if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
-    return <ErrorBoundary>{children}</ErrorBoundary>;
+    navigate(createPageUrl('Home'), { replace: true });
+    return null;
   }
 
-  // Route guard: Protect NotificationSettings (admin + drivers only)
-  if (currentPageName === 'NotificationSettings' && user?.role !== 'admin' && user?.user_type !== 'driver') {
-    return <ErrorBoundary>{children}</ErrorBoundary>;
-  }
-
-  // Route guard: Protect driver pages (but NotificationSettings is allowed for admins too)
-  const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory'];
+  const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory', 'NotificationSettings'];
   if (driverPages.includes(currentPageName) && user?.user_type !== 'driver') {
-    return <ErrorBoundary>{children}</ErrorBoundary>;
+    navigate(createPageUrl('Home'), { replace: true });
+    return null;
   }
 
-  // Driver vehicle selection is skipped - go straight to Home
-  // Home page handles redirects based on user state
-
-  // Route guard: Protect passenger pages
   const passengerPages = ['PassengerTrips'];
   if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger') {
-    return <ErrorBoundary>{children}</ErrorBoundary>;
+    navigate(createPageUrl('Home'), { replace: true });
+    return null;
   }
+
+
 
   return (
     <ErrorBoundary>
