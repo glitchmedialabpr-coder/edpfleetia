@@ -85,7 +85,7 @@ export default function Layout({ children, currentPageName }) {
     
     // Cleanup
     return () => clearInterval(interval);
-    }, []);
+  }, []);
 
   const loadUser = () => {
     try {
@@ -103,10 +103,10 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
     
-    if (!user && !loading && !noLayoutPages.includes(currentPageName)) {
-      navigate(createPageUrl('Home'), { replace: true });
+    if (!loading && !user && !noLayoutPages.includes(currentPageName)) {
+      window.location.href = createPageUrl('Home');
     }
-  }, [user, loading, currentPageName, navigate]);
+  }, [user, loading, currentPageName]);
 
   const handleLogout = () => {
     localStorage.removeItem('pin_user');
