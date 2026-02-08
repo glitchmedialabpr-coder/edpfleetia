@@ -82,12 +82,15 @@ Deno.serve(async (req) => {
     }
     
     // Verificar rate limiting
-    const attemptCheck = checkLoginAttempts(sanitizedId);
+     const attemptCheck = checkLoginAttempts(sanitizedId);
     if (!attemptCheck.allowed) {
       return Response.json({ 
         success: false, 
         error: attemptCheck.message 
-      }, { status: 429 });
+      }, { 
+        status: 429,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
     }
     
     const drivers = await base44.asServiceRole.entities.Driver.filter({ 
