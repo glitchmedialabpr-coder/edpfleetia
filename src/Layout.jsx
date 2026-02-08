@@ -59,7 +59,7 @@ export default function Layout({ children, currentPageName }) {
     const publicPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
     
     if (!user && !publicPages.includes(currentPageName)) {
-      window.location.replace('/home');
+      window.location.href = createPageUrl('Home');
     }
   }, [loading, user, currentPageName]);
 
