@@ -104,7 +104,10 @@ Deno.serve(async (req) => {
     const sanitizedId = studentId.trim().replace(/[^0-9]/g, '').slice(0, 4);
     
     if (sanitizedId.length !== 4) {
-      return Response.json({ success: false, error: 'ID inválido' }, { status: 400 });
+      return Response.json({ success: false, error: 'ID inválido' }, { 
+        status: 400,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
     }
     
     // Rate limiting
