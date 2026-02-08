@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertCircle, Upload, X, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -14,6 +15,7 @@ export default function EmployeeComplaintForm() {
   const [formData, setFormData] = useState({
     employee_name: '',
     employee_email: '',
+    location: '',
     complaint_title: '',
     complaint_description: ''
   });
@@ -104,6 +106,31 @@ export default function EmployeeComplaintForm() {
                     required
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Ubicación del Incidente
+                </label>
+                <Select
+                  value={formData.location}
+                  onValueChange={(value) => setFormData({...formData, location: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccione una ubicación" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="edp_hato_rey">EDP - Hato Rey</SelectItem>
+                    <SelectItem value="edp_manati">EDP - Manatí</SelectItem>
+                    <SelectItem value="edp_san_sebastian">EDP - San Sebastián</SelectItem>
+                    <SelectItem value="edp_villalba">EDP - Villalba</SelectItem>
+                    <SelectItem value="wellness_hato_rey">Wellness - Hato Rey</SelectItem>
+                    <SelectItem value="wellness_manati">Wellness - Manatí</SelectItem>
+                    <SelectItem value="wellness_san_sebastian">Wellness - San Sebastián</SelectItem>
+                    <SelectItem value="wellness_villalba">Wellness - Villalba</SelectItem>
+                    <SelectItem value="otro">Otro</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
