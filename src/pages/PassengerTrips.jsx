@@ -243,7 +243,7 @@ export default function PassengerTrips() {
                       variant="ghost" 
                       size="sm"
                       onClick={() => handleCancel(request)}
-                      className="text-red-600 hover:text-red-700"
+                      className="text-red-600 hover:text-red-700 h-11 sm:h-8"
                     >
                       Cancelar
                     </Button>
@@ -252,17 +252,17 @@ export default function PassengerTrips() {
 
                 <div className="space-y-3">
                   <div className="flex items-start gap-2">
-                    <Navigation className="w-5 h-5 text-teal-600 mt-0.5" />
+                    <Navigation className="w-5 h-5 text-teal-600 mt-0.5 select-none" />
                     <div className="flex-1">
-                      <p className="text-sm text-slate-500">Origen</p>
+                      <p className="text-sm text-slate-500 select-none">Origen</p>
                       <p className="font-medium text-slate-800">{request.origin}</p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-2">
-                    <MapPin className="w-5 h-5 text-red-600 mt-0.5" />
+                    <MapPin className="w-5 h-5 text-red-600 mt-0.5 select-none" />
                     <div className="flex-1">
-                      <p className="text-sm text-slate-500">Destino</p>
+                      <p className="text-sm text-slate-500 select-none">Destino</p>
                       <p className="font-medium text-slate-800">{request.destination}</p>
                     </div>
                   </div>
@@ -398,12 +398,12 @@ export default function PassengerTrips() {
             </div>
 
             <div className="flex gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={() => setModalOpen(false)} className="flex-1">
+              <Button type="button" variant="outline" onClick={() => setModalOpen(false)} className="flex-1 h-11">
                 Cancelar
               </Button>
               <Button 
                 type="submit" 
-                className="flex-1 bg-teal-600 hover:bg-teal-700"
+                className="flex-1 bg-teal-600 hover:bg-teal-700 h-11"
                 disabled={
                   !formData.destination_type ||
                   (formData.destination_type === 'otros' && !formData.destination_other)

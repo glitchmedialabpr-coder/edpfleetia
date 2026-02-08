@@ -154,7 +154,7 @@ export default function DriverRequests() {
   const { data: pendingRequests = [] } = useQuery({
     queryKey: ['pending-requests'],
     queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' }, '-created_date', 50),
-    refetchInterval: 1000
+    refetchInterval: false // Disabled for battery optimization, using real-time subscriptions
   });
 
   const { data: acceptedRequests = [] } = useQuery({
@@ -491,7 +491,7 @@ export default function DriverRequests() {
 
             <Button 
               onClick={handleStartTrip}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 md:py-4 text-base md:text-lg h-auto"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 md:py-4 text-base md:text-lg h-11 md:h-auto"
             >
               <Navigation className="w-5 h-5 mr-2" />
               Comenzar Viaje
@@ -548,7 +548,7 @@ export default function DriverRequests() {
                           <Button
                             size="sm"
                             onClick={() => handleDeliverStudent(trip, idx)}
-                            className="flex-shrink-0 ml-2 bg-green-600 hover:bg-green-700 text-xs sm:text-sm"
+                            className="flex-shrink-0 ml-2 bg-green-600 hover:bg-green-700 text-xs sm:text-sm h-11 sm:h-9"
                           >
                             <CheckCircle className="w-4 h-4 mr-1" />
                             <span className="hidden sm:inline">Entregado</span>
@@ -564,7 +564,7 @@ export default function DriverRequests() {
 
                 <Button 
                   onClick={() => handleCompleteTrip(trip)}
-                  className="w-full bg-teal-600 hover:bg-teal-700"
+                  className="w-full bg-teal-600 hover:bg-teal-700 h-11"
                   disabled={!trip.students?.every(s => s.delivery_status === 'delivered')}
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
@@ -618,17 +618,17 @@ export default function DriverRequests() {
 
                   <div className="space-y-3 mb-4">
                     <div className="flex items-start gap-2">
-                      <Navigation className="w-5 h-5 text-teal-600 mt-0.5 flex-shrink-0" />
+                      <Navigation className="w-5 h-5 text-teal-600 mt-0.5 flex-shrink-0 select-none" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs sm:text-sm text-slate-500">Origen</p>
+                        <p className="text-xs sm:text-sm text-slate-500 select-none">Origen</p>
                         <p className="font-medium text-slate-800 truncate text-sm">{request.origin}</p>
                       </div>
                     </div>
 
                     <div className="flex items-start gap-2">
-                      <MapPin className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                      <MapPin className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0 select-none" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs sm:text-sm text-slate-500">Destino</p>
+                        <p className="text-xs sm:text-sm text-slate-500 select-none">Destino</p>
                         <p className="font-medium text-slate-800 truncate text-sm">{request.destination}</p>
                       </div>
                     </div>
@@ -651,14 +651,14 @@ export default function DriverRequests() {
                     <Button 
                       onClick={() => handleReject(request)}
                       variant="outline"
-                      className="flex-1 border-red-200 text-red-600 hover:bg-red-50 text-sm"
+                      className="flex-1 border-red-200 text-red-600 hover:bg-red-50 text-sm h-11 sm:h-9"
                     >
                       Rechazar
                     </Button>
                     <Button 
                       onClick={() => handleAccept(request)}
                       disabled={!selectedVehicle}
-                      className="flex-1 bg-teal-600 hover:bg-teal-700 text-sm"
+                      className="flex-1 bg-teal-600 hover:bg-teal-700 text-sm h-11 sm:h-9"
                     >
                       <CheckCircle className="w-4 h-4 mr-1" />
                       Aceptar

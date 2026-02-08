@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { AnimatePresence, motion } from 'framer-motion';
+import TabContainer from './components/mobile/TabContainer';
 import { 
                       Bus, 
                       LayoutDashboard, 
@@ -402,18 +403,32 @@ export default function Layout({ children, currentPageName }) {
         "lg:pl-72 pt-16 lg:pt-16 min-h-screen flex flex-col",
         isDriver && mobileNavItems.length > 0 && "pb-20 lg:pb-0"
       )}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: isMainTab ? 0 : 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: isMainTab ? 0 : -10 }}
-            transition={{ duration: isMainTab ? 0.15 : 0.2 }}
-            className="p-4 lg:p-8 flex-1"
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        {isDriver && isMainTab && window.innerWidth < 1024 ? (
+          <div className="p-4 lg:p-8 flex-1">
+            <TabContainer
+              tabs={[
+                { id: 'DriverDashboard', content: currentPageName === 'DriverDashboard' ? children : null },
+                { id: 'DriverRequests', content: currentPageName === 'DriverRequests' ? children : null },
+                { id: 'DriverTrips', content: currentPageName === 'DriverTrips' ? children : null },
+                { id: 'NotificationSettings', content: currentPageName === 'NotificationSettings' ? children : null }
+              ]}
+              currentTab={currentPageName}
+            />
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: isMainTab ? 0 : 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: isMainTab ? 0 : -10 }}
+              transition={{ duration: isMainTab ? 0.15 : 0.2 }}
+              className="p-4 lg:p-8 flex-1"
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        )}
         <footer className="py-4 px-8 text-center text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 select-none">
           Design by <span className="font-medium text-slate-700 dark:text-slate-300">Glitch Media Lab</span>
         </footer>
