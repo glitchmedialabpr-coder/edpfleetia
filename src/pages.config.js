@@ -88,6 +88,7 @@ import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
 import DriverRequests from './pages/DriverRequests';
 import Settings from './pages/Settings';
+import Index from './pages/Index';
 import __Layout from './Layout.jsx';
 
 
@@ -133,6 +134,7 @@ export const PAGES = {
     "Warnings": Warnings,
     "DriverRequests": DriverRequests,
     "Settings": Settings,
+    "Index": Index,
 }
 
 export const pagesConfig = {
