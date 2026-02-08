@@ -62,7 +62,10 @@ export default function Settings() {
 
       toast.success('Cuenta eliminada correctamente');
       setShowDeleteDialog(false);
-      navigate(createPageUrl('Home'));
+      // Use window.location to force full page reload and ensure Home loads
+      setTimeout(() => {
+        window.location.href = createPageUrl('Home');
+      }, 1500);
     } catch (error) {
       console.error('Error deleting account:', error);
       toast.error('Error al eliminar la cuenta');
