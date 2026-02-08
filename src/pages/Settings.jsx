@@ -28,7 +28,8 @@ import {
   Volume2,
   Trash2,
   Wrench,
-  Presentation
+  Presentation,
+  UserX
 } from 'lucide-react';
 import { toast } from 'sonner';
 import SoundSelector from '../components/notifications/SoundSelector';
@@ -42,6 +43,7 @@ export default function Settings() {
   const [videoUrl, setVideoUrl] = useState(null);
   const [pinModal, setPinModal] = useState({ open: false, pin: '', error: '' });
   const [deletingTrips, setDeletingTrips] = useState(false);
+  const [deleteAccountModal, setDeleteAccountModal] = useState({ open: false, pin: '', error: '', deleting: false });
   const [settings, setSettings] = useState({
     // General
     app_name: 'EDP Transport',
@@ -297,6 +299,54 @@ export default function Settings() {
     } catch (error) {
       setPinModal(prev => ({ ...prev, error: 'Error al eliminar viajes' }));
       setDeletingTrips(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleteAccountModal({ open: true, pin: '', error: '', deleting: false });
+  };
+
+  const handleVerifyPinAndDeleteAccount = async () => {
+    setDeleteAccountModal(prev => ({ ...prev, error: '', deleting: true }));
+
+    try {
+      const response = await base44.functions.invoke('validateAdminLogin', { pin: deleteAccountModal.pin });
+      
+      if (!response.data.success) {
+        setDeleteAccountModal(prev => ({ ...prev, error: 'PIN incorrecto', deleting: false }));
+        return;
+      }
+
+      // Delete all data
+      const [trips, requests, students, drivers, vehicles, maintenance, accidents, purchases] = await Promise.all([
+        base44.entities.Trip.list('', 5000),
+        base44.entities.TripRequest.list('', 5000),
+        base44.entities.Student.list('', 5000),
+        base44.entities.Driver.list('', 5000),
+        base44.entities.Vehicle.list('', 5000),
+        base44.entities.MaintenanceRecord.list('', 5000),
+        base44.entities.VehicleAccident.list('', 5000),
+        base44.entities.Purchase.list('', 5000)
+      ]);
+
+      // Delete all records
+      for (const trip of trips) await base44.entities.Trip.delete(trip.id);
+      for (const request of requests) await base44.entities.TripRequest.delete(request.id);
+      for (const student of students) await base44.entities.Student.delete(student.id);
+      for (const driver of drivers) await base44.entities.Driver.delete(driver.id);
+      for (const vehicle of vehicles) await base44.entities.Vehicle.delete(vehicle.id);
+      for (const record of maintenance) await base44.entities.MaintenanceRecord.delete(record.id);
+      for (const accident of accidents) await base44.entities.VehicleAccident.delete(accident.id);
+      for (const purchase of purchases) await base44.entities.Purchase.delete(purchase.id);
+
+      setDeleteAccountModal({ open: false, pin: '', error: '', deleting: false });
+      toast.success('Todos los datos han sido eliminados');
+      setTimeout(() => {
+        localStorage.clear();
+        window.location.href = '/';
+      }, 2000);
+    } catch (error) {
+      setDeleteAccountModal(prev => ({ ...prev, error: 'Error al eliminar datos', deleting: false }));
     }
   };
 
@@ -776,12 +826,72 @@ export default function Settings() {
                       <Trash2 className="w-4 h-4 mr-2" />
                       Eliminar Todos los Viajes
                     </Button>
+
+                    <Button 
+                      variant="outline"
+                      onClick={handleDeleteAccount}
+                      className="w-full border-red-300 hover:bg-red-100 text-red-800 font-semibold"
+                    >
+                      <UserX className="w-4 h-4 mr-2" />
+                      Eliminar Cuenta y Todos los Datos
+                    </Button>
                   </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Delete Account Modal */}
+      {deleteAccountModal.open && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Eliminar Cuenta Completa</h3>
+            <p className="text-sm text-slate-600 mb-4">
+              <strong className="text-red-600">ADVERTENCIA:</strong> Esta acción eliminará PERMANENTEMENTE todos los datos del sistema incluyendo viajes, conductores, vehículos, estudiantes y registros. Esta acción NO se puede deshacer.
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">PIN de Administrador</label>
+                <input
+                  type="password"
+                  value={deleteAccountModal.pin}
+                  onChange={(e) => setDeleteAccountModal(prev => ({ ...prev, pin: e.target.value, error: '' }))}
+                  placeholder="Ingresa PIN"
+                  maxLength="4"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-center text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-red-500"
+                  autoFocus
+                />
+              </div>
+
+              {deleteAccountModal.error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-700">{deleteAccountModal.error}</p>
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline"
+                  onClick={() => setDeleteAccountModal({ open: false, pin: '', error: '', deleting: false })}
+                  className="flex-1"
+                  disabled={deleteAccountModal.deleting}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  onClick={handleVerifyPinAndDeleteAccount}
+                  disabled={deleteAccountModal.pin.length !== 4 || deleteAccountModal.deleting}
+                  className="flex-1 bg-red-600 hover:bg-red-700"
+                >
+                  {deleteAccountModal.deleting ? 'Eliminando...' : 'Eliminar Todo'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* PIN Verification Modal */}
       {pinModal.open && (

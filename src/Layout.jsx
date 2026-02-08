@@ -1,30 +1,32 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { 
-                    Bus, 
-                    LayoutDashboard, 
-                    Users, 
-                    GraduationCap, 
-                    Building2, 
-                    History, 
-                    Menu, 
-                    X,
-                    LogOut,
-                    ChevronRight,
-                    User,
-                    Car,
-                    Wrench,
-                    AlertTriangle,
-                    AlertCircle,
-                    ClipboardList,
-                    ShoppingCart,
-                    Shield,
-                    Clock,
-                    Settings,
-                    Bell
-                  } from 'lucide-react';
+                      Bus, 
+                      LayoutDashboard, 
+                      Users, 
+                      GraduationCap, 
+                      Building2, 
+                      History, 
+                      Menu, 
+                      X,
+                      LogOut,
+                      ChevronRight,
+                      User,
+                      Car,
+                      Wrench,
+                      AlertTriangle,
+                      AlertCircle,
+                      ClipboardList,
+                      ShoppingCart,
+                      Shield,
+                      Clock,
+                      Settings as SettingsIcon,
+                      Bell,
+                      ArrowLeft,
+                      ListTodo
+                    } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import NotificationCenter from './components/notifications/NotificationCenter';
@@ -32,6 +34,7 @@ import NotificationCenter from './components/notifications/NotificationCenter';
 const ADMIN_PIN = '0573';
 
 export default function Layout({ children, currentPageName }) {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -98,6 +101,25 @@ export default function Layout({ children, currentPageName }) {
   const isAdmin = user?.role === 'admin';
   const isDriver = user?.user_type === 'driver';
   const isPassenger = !isAdmin && !isDriver;
+
+  // Mobile navigation items for bottom tab bar
+  const mobileNavItems = useMemo(() => {
+    if (isDriver) {
+      return [
+        { name: 'Dashboard', page: 'DriverDashboard', icon: LayoutDashboard },
+        { name: 'Solicitudes', page: 'DriverRequests', icon: ListTodo },
+        { name: 'Viajes', page: 'DriverTrips', icon: Bus },
+        { name: 'Ajustes', page: 'NotificationSettings', icon: SettingsIcon },
+      ];
+    }
+    return [];
+  }, [isDriver]);
+
+  // Check if current page needs back button
+  const needsBackButton = () => {
+    const mainPages = ['DriverDashboard', 'Dashboard', 'PassengerTrips'];
+    return !mainPages.includes(currentPageName);
+  };
 
   const navItems = useMemo(() => {
     if (isAdmin) {
@@ -190,18 +212,22 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <ErrorBoundary>
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 overscroll-none" style={{ 
+      paddingTop: 'env(safe-area-inset-top)',
+      paddingBottom: 'env(safe-area-inset-bottom)',
+      overscrollBehaviorY: 'none'
+    }}>
       {/* Desktop Header */}
-      <header className="hidden lg:block fixed top-0 left-72 right-0 h-16 bg-white border-b border-slate-200 z-30 px-8">
+      <header className="hidden lg:block fixed top-0 left-72 right-0 h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-30 px-8">
         <div className="flex items-center justify-end h-full gap-4">
           {isDriver && <NotificationCenter user={user} />}
-          <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-50">
-            <div className="w-9 h-9 bg-slate-200 rounded-full flex items-center justify-center">
-              <User className="w-5 h-5 text-slate-500" />
+          <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-700 select-none">
+            <div className="w-9 h-9 bg-slate-200 dark:bg-slate-600 rounded-full flex items-center justify-center">
+              <User className="w-5 h-5 text-slate-500 dark:text-slate-300" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-slate-800 truncate text-sm">{user.full_name || user.email}</p>
-              <p className="text-xs text-slate-500 capitalize">
+              <p className="font-medium text-slate-800 dark:text-slate-100 truncate text-sm">{user.full_name || user.email}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
                 {isAdmin ? 'Administrador' : isDriver ? 'Conductor' : 'Pasajero'}
               </p>
             </div>
@@ -209,7 +235,7 @@ export default function Layout({ children, currentPageName }) {
           <Button 
             variant="ghost" 
             size="icon"
-            className="text-slate-600 hover:text-red-600 hover:bg-red-50"
+            className="text-slate-600 dark:text-slate-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 select-none"
             onClick={handleLogout}
           >
             <LogOut className="w-5 h-5" />
@@ -218,26 +244,42 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-40 px-4 flex items-center justify-between">
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-40 px-4 flex items-center justify-between select-none">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg overflow-hidden">
-            <img 
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/303d16ba3_471231367_1006775134815986_8615529326532786364_n.jpg" 
-              alt="EDP"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <span className="font-semibold text-slate-800">Fleetia</span>
+          {needsBackButton() ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+              className="select-none"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+          ) : (
+            <>
+              <div className="w-9 h-9 rounded-lg overflow-hidden">
+                <img 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/303d16ba3_471231367_1006775134815986_8615529326532786364_n.jpg" 
+                  alt="EDP"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <span className="font-semibold text-slate-800 dark:text-slate-100">Fleetia</span>
+            </>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {isDriver && <NotificationCenter user={user} />}
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </Button>
+          {!isDriver && (
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="select-none"
+            >
+              {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
+          )}
         </div>
       </header>
 
@@ -251,10 +293,10 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-16 left-0 bottom-0 w-72 bg-white border-r border-slate-200 z-50 transform transition-transform duration-300 lg:top-0 lg:translate-x-0 flex flex-col",
+        "fixed top-16 left-0 bottom-0 w-72 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 z-50 transform transition-transform duration-300 lg:top-0 lg:translate-x-0 flex flex-col",
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="hidden lg:block p-6 border-b border-slate-100 flex-shrink-0">
+        <div className="hidden lg:block p-6 border-b border-slate-100 dark:border-slate-700 flex-shrink-0 select-none">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl overflow-hidden">
               <img 
@@ -264,8 +306,8 @@ export default function Layout({ children, currentPageName }) {
               />
             </div>
             <div>
-              <h1 className="font-bold text-slate-800 text-lg">Fleetia</h1>
-              <p className="text-xs text-slate-500">by Glitch Media Lab</p>
+              <h1 className="font-bold text-slate-800 dark:text-slate-100 text-lg">Fleetia</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400">by Glitch Media Lab</p>
             </div>
           </div>
         </div>
@@ -279,15 +321,15 @@ export default function Layout({ children, currentPageName }) {
                 to={createPageUrl(item.page)}
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
+                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group select-none",
                   isActive 
                     ? "bg-teal-600 text-white shadow-lg shadow-teal-600/20" 
-                    : "text-slate-600 hover:bg-slate-100"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                 )}
               >
                 <item.icon className={cn(
                   "w-5 h-5 transition-colors flex-shrink-0",
-                  isActive ? "text-white" : "text-slate-400 group-hover:text-slate-600"
+                  isActive ? "text-white" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"
                 )} />
                 <span className="font-medium">{item.name}</span>
                 {isActive && <ChevronRight className="w-4 h-4 ml-auto flex-shrink-0" />}
@@ -296,21 +338,21 @@ export default function Layout({ children, currentPageName }) {
           })}
         </nav>
 
-        <div className="lg:hidden p-4 border-t border-slate-100 bg-white">
-          <div className="flex items-center gap-3 px-3 py-2 mb-3 bg-slate-50 rounded-lg">
-            <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center flex-shrink-0">
-              <User className="w-5 h-5 text-slate-500" />
+        <div className="lg:hidden p-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800">
+          <div className="flex items-center gap-3 px-3 py-2 mb-3 bg-slate-50 dark:bg-slate-700 rounded-lg select-none">
+            <div className="w-10 h-10 bg-slate-200 dark:bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
+              <User className="w-5 h-5 text-slate-500 dark:text-slate-300" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-slate-800 truncate text-sm">{user.full_name || user.email}</p>
-              <p className="text-xs text-slate-500 capitalize">
+              <p className="font-medium text-slate-800 dark:text-slate-100 truncate text-sm">{user.full_name || user.email}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
                 {isAdmin ? 'Administrador' : isDriver ? 'Conductor' : 'Pasajero'}
               </p>
             </div>
           </div>
           <Button 
             variant="ghost" 
-            className="w-full justify-start text-slate-600 hover:text-red-600 hover:bg-red-50"
+            className="w-full justify-start text-slate-600 dark:text-slate-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 select-none"
             onClick={handleLogout}
           >
             <LogOut className="w-4 h-4 mr-2" />
@@ -320,14 +362,46 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main Content */}
-      <main className="lg:pl-72 pt-16 lg:pt-16 min-h-screen flex flex-col">
+      <main className={cn(
+        "lg:pl-72 pt-16 lg:pt-16 min-h-screen flex flex-col",
+        isDriver && mobileNavItems.length > 0 && "pb-20 lg:pb-0"
+      )}>
         <div className="p-4 lg:p-8 flex-1">
           {children}
         </div>
-        <footer className="py-4 px-8 text-center text-sm text-slate-500 border-t border-slate-200 bg-white">
-          Design by <span className="font-medium text-slate-700">Glitch Media Lab</span>
+        <footer className="py-4 px-8 text-center text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 select-none">
+          Design by <span className="font-medium text-slate-700 dark:text-slate-300">Glitch Media Lab</span>
         </footer>
       </main>
+
+      {/* Bottom Tab Bar - Mobile Only for Drivers */}
+      {isDriver && mobileNavItems.length > 0 && (
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 z-50 select-none safe-area-bottom">
+          <div className="flex justify-around items-center h-16 px-2">
+            {mobileNavItems.map((item) => {
+              const isActive = currentPageName === item.page;
+              return (
+                <Link
+                  key={item.page}
+                  to={createPageUrl(item.page)}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors select-none",
+                    isActive 
+                      ? "text-teal-600 dark:text-teal-400" 
+                      : "text-slate-500 dark:text-slate-400"
+                  )}
+                >
+                  <item.icon className={cn(
+                    "w-6 h-6",
+                    isActive && "text-teal-600 dark:text-teal-400"
+                  )} />
+                  <span className="text-xs font-medium">{item.name}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+      )}
       </div>
       </ErrorBoundary>
       );
