@@ -62,7 +62,7 @@ export default function DriverVehicleSelection() {
     setLoading(false);
   };
 
-  const handleSelectVehicle = (vehicle) => {
+  const handleSelectVehicle = async (vehicle) => {
     if (selecting) return;
     
     setSelecting(true);
@@ -76,17 +76,13 @@ export default function DriverVehicleSelection() {
       selected_vehicle_info: `${vehicle.brand} ${vehicle.model}`
     };
     
+    // Guardar en localStorage
     localStorage.setItem('pin_user', JSON.stringify(updatedUser));
-    // Guardar vehículo seleccionado para DriverRequests
-    localStorage.setItem(`driver_vehicle_${user.driver_id}`, JSON.stringify({
-      vehicleId: vehicle.id,
-      timestamp: Date.now()
-    }));
+    
     toast.success(`Vehículo ${vehicle.plate} seleccionado`);
     
-    setTimeout(() => {
-      navigate(createPageUrl('DriverDashboard'));
-    }, 500);
+    // Navegar al dashboard
+    navigate(createPageUrl('DriverDashboard'));
   };
 
   if (loading) {
