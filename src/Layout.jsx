@@ -209,9 +209,9 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // If no user on protected pages, redirect to home
+  // If no user on protected pages, show error boundary
   if (!user) {
-    return null;
+   return <ErrorBoundary>{children}</ErrorBoundary>;
   }
 
   // Route guard: Protect admin pages
