@@ -31,15 +31,12 @@ export default function DriverLogin() {
         const user = response.data.user;
         user.user_type = 'driver';
         
-        // Guardar datos de login
+        // Guardar datos de login inmediatamente
         localStorage.setItem('pin_user', JSON.stringify(user));
         
-        // Esperar a que localStorage se sincronice antes de navegar
-        setTimeout(() => {
-          toast.success(`¡Bienvenido ${user.full_name}!`);
-          // Usar window.location para forzar recarga completa y sincronizar estado
-          window.location.href = createPageUrl('DriverVehicleSelection');
-        }, 100);
+        toast.success(`¡Bienvenido ${user.full_name}!`);
+        // Navegar después de guardar
+        navigate(createPageUrl('DriverVehicleSelection'));
       } else {
         toast.error(response?.data?.error || 'Conductor no encontrado');
         setLoading(false);
