@@ -153,19 +153,6 @@ export default function Layout({ children, currentPageName }) {
     return [];
   }, [isAdmin, isDriver, isPassenger]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="animate-pulse flex flex-col items-center gap-4">
-          <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center">
-            <Bus className="w-8 h-8 text-white" />
-          </div>
-          <div className="h-2 w-24 bg-slate-200 rounded"></div>
-        </div>
-      </div>
-    );
-  }
-
   // Public pages without layout
   const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
   if (noLayoutPages.includes(currentPageName)) {
@@ -192,8 +179,15 @@ export default function Layout({ children, currentPageName }) {
 
   // Protected pages - redirect to Home if no valid session
   if (!user) {
-    navigate(createPageUrl('Home'), { replace: true });
-    return null;
+    return (
+      <ErrorBoundary>
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+          <div className="text-center">
+            <p className="text-slate-600 dark:text-slate-300">Redirigiendo...</p>
+          </div>
+        </div>
+      </ErrorBoundary>
+    );
   }
 
   // Enforce role-based routing
