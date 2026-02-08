@@ -113,7 +113,10 @@ Deno.serve(async (req) => {
         session_expiry: Date.now() + (12 * 60 * 60 * 1000)
       }
     }, {
+      status: 200,
       headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '1; mode=block'
