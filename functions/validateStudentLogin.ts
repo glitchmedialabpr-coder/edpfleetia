@@ -140,7 +140,10 @@ Deno.serve(async (req) => {
     const student = studentCache.get(sanitizedId);
     
     if (!student) {
-      return Response.json({ success: false, error: 'Estudiante no encontrado' }, { status: 404 });
+      return Response.json({ success: false, error: 'Estudiante no encontrado' }, { 
+        status: 404,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
     }
     
     // Login exitoso
