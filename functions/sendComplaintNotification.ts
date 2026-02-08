@@ -185,13 +185,38 @@ const EMAIL_TEMPLATES = {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
     
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    const payload = await req.json();
+    
+    // Handle entity automation payload
+    let template = payload.template;
+    let data = payload.data;
+    
+    // If called from entity automation
+    if (payload.event) {
+      const complaint = payload.data;
+      
+      if (payload.event.type === 'create') {
+        template = 'newComplaint';
+        data = complaint;
+      } else if (payload.event.type === 'update') {
+        template = 'statusUpdate';
+        // Only send if status changed
+        if (payload.old_data && payload.old_data.status !== complaint.status) {
+          data = {
+            ...complaint,
+            old_status: payload.old_data.status,
+            new_status: complaint.status
+          };
+        } else {
+          // Status didn't change, skip notification
+          return Response.json({ 
+            success: true, 
+            message: 'Status unchanged, no notification sent' 
+          });
+        }
+      }
     }
-    
-    const { template, data } = await req.json();
     
     if (!template || !EMAIL_TEMPLATES[template]) {
       return Response.json({ error: 'Invalid template' }, { status: 400 });
