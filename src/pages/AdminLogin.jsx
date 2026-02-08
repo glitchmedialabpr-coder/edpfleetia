@@ -26,7 +26,8 @@ export default function AdminLogin() {
         userData.role = 'admin';
         localStorage.setItem('pin_user', JSON.stringify(userData));
         toast.success('Acceso autorizado');
-        window.location.href = createPageUrl('Home');
+        setLoading(false);
+        navigate(createPageUrl('Dashboard'));
       } else {
         toast.error(response?.data?.error || 'PIN incorrecto');
         setPin('');
