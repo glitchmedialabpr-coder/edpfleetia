@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,38 @@ import { Shield, Truck, GraduationCap } from 'lucide-react';
 
 export default function Home() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const user = localStorage.getItem('pin_user');
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        // Redirigir según tipo de usuario
+        if (userData.role === 'admin') {
+          navigate(createPageUrl('Dashboard'));
+        } else if (userData.user_type === 'driver') {
+          navigate(createPageUrl('DriverDashboard'));
+        } else if (userData.user_type === 'passenger') {
+          navigate(createPageUrl('PassengerTrips'));
+        }
+      } catch (e) {
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
+    }
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+        <div className="animate-pulse">
+          <div className="w-20 h-20 bg-slate-600/30 rounded-full"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">

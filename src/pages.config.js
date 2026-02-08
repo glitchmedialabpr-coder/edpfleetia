@@ -56,6 +56,7 @@ import DriverDashboard from './pages/DriverDashboard';
 import DriverHistory from './pages/DriverHistory';
 import DriverLogin from './pages/DriverLogin';
 import DriverNotificationSettings from './pages/DriverNotificationSettings';
+import DriverRequests from './pages/DriverRequests';
 import DriverSchedule from './pages/DriverSchedule';
 import DriverTrips from './pages/DriverTrips';
 import DriverVehicleSelection from './pages/DriverVehicleSelection';
@@ -70,6 +71,7 @@ import GeneralServicePurchases from './pages/GeneralServicePurchases';
 import History from './pages/History';
 import Home from './pages/Home';
 import Housing from './pages/Housing';
+import Index from './pages/Index';
 import LiveTrips from './pages/LiveTrips';
 import Maintenance from './pages/Maintenance';
 import NotificationSettings from './pages/NotificationSettings';
@@ -80,15 +82,13 @@ import PurchaseReports from './pages/PurchaseReports';
 import Purchases from './pages/Purchases';
 import Reports from './pages/Reports';
 import ResponseHistory from './pages/ResponseHistory';
+import Settings from './pages/Settings';
 import ShareLinks from './pages/ShareLinks';
 import Students from './pages/Students';
 import Trips from './pages/Trips';
 import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
-import DriverRequests from './pages/DriverRequests';
-import Settings from './pages/Settings';
-import Index from './pages/Index';
 import __Layout from './Layout.jsx';
 
 
@@ -102,6 +102,7 @@ export const PAGES = {
     "DriverHistory": DriverHistory,
     "DriverLogin": DriverLogin,
     "DriverNotificationSettings": DriverNotificationSettings,
+    "DriverRequests": DriverRequests,
     "DriverSchedule": DriverSchedule,
     "DriverTrips": DriverTrips,
     "DriverVehicleSelection": DriverVehicleSelection,
@@ -116,6 +117,7 @@ export const PAGES = {
     "History": History,
     "Home": Home,
     "Housing": Housing,
+    "Index": Index,
     "LiveTrips": LiveTrips,
     "Maintenance": Maintenance,
     "NotificationSettings": NotificationSettings,
@@ -126,15 +128,13 @@ export const PAGES = {
     "Purchases": Purchases,
     "Reports": Reports,
     "ResponseHistory": ResponseHistory,
+    "Settings": Settings,
     "ShareLinks": ShareLinks,
     "Students": Students,
     "Trips": Trips,
     "VehicleManagement": VehicleManagement,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
-    "DriverRequests": DriverRequests,
-    "Settings": Settings,
-    "Index": Index,
 }
 
 export const pagesConfig = {
