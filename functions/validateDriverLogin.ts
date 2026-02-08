@@ -102,7 +102,10 @@ Deno.serve(async (req) => {
       return Response.json({ 
         success: false, 
         error: 'No encontrado' 
-      }, { status: 404 });
+      }, { 
+        status: 404,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
     }
     
     // Login exitoso - reset intentos
