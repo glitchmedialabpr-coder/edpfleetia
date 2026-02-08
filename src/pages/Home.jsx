@@ -38,7 +38,7 @@ export default function Home() {
               </div>
               <div className="pt-4">
                 <span className="text-blue-400 font-semibold group-hover:underline">
-                  Acceso con Clave →
+                  Acceso con PIN →
                 </span>
               </div>
             </div>
