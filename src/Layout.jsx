@@ -45,10 +45,12 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     loadUser();
-    
+
     // Start in light mode by default
-    document.documentElement.classList.remove('dark');
-    
+    if (document.documentElement) {
+      document.documentElement.classList.remove('dark');
+    }
+
     // Check session expiry for all users every 30 seconds
     const interval = setInterval(async () => {
       const pinUser = localStorage.getItem('pin_user');
