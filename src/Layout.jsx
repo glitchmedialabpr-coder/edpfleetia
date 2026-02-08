@@ -242,6 +242,12 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
+  // Redirect if no user on protected pages
+  if (!user) {
+    window.location.href = createPageUrl('Home');
+    return null;
+  }
+
   // Route guard: Protect admin pages
   const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'Maintenance', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
   if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
