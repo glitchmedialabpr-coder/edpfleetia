@@ -139,6 +139,10 @@ export default function DriverRequests() {
       if (pinUser) {
         const userData = JSON.parse(pinUser);
         setUser(userData);
+        // Set vehículo si existe en user
+        if (userData.selected_vehicle_id) {
+          setSelectedVehicle(userData.selected_vehicle_id);
+        }
       }
     } catch (error) {
       console.error('Error loading user:', error);
