@@ -50,41 +50,6 @@ export default function Layout({ children, currentPageName }) {
     if (document.documentElement) {
       document.documentElement.classList.remove('dark');
     }
-
-    // Check session expiry for all users every 30 seconds
-    const interval = setInterval(async () => {
-      const pinUser = localStorage.getItem('pin_user');
-      if (pinUser) {
-        try {
-          const userData = JSON.parse(pinUser);
-          
-          // Check if session has session_expiry
-          if (userData.session_expiry) {
-            if (Date.now() > userData.session_expiry) {
-              localStorage.removeItem('pin_user');
-              setUser(null);
-              return;
-            }
-          }
-          
-          // Legacy check for old sessions without token
-          if (userData.user_type === 'passenger' && userData.login_time && !userData.session_expiry) {
-            const elapsed = Date.now() - userData.login_time;
-            const fiveMinutes = 5 * 60 * 1000;
-            
-            if (elapsed >= fiveMinutes) {
-              localStorage.removeItem('pin_user');
-              setUser(null);
-            }
-          }
-        } catch (e) {
-          localStorage.removeItem('pin_user');
-        }
-      }
-    }, 30000); // Check every 30 seconds
-    
-    // Cleanup
-    return () => clearInterval(interval);
   }, []);
 
   // Redirect to Home if no user on ANY protected pages (including Dashboard)
