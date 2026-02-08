@@ -24,10 +24,18 @@ export default function AdminLogin() {
       if (response?.data?.success) {
         const userData = response.data.user;
         userData.role = 'admin';
-        localStorage.setItem('pin_user', JSON.stringify(userData));
-        toast.success('Acceso autorizado');
-        setLoading(false);
-        navigate(createPageUrl('Dashboard'), { replace: true });
+        
+        // Guardar en Base44 en lugar de localStorage
+        const sessionResponse = await base44.functions.invoke('createUserSession', userData);
+        if (sessionResponse?.data?.success) {
+          sessionStorage.setItem('session_token', sessionResponse.data.session_token);
+          toast.success('Acceso autorizado');
+          setLoading(false);
+          navigate(createPageUrl('Dashboard'), { replace: true });
+        } else {
+          toast.error('Error al crear sesión');
+          setLoading(false);
+        }
       } else {
         toast.error(response?.data?.error || 'PIN incorrecto');
         setPin('');
