@@ -45,7 +45,7 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     loadUser();
-  }, [location]);
+  }, []);
 
   // No automatic redirects - Home is always accessible
   // Users stay where they are regardless of login status
