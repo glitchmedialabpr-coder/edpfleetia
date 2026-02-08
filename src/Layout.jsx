@@ -52,12 +52,11 @@ export default function Layout({ children, currentPageName }) {
     }
   }, []);
 
-  // Redirect to Home if no user on ANY protected pages (including Dashboard)
+  // Auto-redirect to Home if no user
   useEffect(() => {
     const publicPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
-    
     if (!loading && !user && !publicPages.includes(currentPageName)) {
-      window.location.href = createPageUrl('Home');
+      window.location.href = '/';
     }
   }, [loading, user, currentPageName]);
 
