@@ -25,6 +25,7 @@ export default function DriverDashboard() {
   const [user, setUser] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState('');
   const [currentVehicleData, setCurrentVehicleData] = useState(null);
+  const [showVehicleModal, setShowVehicleModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
