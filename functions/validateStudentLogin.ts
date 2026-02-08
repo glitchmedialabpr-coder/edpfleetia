@@ -178,6 +178,9 @@ Deno.serve(async (req) => {
     return Response.json({ 
       success: false, 
       error: 'Error en el servidor' 
-    }, { status: 500 });
+    }, { 
+      status: 500,
+      headers: { 'Access-Control-Allow-Origin': '*' }
+    });
   }
 });
