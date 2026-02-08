@@ -30,9 +30,6 @@ export default function DriverLogin() {
       if (response?.data?.success) {
         const user = response.data.user;
         user.user_type = 'driver';
-        delete user.selected_vehicle_id;
-        delete user.selected_vehicle_plate;
-        delete user.selected_vehicle_info;
         localStorage.setItem('pin_user', JSON.stringify(user));
         toast.success(`¡Bienvenido ${user.full_name}!`);
         navigate(createPageUrl('DriverVehicleSelection'));
