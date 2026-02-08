@@ -69,7 +69,6 @@ import FuelRecords from './pages/FuelRecords';
 import GeneralServiceJobs from './pages/GeneralServiceJobs';
 import GeneralServicePurchases from './pages/GeneralServicePurchases';
 import History from './pages/History';
-import Home from './pages/Home';
 import Housing from './pages/Housing';
 import LiveTrips from './pages/LiveTrips';
 import Maintenance from './pages/Maintenance';
@@ -88,6 +87,7 @@ import Trips from './pages/Trips';
 import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
+import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
@@ -114,7 +114,6 @@ export const PAGES = {
     "GeneralServiceJobs": GeneralServiceJobs,
     "GeneralServicePurchases": GeneralServicePurchases,
     "History": History,
-    "Home": Home,
     "Housing": Housing,
     "LiveTrips": LiveTrips,
     "Maintenance": Maintenance,
@@ -133,6 +132,7 @@ export const PAGES = {
     "VehicleManagement": VehicleManagement,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
+    "Home": Home,
 }
 
 export const pagesConfig = {
