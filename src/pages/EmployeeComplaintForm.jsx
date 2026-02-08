@@ -17,6 +17,7 @@ export default function EmployeeComplaintForm() {
     employee_email: '',
     location: '',
     category: '',
+    category_other: '',
     complaint_title: '',
     complaint_description: ''
   });
@@ -137,7 +138,7 @@ export default function EmployeeComplaintForm() {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Categoría de la Queja
+                    Categoría del Problema Estructural
                   </label>
                   <Select
                     value={formData.category}
@@ -147,18 +148,27 @@ export default function EmployeeComplaintForm() {
                       <SelectValue placeholder="Seleccione una categoría" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="acoso_laboral">Acoso Laboral</SelectItem>
-                      <SelectItem value="discriminacion">Discriminación</SelectItem>
-                      <SelectItem value="condiciones_laborales">Condiciones Laborales</SelectItem>
-                      <SelectItem value="seguridad">Seguridad</SelectItem>
-                      <SelectItem value="salario_beneficios">Salario/Beneficios</SelectItem>
-                      <SelectItem value="gestion_supervision">Gestión/Supervisión</SelectItem>
-                      <SelectItem value="ambiente_trabajo">Ambiente de Trabajo</SelectItem>
-                      <SelectItem value="otro">Otro</SelectItem>
+                      <SelectItem value="electrico">Eléctrico</SelectItem>
+                      <SelectItem value="estructural">Estructural</SelectItem>
+                      <SelectItem value="plomeria">Plomería</SelectItem>
+                      <SelectItem value="otros">Otros</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
+
+              {formData.category === 'otros' && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Especifique el Tipo de Problema
+                  </label>
+                  <Input
+                    value={formData.category_other}
+                    onChange={(e) => setFormData({...formData, category_other: e.target.value})}
+                    placeholder="Describa el tipo de problema"
+                  />
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
