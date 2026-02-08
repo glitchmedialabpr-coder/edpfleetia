@@ -164,7 +164,10 @@ Deno.serve(async (req) => {
         login_time: Date.now()
       }
     }, {
+      status: 200,
       headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '1; mode=block'
