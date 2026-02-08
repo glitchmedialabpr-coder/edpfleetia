@@ -1,18 +1,74 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Bell, Lock, LogOut } from 'lucide-react';
+import { Bell, Lock, LogOut, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { base44 } from '@/api/base44Client';
 
 export default function Settings() {
   const navigate = useNavigate();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('pin_user');
     toast.success('Sesión cerrada');
     navigate(createPageUrl('Home'));
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+    try {
+      const pinUser = localStorage.getItem('pin_user');
+      if (!pinUser) {
+        toast.error('Datos de usuario no encontrados');
+        return;
+      }
+
+      const user = JSON.parse(pinUser);
+
+      // Delete from Student or Driver entity
+      if (user.user_type === 'driver') {
+        const drivers = await base44.entities.Driver.filter({ driver_id: user.driver_id });
+        if (drivers && drivers.length > 0) {
+          await base44.entities.Driver.delete(drivers[0].id);
+        }
+      } else if (user.user_type === 'passenger') {
+        const students = await base44.entities.Student.filter({ student_id: user.student_id });
+        if (students && students.length > 0) {
+          await base44.entities.Student.delete(students[0].id);
+        }
+      }
+
+      // Clear local data
+      localStorage.removeItem('pin_user');
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('driver_vehicle_')) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      toast.success('Cuenta eliminada correctamente');
+      setShowDeleteDialog(false);
+      navigate(createPageUrl('Home'));
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      toast.error('Error al eliminar la cuenta');
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   return (
