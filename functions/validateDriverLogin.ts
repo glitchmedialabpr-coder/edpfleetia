@@ -64,8 +64,11 @@ Deno.serve(async (req) => {
     const { driverId } = await req.json();
     
     // Validación
-    if (!driverId || typeof driverId !== 'string' || driverId.length !== 3) {
-      return Response.json({ success: false, error: 'ID inválido' }, { status: 400 });
+     if (!driverId || typeof driverId !== 'string' || driverId.length !== 3) {
+      return Response.json({ success: false, error: 'ID inválido' }, { 
+        status: 400,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
     }
     
     // Sanitizar input
