@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
+import { useAuth } from '@/components/auth/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Truck, Hash } from 'lucide-react';
@@ -9,6 +10,7 @@ import { toast } from 'sonner';
 
 export default function DriverLogin() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [driverId, setDriverId] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -31,12 +33,19 @@ export default function DriverLogin() {
         const user = response.data.user;
         user.user_type = 'driver';
 
-        // Guardar en Base44 en lugar de localStorage
         const sessionResponse = await base44.functions.invoke('createUserSession', user);
         if (sessionResponse?.data?.success) {
-          sessionStorage.setItem('session_token', sessionResponse.data.session_token);
-          toast.success(`¡Bienvenido ${user.full_name}!`);
-          navigate(createPageUrl('DriverDashboard'));
+          const token = sessionResponse.data.session_token;
+          const loginResult = await login(token);
+          
+          if (loginResult.success) {
+            toast.success(`¡Bienvenido ${user.full_name}!`);
+            navigate(createPageUrl('DriverDashboard'), { replace: true });
+          } else {
+            toast.error('Error al validar sesión');
+            setDriverId('');
+            setLoading(false);
+          }
         } else {
           toast.error('Error al crear sesión');
           setDriverId('');
