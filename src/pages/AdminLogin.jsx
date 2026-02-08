@@ -24,15 +24,21 @@ export default function AdminLogin() {
       if (response?.data?.success) {
         const userData = response.data.user;
         userData.role = 'admin';
+        userData.user_type = 'admin';
         
         // Guardar en Base44 en lugar de localStorage
         const sessionResponse = await base44.functions.invoke('createUserSession', userData);
         if (sessionResponse?.data?.success) {
-          sessionStorage.setItem('session_token', sessionResponse.data.session_token);
+          const token = sessionResponse.data.session_token;
+          sessionStorage.setItem('session_token', token);
+          console.log('Session token saved:', token);
           toast.success('Acceso autorizado');
-          navigate(createPageUrl('Dashboard'), { replace: true });
+          // Pequeño delay para asegurar que sessionStorage se escriba
+          setTimeout(() => {
+            navigate(createPageUrl('Dashboard'), { replace: true });
+          }, 100);
         } else {
-          toast.error('Error al crear sesión');
+          toast.error(response?.data?.error || 'Error al crear sesión');
           setPin('');
           setLoading(false);
         }
