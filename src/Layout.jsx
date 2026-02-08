@@ -206,14 +206,8 @@ export default function Layout({ children, currentPageName }) {
 
   // If no user on protected pages, redirect to Home
   if (!user) {
-    navigate(createPageUrl('Home'));
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="animate-pulse">
-          <div className="w-16 h-16 bg-slate-200 rounded-full"></div>
-        </div>
-      </div>
-    );
+    navigate(createPageUrl('Home'), { replace: true });
+    return null;
   }
 
   // Route guard: Protect admin pages
