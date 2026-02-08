@@ -79,8 +79,14 @@ export default function Layout({ children, currentPageName }) {
 
   const handleLogout = () => {
     localStorage.removeItem('pin_user');
+    // Limpiar datos de vehículos temporales
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('driver_vehicle_')) {
+        localStorage.removeItem(key);
+      }
+    });
     setUser(null);
-    navigate(createPageUrl('Home'));
+    window.location.href = createPageUrl('Home');
   };
 
   const isAdmin = user?.role === 'admin';
