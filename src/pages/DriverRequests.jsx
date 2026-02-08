@@ -59,7 +59,7 @@ export default function DriverRequests() {
     if (user?.driver_id) {
       checkAndSetVehicleFromSchedule();
     }
-  }, [user?.driver_id]);
+  }, [user?.driver_id, user?.selected_vehicle_id]);
 
   const checkAndSetVehicleFromSchedule = async () => {
     try {
