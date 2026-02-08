@@ -1,13 +1,36 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { 
+  Bus, 
+  Users, 
+  GraduationCap, 
+  Clock, 
+  CheckCircle2,
+  Plus,
+  ArrowRight,
+  Calendar,
+  AlertTriangle,
+  FileText,
+  TrendingUp
+} from 'lucide-react';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import StatsCard from '../components/common/StatsCard';
+import TripCard from '../components/trips/TripCard';
+import CreateTripModal from '../components/trips/CreateTripModal';
+import EmptyState from '../components/common/EmptyState';
+import PinVerification from '../components/auth/PinVerification';
+import DriverStats from '../components/dashboard/DriverStats';
+import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
+import { differenceInDays, parseISO } from 'date-fns';
 
 export default function Dashboard() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate(createPageUrl('Home'), { replace: true });
-  }, [navigate]);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [pinModalOpen, setPinModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
