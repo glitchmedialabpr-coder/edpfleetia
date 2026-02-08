@@ -27,16 +27,17 @@ export default function PassengerLogin() {
 
       const response = await base44.functions.invoke('validateStudentLogin', { studentId });
       
-      if (response.data.success) {
+      if (response?.data?.success) {
         localStorage.setItem('pin_user', JSON.stringify(response.data.user));
         toast.success(`¡Bienvenido ${response.data.user.full_name}!`);
         window.location.href = createPageUrl('PassengerTrips');
       } else {
-        toast.error(response.data.error || 'Estudiante no encontrado');
+        toast.error(response?.data?.error || 'Estudiante no encontrado');
         setStudentId('');
         setLoading(false);
       }
     } catch (error) {
+      console.error('Login error:', error);
       toast.error('Error al verificar estudiante');
       setStudentId('');
       setLoading(false);

@@ -19,19 +19,19 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      // Validar con backend en lugar de hardcoded
       const response = await base44.functions.invoke('validateAdminLogin', { pin });
       
-      if (response.data.success) {
+      if (response?.data?.success) {
         localStorage.setItem('pin_user', JSON.stringify(response.data.user));
         toast.success('Acceso autorizado');
         window.location.href = createPageUrl('Dashboard');
       } else {
-        toast.error(response.data.error || 'PIN incorrecto');
+        toast.error(response?.data?.error || 'PIN incorrecto');
         setPin('');
         setLoading(false);
       }
     } catch (error) {
+      console.error('Login error:', error);
       toast.error('Error al iniciar sesión');
       setPin('');
       setLoading(false);

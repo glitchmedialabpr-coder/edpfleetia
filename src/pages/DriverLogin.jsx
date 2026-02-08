@@ -27,10 +27,9 @@ export default function DriverLogin() {
 
       const response = await base44.functions.invoke('validateDriverLogin', { driverId });
       
-      if (response.data.success) {
+      if (response?.data?.success) {
         const user = response.data.user;
         user.user_type = 'driver';
-        // No guardar selected_vehicle_id para forzar selección en cada login
         delete user.selected_vehicle_id;
         delete user.selected_vehicle_plate;
         delete user.selected_vehicle_info;
@@ -38,11 +37,12 @@ export default function DriverLogin() {
         toast.success(`¡Bienvenido ${user.full_name}!`);
         navigate(createPageUrl('DriverVehicleSelection'));
       } else {
-        toast.error(response.data.error || 'Conductor no encontrado');
+        toast.error(response?.data?.error || 'Conductor no encontrado');
         setDriverId('');
         setLoading(false);
       }
     } catch (error) {
+      console.error('Login error:', error);
       toast.error('Error al verificar conductor');
       setDriverId('');
       setLoading(false);
