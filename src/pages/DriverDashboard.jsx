@@ -34,23 +34,23 @@ export default function DriverDashboard() {
   const loadUser = async () => {
     try {
       const pinUser = localStorage.getItem('pin_user');
-      if (pinUser) {
-        const userData = JSON.parse(pinUser);
-        setUser(userData);
-        // Set vehicle immediately when user loads
-        if (userData.selected_vehicle_id) {
-          setSelectedVehicle(userData.selected_vehicle_id);
-        } else {
-          // If no vehicle selected, redirect to vehicle selection
-          navigate(createPageUrl('DriverVehicleSelection'));
-        }
-      } else {
-        // If not logged in, redirect to login
-        navigate(createPageUrl('DriverLogin'));
+      if (!pinUser) {
+        window.location.href = createPageUrl('DriverLogin');
+        return;
       }
+      
+      const userData = JSON.parse(pinUser);
+      
+      if (!userData.selected_vehicle_id) {
+        window.location.href = createPageUrl('DriverVehicleSelection');
+        return;
+      }
+      
+      setUser(userData);
+      setSelectedVehicle(userData.selected_vehicle_id);
     } catch (error) {
       console.error('Error loading user:', error);
-      navigate(createPageUrl('DriverLogin'));
+      window.location.href = createPageUrl('DriverLogin');
     }
   };
 
