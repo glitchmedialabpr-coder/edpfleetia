@@ -61,6 +61,10 @@ import DriverSchedule from './pages/DriverSchedule';
 import DriverTrips from './pages/DriverTrips';
 import DriverVehicleSelection from './pages/DriverVehicleSelection';
 import Drivers from './pages/Drivers';
+import EmployeeComplaintForm from './pages/EmployeeComplaintForm';
+import EmployeeComplaintHistory from './pages/EmployeeComplaintHistory';
+import EmployeeComplaints from './pages/EmployeeComplaints';
+import EmployeeLogin from './pages/EmployeeLogin';
 import FuelRecords from './pages/FuelRecords';
 import GeneralServiceJobs from './pages/GeneralServiceJobs';
 import GeneralServicePurchases from './pages/GeneralServicePurchases';
@@ -84,10 +88,6 @@ import Trips from './pages/Trips';
 import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
-import EmployeeLogin from './pages/EmployeeLogin';
-import EmployeeComplaintForm from './pages/EmployeeComplaintForm';
-import EmployeeComplaintHistory from './pages/EmployeeComplaintHistory';
-import EmployeeComplaints from './pages/EmployeeComplaints';
 import __Layout from './Layout.jsx';
 
 
@@ -106,6 +106,10 @@ export const PAGES = {
     "DriverTrips": DriverTrips,
     "DriverVehicleSelection": DriverVehicleSelection,
     "Drivers": Drivers,
+    "EmployeeComplaintForm": EmployeeComplaintForm,
+    "EmployeeComplaintHistory": EmployeeComplaintHistory,
+    "EmployeeComplaints": EmployeeComplaints,
+    "EmployeeLogin": EmployeeLogin,
     "FuelRecords": FuelRecords,
     "GeneralServiceJobs": GeneralServiceJobs,
     "GeneralServicePurchases": GeneralServicePurchases,
@@ -129,10 +133,6 @@ export const PAGES = {
     "VehicleManagement": VehicleManagement,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
-    "EmployeeLogin": EmployeeLogin,
-    "EmployeeComplaintForm": EmployeeComplaintForm,
-    "EmployeeComplaintHistory": EmployeeComplaintHistory,
-    "EmployeeComplaints": EmployeeComplaints,
 }
 
 export const pagesConfig = {

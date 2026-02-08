@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { AlertCircle, Plus, FileText, Download } from 'lucide-react';
+import { AlertCircle, Plus, FileText, Download, LogOut } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -54,13 +54,23 @@ export default function EmployeeComplaintHistory() {
             <h1 className="text-3xl font-bold text-slate-800 mb-2">Mis Quejas</h1>
             <p className="text-slate-600">Historial de quejas presentadas</p>
           </div>
-          <Button
-            onClick={() => navigate(createPageUrl('EmployeeComplaintForm'))}
-            className="bg-purple-600 hover:bg-purple-700"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Nueva Queja
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => navigate(createPageUrl('EmployeeComplaintForm'))}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Nueva Queja
+            </Button>
+            <Button
+              onClick={() => navigate(createPageUrl('Home'))}
+              variant="outline"
+              className="text-slate-600"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Salir
+            </Button>
+          </div>
         </div>
 
         <Card className="mb-6">
