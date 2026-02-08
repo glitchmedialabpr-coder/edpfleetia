@@ -45,9 +45,6 @@ export default function DriverDashboard() {
       // Usar vehículo guardado si existe
       if (userData.selected_vehicle_id) {
         setSelectedVehicle(userData.selected_vehicle_id);
-      } else {
-        // Abrir modal si no hay vehículo seleccionado
-        setVehicleModalOpen(true);
       }
     } catch (error) {
       console.error('Error loading user:', error);
@@ -138,13 +135,10 @@ export default function DriverDashboard() {
               <h3 className="font-semibold text-red-900 mb-2">Selecciona un Vehículo</h3>
               <p className="text-sm text-red-700 mb-3">Debes seleccionar un vehículo para aceptar solicitudes de viaje.</p>
               <Button 
-                onClick={() => {
-                  setVehicleModalOpen(false);
-                  navigate(createPageUrl('DriverVehicleSelection'));
-                }}
-                className="bg-red-600 hover:bg-red-700 text-white"
+               onClick={() => navigate(createPageUrl('DriverVehicleSelection'))}
+               className="bg-red-600 hover:bg-red-700 text-white"
               >
-                Seleccionar Vehículo
+               Seleccionar Vehículo
               </Button>
             </div>
           </div>
@@ -263,8 +257,6 @@ export default function DriverDashboard() {
           <ChevronRight className="w-4 h-4 ml-auto" />
         </Button>
       </div>
-
-
     </div>
   );
 }
