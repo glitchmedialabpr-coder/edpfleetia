@@ -229,19 +229,6 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // If no user and not on a public page, show loading or placeholder
-  const publicPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
-  if (!user && !publicPages.includes(currentPageName)) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="animate-pulse text-center">
-          <div className="w-16 h-16 bg-slate-200 rounded-full mx-auto mb-4"></div>
-          <p className="text-slate-500">Cargando...</p>
-        </div>
-      </div>
-    );
-  }
-
   // Route guard: Protect admin pages
   const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'Maintenance', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
   if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
