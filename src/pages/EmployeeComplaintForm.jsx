@@ -243,7 +243,7 @@ export default function EmployeeComplaintForm() {
                   onClick={() => navigate(createPageUrl('EmployeeComplaintHistory'))}
                   className="flex-1"
                 >
-                  Ver Mis Quejas
+                  Ver Mis Solicitudes
                 </Button>
                 <Button
                   type="submit"

@@ -69,7 +69,7 @@ export default function EmployeeComplaints() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="animate-pulse text-slate-600">Cargando quejas...</div>
+        <div className="animate-pulse text-slate-600">Cargando solicitudes...</div>
       </div>
     );
   }
@@ -77,8 +77,8 @@ export default function EmployeeComplaints() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-800 mb-2">Quejas de Empleados</h1>
-        <p className="text-slate-600">Administración y seguimiento de quejas</p>
+        <h1 className="text-3xl font-bold text-slate-800 mb-2">Solicitudes de Empleados</h1>
+        <p className="text-slate-600">Administración y seguimiento de solicitudes</p>
       </div>
 
       {/* Stats */}
@@ -86,7 +86,7 @@ export default function EmployeeComplaints() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-2xl font-bold text-slate-800">{stats.total}</div>
-            <div className="text-sm text-slate-600">Total de Quejas</div>
+            <div className="text-sm text-slate-600">Total de Solicitudes</div>
           </CardContent>
         </Card>
         <Card>
@@ -140,7 +140,7 @@ export default function EmployeeComplaints() {
         <Card>
           <CardContent className="py-12 text-center">
             <AlertCircle className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-600">No se encontraron quejas</p>
+            <p className="text-slate-600">No se encontraron solicitudes</p>
           </CardContent>
         </Card>
       ) : (
