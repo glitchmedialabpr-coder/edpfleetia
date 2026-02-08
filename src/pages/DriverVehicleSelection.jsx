@@ -13,6 +13,7 @@ export default function DriverVehicleSelection() {
   const [loading, setLoading] = useState(true);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [user, setUser] = useState(null);
+  const [selecting, setSelecting] = useState(false);
 
   useEffect(() => {
     loadUser();
@@ -63,6 +64,11 @@ export default function DriverVehicleSelection() {
   };
 
   const handleSelectVehicle = (vehicle) => {
+    if (selecting) return;
+    
+    setSelecting(true);
+    setSelectedVehicle(vehicle.id);
+    
     // Actualizar usuario con vehículo seleccionado
     const updatedUser = {
       ...user,
@@ -73,7 +79,10 @@ export default function DriverVehicleSelection() {
     
     localStorage.setItem('pin_user', JSON.stringify(updatedUser));
     toast.success(`Vehículo ${vehicle.plate} seleccionado`);
-    window.location.href = createPageUrl('DriverDashboard');
+    
+    setTimeout(() => {
+      window.location.href = createPageUrl('DriverDashboard');
+    }, 500);
   };
 
   if (loading) {
@@ -109,11 +118,13 @@ export default function DriverVehicleSelection() {
               return (
                 <Card 
                   key={vehicle.id}
-                  className={`cursor-pointer transition-all border-2 ${
-                    isAssigned 
-                      ? 'bg-teal-600/20 border-teal-400 ring-2 ring-teal-400' 
-                      : 'bg-white/10 border-white/20 hover:border-teal-400/50 hover:bg-white/15'
-                  }`}
+                  className={`transition-all border-2 ${
+                    selectedVehicle === vehicle.id
+                      ? 'bg-teal-600/40 border-teal-300 ring-2 ring-teal-300 cursor-wait'
+                      : isAssigned 
+                        ? 'bg-teal-600/20 border-teal-400 ring-2 ring-teal-400 cursor-pointer hover:bg-teal-600/30' 
+                        : 'bg-white/10 border-white/20 hover:border-teal-400/50 hover:bg-white/15 cursor-pointer'
+                  } ${selecting ? 'pointer-events-none opacity-60' : ''}`}
                   onClick={() => handleSelectVehicle(vehicle)}
                 >
                   <CardHeader>
