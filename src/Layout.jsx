@@ -65,7 +65,7 @@ export default function Layout({ children, currentPageName }) {
               const loginPage = user.role === 'admin' ? 'AdminLogin' 
                 : user.user_type === 'driver' ? 'DriverLogin' 
                 : 'PassengerLogin';
-              window.location.href = createPageUrl(loginPage);
+              navigate(createPageUrl(loginPage));
               return;
             }
           }
@@ -77,7 +77,7 @@ export default function Layout({ children, currentPageName }) {
             
             if (elapsed >= fiveMinutes) {
               localStorage.removeItem('pin_user');
-              window.location.href = createPageUrl('PassengerLogin');
+              navigate(createPageUrl('PassengerLogin'));
             }
           }
         } catch (e) {
@@ -105,7 +105,7 @@ export default function Layout({ children, currentPageName }) {
   const handleLogout = () => {
     localStorage.removeItem('pin_user');
     setUser(null);
-    window.location.href = createPageUrl('Home');
+    navigate(createPageUrl('Home'));
   };
 
   const isAdmin = user?.role === 'admin';
@@ -225,7 +225,7 @@ export default function Layout({ children, currentPageName }) {
   // Allow login and public pages without authentication
   const publicPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'DriverVehicleSelection', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
   if (!user && !publicPages.includes(currentPageName)) {
-    window.location.href = createPageUrl('Home');
+    navigate(createPageUrl('Home'));
     return null;
   }
 
@@ -238,33 +238,33 @@ export default function Layout({ children, currentPageName }) {
   // Route guard: Protect admin pages
   const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'Maintenance', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
   if (adminPages.includes(currentPageName) && user.role !== 'admin') {
-    window.location.href = createPageUrl('Dashboard');
+    navigate(createPageUrl('Dashboard'));
     return null;
   }
 
   // Route guard: Protect NotificationSettings (admin + drivers only)
   if (currentPageName === 'NotificationSettings' && user.role !== 'admin' && user.user_type !== 'driver') {
-    window.location.href = createPageUrl('Home');
+    navigate(createPageUrl('Home'));
     return null;
   }
 
   // Route guard: Protect driver pages (but NotificationSettings is allowed for admins too)
   const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory'];
   if (driverPages.includes(currentPageName) && user.user_type !== 'driver') {
-    window.location.href = createPageUrl('Home');
+    navigate(createPageUrl('Home'));
     return null;
   }
 
   // Check if driver needs to select vehicle (always required, no bypass)
   if (user.user_type === 'driver' && !user.selected_vehicle_id && currentPageName !== 'DriverVehicleSelection') {
-    window.location.href = createPageUrl('DriverVehicleSelection');
+    navigate(createPageUrl('DriverVehicleSelection'));
     return null;
   }
 
   // Route guard: Protect passenger pages
   const passengerPages = ['PassengerTrips'];
   if (passengerPages.includes(currentPageName) && user.user_type !== 'passenger') {
-    window.location.href = createPageUrl('Dashboard');
+    navigate(createPageUrl('Dashboard'));
     return null;
   }
 
