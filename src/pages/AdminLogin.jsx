@@ -22,12 +22,11 @@ export default function AdminLogin() {
       const response = await base44.functions.invoke('validateAdminLogin', { pin });
       
       if (response?.data?.success) {
-        localStorage.setItem('pin_user', JSON.stringify(response.data.user));
+        const userData = response.data.user;
+        userData.role = 'admin';
+        localStorage.setItem('pin_user', JSON.stringify(userData));
         toast.success('Acceso autorizado');
-        // Delay para asegurar que se guarde en localStorage antes de navegar
-        setTimeout(() => {
-          window.location.href = createPageUrl('Dashboard');
-        }, 100);
+        navigate(createPageUrl('Dashboard'));
       } else {
         toast.error(response?.data?.error || 'PIN incorrecto');
         setPin('');
