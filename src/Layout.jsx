@@ -45,6 +45,26 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     loadUser();
     
+    // Monitor system color scheme changes and apply dark mode
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleColorSchemeChange = (e) => {
+      if (e.matches) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+    
+    // Set initial dark mode state
+    if (mediaQuery.matches) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    // Listen for changes
+    mediaQuery.addEventListener('change', handleColorSchemeChange);
+    
     // Check session expiry for all users every 30 seconds
     const interval = setInterval(async () => {
       const pinUser = localStorage.getItem('pin_user');
@@ -80,8 +100,10 @@ export default function Layout({ children, currentPageName }) {
       }
     }, 30000); // Check every 30 seconds
     
+    // Cleanup
+    mediaQuery.removeEventListener('change', handleColorSchemeChange);
     return () => clearInterval(interval);
-  }, []);
+    }, []);
 
   const loadUser = () => {
     try {
@@ -115,8 +137,22 @@ export default function Layout({ children, currentPageName }) {
         { name: 'Ajustes', page: 'NotificationSettings', icon: SettingsIcon },
       ];
     }
+    if (isPassenger) {
+      return [
+        { name: 'Viajes', page: 'PassengerTrips', icon: Bus },
+        { name: 'Ajustes', page: 'Settings', icon: SettingsIcon },
+      ];
+    }
+    if (isAdmin) {
+      return [
+        { name: 'Dashboard', page: 'Dashboard', icon: LayoutDashboard },
+        { name: 'Vehículos', page: 'VehicleManagement', icon: Car },
+        { name: 'Choferes', page: 'Drivers', icon: Users },
+        { name: 'Ajustes', page: 'Settings', icon: SettingsIcon },
+      ];
+    }
     return [];
-  }, [isDriver]);
+  }, [isDriver, isPassenger, isAdmin]);
 
   // Check if current page is a main tab
   const isMainTab = useMemo(() => {
@@ -401,17 +437,15 @@ export default function Layout({ children, currentPageName }) {
       {/* Main Content */}
       <main className={cn(
         "lg:pl-72 pt-16 lg:pt-16 min-h-screen flex flex-col",
-        isDriver && mobileNavItems.length > 0 && "pb-20 lg:pb-0"
+        mobileNavItems.length > 0 && "pb-20 lg:pb-0"
       )}>
-        {isDriver && isMainTab && window.innerWidth < 1024 ? (
+        {isMainTab && window.innerWidth < 1024 ? (
           <div className="p-4 lg:p-8 flex-1">
             <TabContainer
-              tabs={[
-                { id: 'DriverDashboard', content: currentPageName === 'DriverDashboard' ? children : null },
-                { id: 'DriverRequests', content: currentPageName === 'DriverRequests' ? children : null },
-                { id: 'DriverTrips', content: currentPageName === 'DriverTrips' ? children : null },
-                { id: 'NotificationSettings', content: currentPageName === 'NotificationSettings' ? children : null }
-              ]}
+              tabs={mobileNavItems.map(item => ({
+                id: item.page,
+                content: currentPageName === item.page ? children : null
+              }))}
               currentTab={currentPageName}
             />
           </div>
@@ -434,8 +468,8 @@ export default function Layout({ children, currentPageName }) {
         </footer>
       </main>
 
-      {/* Bottom Tab Bar - Mobile Only for Drivers */}
-      {isDriver && mobileNavItems.length > 0 && (
+      {/* Bottom Tab Bar - Mobile Only */}
+      {mobileNavItems.length > 0 && (
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 z-50 select-none" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           <div className="flex justify-around items-center h-16 px-2">
             {mobileNavItems.map((item) => {
