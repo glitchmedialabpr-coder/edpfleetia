@@ -78,6 +78,11 @@ export default function DriverVehicleSelection() {
     };
     
     localStorage.setItem('pin_user', JSON.stringify(updatedUser));
+    // Guardar vehículo seleccionado para DriverRequests
+    localStorage.setItem(`driver_vehicle_${user.driver_id}`, JSON.stringify({
+      vehicleId: vehicle.id,
+      timestamp: Date.now()
+    }));
     toast.success(`Vehículo ${vehicle.plate} seleccionado`);
     
     setTimeout(() => {
