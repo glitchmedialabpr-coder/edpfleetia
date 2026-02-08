@@ -381,7 +381,8 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <main className={cn(
-        "pl-72 pt-16 lg:pt-16 min-h-screen flex flex-col",
+        "pt-16 lg:pt-16 min-h-screen flex flex-col",
+        "lg:pl-72",
         mobileNavItems.length > 0 && "pb-20 lg:pb-0"
       )}>
         {isMainTab && window.innerWidth < 1024 ? (
