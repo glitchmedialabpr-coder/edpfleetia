@@ -123,15 +123,18 @@ Deno.serve(async (req) => {
     }
     
     // Cargar cache - propagar error si falla
-    try {
-      await loadStudentCache(base44);
-    } catch (cacheError) {
-      console.error('[Cache Load] Failed:', cacheError.message);
-      return Response.json({ 
-        success: false, 
-        error: 'Error cargando datos' 
-      }, { status: 500 });
-    }
+     try {
+       await loadStudentCache(base44);
+     } catch (cacheError) {
+       console.error('[Cache Load] Failed:', cacheError.message);
+       return Response.json({ 
+         success: false, 
+         error: 'Error cargando datos' 
+       }, { 
+         status: 500,
+         headers: { 'Access-Control-Allow-Origin': '*' }
+       });
+     }
     
     // Buscar en cache primero
     const student = studentCache.get(sanitizedId);
