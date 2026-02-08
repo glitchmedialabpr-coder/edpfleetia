@@ -45,6 +45,7 @@ import { Textarea } from '@/components/ui/textarea';
 import EmptyState from '../components/common/EmptyState';
 import MobileCard, { MobileCardRow, MobileCardSection } from '../components/common/MobileCard';
 import { useQueryClient } from '@tanstack/react-query';
+import { cn } from '@/lib/utils';
 
 export default function Students() {
   const queryClient = useQueryClient();
