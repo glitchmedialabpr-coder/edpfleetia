@@ -31,12 +31,17 @@ export default function DriverLogin() {
         const user = response.data.user;
         user.user_type = 'driver';
 
-        // Guardar datos de login inmediatamente
-        localStorage.setItem('pin_user', JSON.stringify(user));
-
-        toast.success(`¡Bienvenido ${user.full_name}!`);
-        setLoading(false);
-        navigate(createPageUrl('DriverDashboard'));
+        // Guardar en Base44 en lugar de localStorage
+        const sessionResponse = await base44.functions.invoke('createUserSession', user);
+        if (sessionResponse?.data?.success) {
+          sessionStorage.setItem('session_token', sessionResponse.data.session_token);
+          toast.success(`¡Bienvenido ${user.full_name}!`);
+          setLoading(false);
+          navigate(createPageUrl('DriverDashboard'));
+        } else {
+          toast.error('Error al crear sesión');
+          setLoading(false);
+        }
       } else {
         toast.error(response?.data?.error || 'Conductor no encontrado');
         setLoading(false);
