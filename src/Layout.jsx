@@ -50,34 +50,14 @@ function LayoutContent({ children, currentPageName }) {
   const isPassenger = !isAdmin && !isDriver;
 
   // ALL useMemo and useEffect hooks MUST be declared here, before any conditional returns
-  const mobileNavItems = useMemo(() => {
-    if (isDriver) {
-      return [
-        { name: 'Dashboard', page: 'DriverDashboard', icon: LayoutDashboard },
-        { name: 'Solicitudes', page: 'DriverRequests', icon: ListTodo },
-        { name: 'Viajes', page: 'DriverTrips', icon: Bus },
-        { name: 'Ajustes', page: 'NotificationSettings', icon: SettingsIcon },
-      ];
-    }
-    if (isPassenger) {
-      return [
-        { name: 'Viajes', page: 'PassengerTrips', icon: Bus },
-      ];
-    }
-    if (isAdmin) {
-      return [
-        { name: 'Dashboard', page: 'Dashboard', icon: LayoutDashboard },
-        { name: 'Vehículos', page: 'VehicleManagement', icon: Car },
-        { name: 'Choferes', page: 'Drivers', icon: Users },
-        { name: 'Ajustes', page: 'Settings', icon: SettingsIcon },
-      ];
-    }
-    return [];
-  }, [isDriver, isPassenger, isAdmin]);
+  const getHomePage = () => {
+    if (isDriver) return 'DriverDashboard';
+    if (isPassenger) return 'PassengerTrips';
+    if (isAdmin) return 'Dashboard';
+    return 'Home';
+  };
 
-  const isMainTab = useMemo(() => {
-    return mobileNavItems.some(item => item.page === currentPageName);
-  }, [mobileNavItems, currentPageName]);
+
 
   const navItems = useMemo(() => {
     if (isAdmin) {
@@ -115,23 +95,7 @@ function LayoutContent({ children, currentPageName }) {
   }, [isAdmin, isDriver, isPassenger]);
 
   // ALL useEffect hooks - must be before any conditional returns
-  useEffect(() => {
-    if (!isDriver || window.innerWidth >= 1024) return;
 
-    const handlePopState = (e) => {
-      const path = location.pathname;
-      const isTabPage = mobileNavItems.some(item => 
-        path.includes(item.page) || path === createPageUrl(item.page)
-      );
-      
-      if (isTabPage) {
-        return;
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [isDriver, location, mobileNavItems]);
 
   useEffect(() => {
     if (loading) return;
@@ -161,17 +125,7 @@ function LayoutContent({ children, currentPageName }) {
     navigate(createPageUrl('Home'));
   };
 
-  const handleMobileTabClick = (e, page) => {
-    if (window.innerWidth >= 1024) return;
-    e.preventDefault();
-    navigate(createPageUrl(page), { replace: false });
-  };
 
-  const needsBackButton = () => {
-    if (isDriver && isMainTab) return false;
-    const mainPages = ['DriverDashboard', 'Dashboard', 'PassengerTrips'];
-    return !mainPages.includes(currentPageName);
-  };
 
   // Public pages without layout - early return
   if (noLayoutPages.includes(currentPageName)) {
@@ -243,31 +197,9 @@ function LayoutContent({ children, currentPageName }) {
       </header>
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-40 px-3 flex items-center justify-between select-none">
-        <div className="flex items-center gap-3 select-none">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="select-none"
-          >
-            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </Button>
-          {needsBackButton() && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate(-1)}
-              className="select-none"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          )}
-          {!needsBackButton() && (
-            <span className="font-semibold text-slate-800 dark:text-slate-100 select-none">Fleetia</span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-40 px-3 flex items-center justify-center select-none">
+        <span className="font-semibold text-slate-800 dark:text-slate-100 select-none">Fleetia</span>
+        <div className="absolute right-3 flex items-center gap-2">
           <ThemeToggle />
           {isDriver && <NotificationCenter user={user} />}
         </div>
@@ -357,32 +289,20 @@ function LayoutContent({ children, currentPageName }) {
       <main className={cn(
         "pt-14 lg:pt-16 min-h-screen flex flex-col",
         "lg:pl-72",
-        mobileNavItems.length > 0 && "pb-16 lg:pb-0"
+        "pb-16 lg:pb-0"
       )}>
-        {isMainTab && window.innerWidth < 1024 ? (
-          <div className="p-3 lg:p-8 flex-1">
-            <TabContainer
-              tabs={mobileNavItems.map(item => ({
-                id: item.page,
-                content: currentPageName === item.page ? children : null
-              }))}
-              currentTab={currentPageName}
-            />
-          </div>
-        ) : (
-          <AnimatePresence mode="wait">
-              <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0, y: isMainTab ? 0 : 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: isMainTab ? 0 : -10 }}
-                transition={{ duration: isMainTab ? 0.15 : 0.2 }}
-                className="p-3 lg:p-8 flex-1"
-              >
-              {children}
-            </motion.div>
-          </AnimatePresence>
-        )}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="p-3 lg:p-8 flex-1"
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
         <footer className="py-4 px-8 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
           <div>Design by <span className="font-medium text-slate-700 dark:text-slate-300 select-none">Glitch Media Lab</span></div>
           <Button 
@@ -397,37 +317,40 @@ function LayoutContent({ children, currentPageName }) {
         </footer>
       </main>
 
-      {/* Bottom Tab Bar - Mobile Only */}
-      {mobileNavItems.length > 0 && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 z-50 select-none lg:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-          <div className="flex justify-around items-center h-14 px-1">
-            {mobileNavItems.map((item) => {
-              const isActive = currentPageName === item.page;
-              return (
-                <button
-                  key={item.page}
-                  onClick={(e) => handleMobileTabClick(e, item.page)}
-                  className={cn(
-                    "flex flex-col items-center justify-center gap-0.5 flex-1 py-1.5 rounded-lg transition-all duration-200 select-none active:scale-95",
-                    isActive 
-                      ? "text-teal-600 dark:text-teal-400" 
-                      : "text-slate-500 dark:text-slate-400"
-                  )}
-                >
-                  <item.icon className={cn(
-                    "w-5 h-5 transition-transform",
-                    isActive && "text-teal-600 dark:text-teal-400 scale-110"
-                  )} />
-                  <span className="text-[10px] font-medium">{item.name}</span>
-                  {isActive && (
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-teal-600 dark:bg-teal-400 rounded-t-full" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </nav>
-      )}
+      {/* Bottom Navigation Bar - Mobile Only */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 z-50 select-none lg:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        <div className="flex justify-between items-center h-14 px-4">
+          {/* Left: Menu Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="w-12 h-12 select-none"
+          >
+            <Menu className="w-6 h-6" />
+          </Button>
+
+          {/* Center: Home Button */}
+          <Button
+            variant="default"
+            size="icon"
+            onClick={() => navigate(createPageUrl(getHomePage()))}
+            className="w-14 h-14 rounded-full bg-teal-600 hover:bg-teal-700 shadow-lg select-none"
+          >
+            <LayoutDashboard className="w-7 h-7" />
+          </Button>
+
+          {/* Right: Back Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+            className="w-12 h-12 select-none"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
+        </div>
+      </nav>
     </div>
     </ErrorBoundary>
   );
