@@ -138,7 +138,7 @@ function LayoutContent({ children, currentPageName }) {
     if (noLayoutPages.includes(currentPageName)) return;
 
     if (!user) {
-      window.location.href = createPageUrl('Home');
+      navigate(createPageUrl('Home'));
       return;
     }
 
@@ -147,18 +147,18 @@ function LayoutContent({ children, currentPageName }) {
     const passengerPages = ['PassengerTrips'];
 
     if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
-      window.location.href = createPageUrl('Home');
+      navigate(createPageUrl('Home'));
     } else if (driverPages.includes(currentPageName) && user?.user_type !== 'driver') {
-      window.location.href = createPageUrl('Home');
+      navigate(createPageUrl('Home'));
     } else if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger' && user?.role !== 'admin') {
-      window.location.href = createPageUrl('Home');
+      navigate(createPageUrl('Home'));
     }
   }, [user, loading, currentPageName, noLayoutPages]);
 
   // Helper functions
   const handleLogout = async () => {
     await logout();
-    window.location.href = createPageUrl('Home');
+    navigate(createPageUrl('Home'));
   };
 
   const handleMobileTabClick = (e, page) => {
