@@ -43,18 +43,13 @@ function LayoutContent({ children, currentPageName }) {
   const { user, loading, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handleLogout = async () => {
-    await logout();
-    window.location.href = createPageUrl('Home');
-  };
-
+  // Define these BEFORE any conditional logic
   const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
-
   const isAdmin = user?.role === 'admin';
   const isDriver = user?.user_type === 'driver';
   const isPassenger = !isAdmin && !isDriver;
 
-  // Mobile navigation items for bottom tab bar
+  // ALL useMemo and useEffect hooks MUST be declared here, before any conditional returns
   const mobileNavItems = useMemo(() => {
     if (isDriver) {
       return [
@@ -80,7 +75,6 @@ function LayoutContent({ children, currentPageName }) {
     return [];
   }, [isDriver, isPassenger, isAdmin]);
 
-  // Check if current page is a main tab
   const isMainTab = useMemo(() => {
     return mobileNavItems.some(item => item.page === currentPageName);
   }, [mobileNavItems, currentPageName]);
@@ -120,7 +114,7 @@ function LayoutContent({ children, currentPageName }) {
     return [];
   }, [isAdmin, isDriver, isPassenger]);
 
-  // Intercept browser back button on mobile for proper tab navigation
+  // ALL useEffect hooks - must be before any conditional returns
   useEffect(() => {
     if (!isDriver || window.innerWidth >= 1024) return;
 
@@ -131,7 +125,6 @@ function LayoutContent({ children, currentPageName }) {
       );
       
       if (isTabPage) {
-        // Allow normal navigation for tab pages
         return;
       }
     };
@@ -140,21 +133,15 @@ function LayoutContent({ children, currentPageName }) {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [isDriver, location, mobileNavItems]);
 
-  // Single unified redirect effect - runs only after loading completes
   useEffect(() => {
-    // Wait for session validation to complete
     if (loading) return;
-
-    // Public pages don't need auth
     if (noLayoutPages.includes(currentPageName)) return;
 
-    // No user session - redirect to Home
     if (!user) {
       window.location.href = createPageUrl('Home');
       return;
     }
 
-    // Role-based access control
     const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
     const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory'];
     const passengerPages = ['PassengerTrips'];
@@ -168,14 +155,18 @@ function LayoutContent({ children, currentPageName }) {
     }
   }, [user, loading, currentPageName]);
 
-  // Handle mobile tab navigation with state preservation
+  // Helper functions
+  const handleLogout = async () => {
+    await logout();
+    window.location.href = createPageUrl('Home');
+  };
+
   const handleMobileTabClick = (e, page) => {
     if (window.innerWidth >= 1024) return;
     e.preventDefault();
     navigate(createPageUrl(page), { replace: false });
   };
 
-  // Check if current page needs back button
   const needsBackButton = () => {
     if (isDriver && isMainTab) return false;
     const mainPages = ['DriverDashboard', 'Dashboard', 'PassengerTrips'];
