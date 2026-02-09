@@ -33,23 +33,9 @@ export default function PassengerLogin() {
         const userData = response.data.user;
         userData.user_type = 'passenger';
         
-        const sessionResponse = await base44.functions.invoke('createUserSession', userData);
-        if (sessionResponse?.data?.success) {
-          const token = sessionResponse.data.session_token;
-          const loginResult = await login(token);
-          if (loginResult.success) {
-            toast.success(`¡Bienvenido ${userData.full_name}!`);
-            window.location.href = createPageUrl('PassengerTrips');
-          } else {
-            toast.error('Error al iniciar sesión');
-            setStudentId('');
-            setLoading(false);
-          }
-        } else {
-          toast.error('Error al crear sesión');
-          setStudentId('');
-          setLoading(false);
-        }
+        await login(userData);
+        toast.success(`¡Bienvenido ${userData.full_name}!`);
+        navigate(createPageUrl('PassengerTrips'));
       } else {
         toast.error(response?.data?.error || 'Estudiante no encontrado');
         setStudentId('');

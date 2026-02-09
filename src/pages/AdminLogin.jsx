@@ -28,23 +28,9 @@ export default function AdminLogin() {
         userData.role = 'admin';
         userData.user_type = 'admin';
 
-        const sessionResponse = await base44.functions.invoke('createUserSession', userData);
-        if (sessionResponse?.data?.success) {
-          const token = sessionResponse.data.session_token;
-          const loginResult = await login(token);
-          if (loginResult.success) {
-            toast.success('Acceso autorizado');
-            window.location.href = createPageUrl('Dashboard');
-          } else {
-            toast.error('Error al iniciar sesión');
-            setPin('');
-            setLoading(false);
-          }
-        } else {
-          toast.error(sessionResponse?.data?.error || 'Error al crear sesión');
-          setPin('');
-          setLoading(false);
-        }
+        await login(userData);
+        toast.success('Acceso autorizado');
+        navigate(createPageUrl('Dashboard'));
       } else {
         toast.error(response?.data?.error || 'PIN incorrecto');
         setPin('');

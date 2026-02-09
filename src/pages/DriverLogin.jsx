@@ -33,23 +33,9 @@ export default function DriverLogin() {
         const user = response.data.user;
         user.user_type = 'driver';
 
-        const sessionResponse = await base44.functions.invoke('createUserSession', user);
-        if (sessionResponse?.data?.success) {
-          const token = sessionResponse.data.session_token;
-          const loginResult = await login(token);
-          if (loginResult.success) {
-            toast.success(`¡Bienvenido ${user.full_name}!`);
-            window.location.href = createPageUrl('DriverDashboard');
-          } else {
-            toast.error('Error al iniciar sesión');
-            setDriverId('');
-            setLoading(false);
-          }
-        } else {
-          toast.error('Error al crear sesión');
-          setDriverId('');
-          setLoading(false);
-        }
+        await login(user);
+        toast.success(`¡Bienvenido ${user.full_name}!`);
+        navigate(createPageUrl('DriverDashboard'));
       } else {
         toast.error(response?.data?.error || 'Conductor no encontrado');
         setLoading(false);
