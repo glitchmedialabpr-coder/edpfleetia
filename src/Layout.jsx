@@ -197,11 +197,19 @@ function LayoutContent({ children, currentPageName }) {
       </header>
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-40 px-3 flex items-center justify-center select-none">
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-40 px-3 flex items-center justify-between select-none">
         <span className="font-semibold text-slate-800 dark:text-slate-100 select-none">Fleetia</span>
-        <div className="absolute right-3 flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <ThemeToggle />
           {isDriver && <NotificationCenter user={user} />}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleLogout}
+            className="text-slate-600 dark:text-slate-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 select-none"
+          >
+            <LogOut className="w-5 h-5" />
+          </Button>
         </div>
       </header>
 
@@ -262,27 +270,7 @@ function LayoutContent({ children, currentPageName }) {
           })}
         </nav>
 
-        <div className="lg:hidden p-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800">
-          <div className="flex items-center gap-3 px-3 py-2 mb-3 bg-slate-50 dark:bg-slate-700 rounded-lg select-none">
-            <div className="w-10 h-10 bg-slate-200 dark:bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
-              <User className="w-5 h-5 text-slate-500 dark:text-slate-300" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-slate-800 dark:text-slate-100 truncate text-sm">{user.full_name || user.email}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
-                {isAdmin ? 'Administrador' : isDriver ? 'Conductor' : 'Pasajero'}
-              </p>
-            </div>
-          </div>
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start text-slate-600 dark:text-slate-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-            onClick={handleLogout}
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            <span className="select-none">Cerrar Sesión</span>
-          </Button>
-        </div>
+
       </aside>
 
       {/* Main Content */}
