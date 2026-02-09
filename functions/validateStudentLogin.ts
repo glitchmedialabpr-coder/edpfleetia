@@ -160,7 +160,7 @@ Deno.serve(async (req) => {
         user_type: 'passenger',
         student_id: student.student_id,
         housing_name: student.housing_name,
-        session_expiry: Date.now() + (5 * 60 * 1000),
+        session_expiry: Date.now() + (3 * 60 * 60 * 1000), // 3 horas
         login_time: Date.now()
       }
     }, {
