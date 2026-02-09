@@ -186,17 +186,9 @@ function LayoutContent({ children, currentPageName }) {
             <p className="text-slate-600 dark:text-slate-300">Redirigiendo...</p>
           </div>
         </div>
-        </ErrorBoundary>
-        );
-        }
-
-        export default function Layout({ children, currentPageName }) {
-        return (
-        <AuthProvider>
-        <LayoutContent children={children} currentPageName={currentPageName} />
-        </AuthProvider>
-        );
-        }
+      </ErrorBoundary>
+    );
+  }
 
   // Enforce role-based routing
   const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
@@ -438,7 +430,15 @@ function LayoutContent({ children, currentPageName }) {
           </div>
         </nav>
       )}
-      </div>
-      </ErrorBoundary>
-      );
-      }
+    </div>
+    </ErrorBoundary>
+  );
+}
+
+export default function Layout({ children, currentPageName }) {
+  return (
+    <AuthProvider>
+      <LayoutContent children={children} currentPageName={currentPageName} />
+    </AuthProvider>
+  );
+}
