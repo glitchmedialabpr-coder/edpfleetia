@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { useAuth } from '../components/auth/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Truck, Hash } from 'lucide-react';
+import { Truck, Hash, Home } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function DriverLogin() {
@@ -50,6 +50,17 @@ export default function DriverLogin() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-900 via-teal-800 to-emerald-900 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
+        <div className="absolute top-4 right-4">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => navigate(createPageUrl('Home'))}
+            className="bg-white/20 border-white/30 hover:bg-white/30 text-white"
+            title="Volver a Home"
+          >
+            <Home className="w-5 h-5" />
+          </Button>
+        </div>
         <div className="text-center mb-8">
           <div className="w-32 h-32 mx-auto mb-6">
             <img 

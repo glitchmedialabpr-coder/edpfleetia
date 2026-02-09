@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Shield } from 'lucide-react';
+import { Shield, Home } from 'lucide-react';
 import { toast } from 'sonner';
 
 const ACCESS_CODES = ['edpuniversity', 'admin0573'];
@@ -37,6 +37,17 @@ export default function EmployeeLogin() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
+        <div className="absolute top-4 right-4">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => navigate(createPageUrl('Home'))}
+            className="bg-white/20 border-white/30 hover:bg-white/30 text-white"
+            title="Volver a Home"
+          >
+            <Home className="w-5 h-5" />
+          </Button>
+        </div>
         <div className="text-center mb-8">
           <div className="w-32 h-32 mx-auto mb-6">
             <img 
