@@ -164,8 +164,10 @@ Deno.serve(async (req) => {
     }, {
       status: 200,
       headers: {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': req.headers.get('origin') || '*',
+        'Access-Control-Allow-Credentials': 'true',
         'Content-Type': 'application/json',
+        'Set-Cookie': `session_token=${sessionResponse.data.session_token}; Path=/; Max-Age=${5*60*60}; HttpOnly; Secure; SameSite=Strict`,
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '1; mode=block'
