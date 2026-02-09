@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
+import { useAuth } from '../components/auth/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,48 +23,31 @@ import { toast } from 'sonner';
 import WebSocketNotificationClient from '@/components/notifications/WebSocketNotificationClient';
 
 export default function DriverDashboard() {
-  const [user, setUser] = useState(null);
+  const { user, loading: authLoading } = useAuth();
   const [selectedVehicle, setSelectedVehicle] = useState('');
   const [currentVehicleData, setCurrentVehicleData] = useState(null);
   const [showVehicleModal, setShowVehicleModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadUser();
-  }, []);
-
-  const loadUser = async () => {
-    try {
-      const pinUser = localStorage.getItem('pin_user');
-      if (!pinUser) {
-        navigate(createPageUrl('DriverLogin'));
-        return;
-      }
-      
-      const userData = JSON.parse(pinUser);
-      // Asegurar que user_type sea 'driver'
-      userData.user_type = 'driver';
-      
-      setUser(userData);
-      // Usar vehículo guardado si existe
-      if (userData.selected_vehicle_id) {
-        setSelectedVehicle(userData.selected_vehicle_id);
-      }
-    } catch (error) {
-      console.error('Error loading user:', error);
-      navigate(createPageUrl('DriverLogin'));
+    if (!user?.driver_id) return;
+    const savedVehicleId = localStorage.getItem(`driver_${user.driver_id}_selected_vehicle`);
+    if (savedVehicleId) {
+      setSelectedVehicle(savedVehicleId);
     }
-  };
+  }, [user]);
 
   const { data: vehicles = [] } = useQuery({
     queryKey: ['vehicles'],
     queryFn: () => base44.entities.Vehicle.list(),
+    enabled: !!user && !authLoading,
     staleTime: 1000 * 60 * 5
   });
 
   const { data: pendingRequests = [] } = useQuery({
     queryKey: ['pending-requests'],
     queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' }),
+    enabled: !!user && !authLoading,
     staleTime: 1000 * 30
   });
 
@@ -73,7 +57,7 @@ export default function DriverDashboard() {
       driver_id: user?.driver_id,
       status: 'accepted_by_driver'
     }, '-created_date'),
-    enabled: !!user?.driver_id,
+    enabled: !!user?.driver_id && !authLoading,
     staleTime: 1000 * 30
   });
 
@@ -86,21 +70,19 @@ export default function DriverDashboard() {
   }, [selectedVehicle, vehicles]);
 
   const handleVehicleSelect = (vehicle) => {
-    const updatedUser = {
-      ...user,
-      selected_vehicle_id: vehicle.id,
-      selected_vehicle_plate: vehicle.plate,
-      selected_vehicle_info: `${vehicle.brand} ${vehicle.model}`
-    };
-    
-    localStorage.setItem('pin_user', JSON.stringify(updatedUser));
-    setUser(updatedUser);
+    if (user?.driver_id) {
+      localStorage.setItem(`driver_${user.driver_id}_selected_vehicle`, vehicle.id);
+      localStorage.setItem(`driver_${user.driver_id}_vehicle_info`, JSON.stringify({
+        plate: vehicle.plate,
+        info: `${vehicle.brand} ${vehicle.model}`
+      }));
+    }
     setSelectedVehicle(vehicle.id);
     setShowVehicleModal(false);
     toast.success(`Vehículo ${vehicle.plate} seleccionado`);
   };
 
-  if (!user) {
+  if (authLoading) {
     return (
       <div className="w-full flex items-center justify-center min-h-screen">
         <div className="animate-pulse">
@@ -119,7 +101,7 @@ export default function DriverDashboard() {
       </div>
 
       {/* Vehicle Selection or Info */}
-      {user?.selected_vehicle_plate ? (
+      {currentVehicleData ? (
         <Card className="p-6 bg-gradient-to-br from-teal-50 to-white border-teal-200">
           <div className="flex items-center gap-3 mb-4">
             <Car className="w-6 h-6 text-teal-600" />
@@ -130,7 +112,7 @@ export default function DriverDashboard() {
             <div className="flex items-center gap-2">
               <span className="text-sm text-slate-600">Vehículo seleccionado:</span>
               <Badge className="bg-teal-600 text-white text-base px-3 py-1">
-                {user.selected_vehicle_info} - {user.selected_vehicle_plate}
+                {currentVehicleData.brand} {currentVehicleData.model} - {currentVehicleData.plate}
               </Badge>
             </div>
             <p className="text-xs text-slate-500 mt-2">
