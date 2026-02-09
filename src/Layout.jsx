@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { useAuth } from './components/auth/AuthContext';
+import { useAuth, AuthProvider } from './components/auth/AuthContext';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { AnimatePresence, motion } from 'framer-motion';
 import TabContainer from './components/mobile/TabContainer';
@@ -37,7 +37,7 @@ import ThemeToggle from './components/common/ThemeToggle';
 
 const ADMIN_PIN = '0573';
 
-export default function Layout({ children, currentPageName }) {
+function LayoutContent({ children, currentPageName }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading, logout } = useAuth();
@@ -186,9 +186,17 @@ export default function Layout({ children, currentPageName }) {
             <p className="text-slate-600 dark:text-slate-300">Redirigiendo...</p>
           </div>
         </div>
-      </ErrorBoundary>
-    );
-  }
+        </ErrorBoundary>
+        );
+        }
+
+        export default function Layout({ children, currentPageName }) {
+        return (
+        <AuthProvider>
+        <LayoutContent children={children} currentPageName={currentPageName} />
+        </AuthProvider>
+        );
+        }
 
   // Enforce role-based routing
   const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
