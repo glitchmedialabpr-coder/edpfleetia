@@ -53,7 +53,7 @@ export default function EmployeeComplaintForm() {
     setSubmitting(true);
 
     try {
-      await base44.entities.EmployeeComplaint.create({
+      await base44.functions.invoke('submitEmployeeComplaint', {
         ...formData,
         document_urls: documents,
         status: 'pendiente'

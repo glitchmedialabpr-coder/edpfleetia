@@ -31,7 +31,10 @@ export default function EmployeeComplaintHistory() {
 
   const { data: complaints = [], isLoading } = useQuery({
     queryKey: ['employee-complaints-history'],
-    queryFn: () => base44.entities.EmployeeComplaint.list('-created_date')
+    queryFn: async () => {
+      const result = await base44.functions.invoke('getEmployeeComplaints', {});
+      return result.data;
+    }
   });
 
   const filteredComplaints = emailFilter
