@@ -140,35 +140,33 @@ function LayoutContent({ children, currentPageName }) {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [isDriver, location, mobileNavItems]);
 
-  // Enforce role-based routing
+  // Single unified redirect effect - runs only after loading completes
   useEffect(() => {
-    if (loading || !user) return;
+    // Wait for session validation to complete
+    if (loading) return;
 
+    // Public pages don't need auth
+    if (noLayoutPages.includes(currentPageName)) return;
+
+    // No user session - redirect to Home
+    if (!user) {
+      window.location.href = createPageUrl('Home');
+      return;
+    }
+
+    // Role-based access control
     const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
+    const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory'];
+    const passengerPages = ['PassengerTrips'];
+
     if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
       window.location.href = createPageUrl('Home');
-      return;
-    }
-  
-    const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory'];
-    if (driverPages.includes(currentPageName) && user?.user_type !== 'driver') {
+    } else if (driverPages.includes(currentPageName) && user?.user_type !== 'driver') {
       window.location.href = createPageUrl('Home');
-      return;
-    }
-  
-    const passengerPages = ['PassengerTrips'];
-    if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger') {
+    } else if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger') {
       window.location.href = createPageUrl('Home');
-      return;
     }
   }, [user, loading, currentPageName]);
-
-  // Protected pages - redirect to Home if no valid session
-  useEffect(() => {
-    if (!loading && !user && !noLayoutPages.includes(currentPageName)) {
-      window.location.href = createPageUrl('Home');
-    }
-  }, [loading, user, currentPageName]);
 
   // Handle mobile tab navigation with state preservation
   const handleMobileTabClick = (e, page) => {

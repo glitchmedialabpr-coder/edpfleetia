@@ -9,34 +9,34 @@ export function AuthProvider({ children }) {
 
   // On app init, validate session from sessionStorage
   useEffect(() => {
-    validateSession();
-  }, []);
-
-  const validateSession = async () => {
-    try {
-      const sessionToken = sessionStorage.getItem('session_token');
-      if (sessionToken) {
-        const response = await base44.functions.invoke('getCurrentUser', { 
-          session_token: sessionToken 
-        });
-        
-        if (response?.data?.success) {
-          setUser(response.data.user);
+    const validateSession = async () => {
+      try {
+        const sessionToken = sessionStorage.getItem('session_token');
+        if (sessionToken) {
+          const response = await base44.functions.invoke('getCurrentUser', { 
+            session_token: sessionToken 
+          });
+          
+          if (response?.data?.success) {
+            setUser(response.data.user);
+          } else {
+            sessionStorage.removeItem('session_token');
+            setUser(null);
+          }
         } else {
-          sessionStorage.removeItem('session_token');
           setUser(null);
         }
-      } else {
+      } catch (error) {
+        console.error('Session validation error:', error);
+        sessionStorage.removeItem('session_token');
         setUser(null);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Session validation error:', error);
-      sessionStorage.removeItem('session_token');
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    validateSession();
+  }, []);
 
   const login = async (sessionToken) => {
     try {
