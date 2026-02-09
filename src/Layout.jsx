@@ -44,7 +44,7 @@ function LayoutContent({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Define these BEFORE any conditional logic
-  const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
+  const noLayoutPages = ['AdminLogin', 'DriverLogin', 'PassengerLogin', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
   const isAdmin = user?.role === 'admin';
   const isDriver = user?.user_type === 'driver';
   const isPassenger = !isAdmin && !isDriver;
