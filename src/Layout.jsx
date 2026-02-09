@@ -243,7 +243,7 @@ function LayoutContent({ children, currentPageName }) {
       </header>
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-40 px-4 flex items-center justify-between select-none">
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-40 px-3 flex items-center justify-between select-none">
         <div className="flex items-center gap-3 select-none">
           <Button 
             variant="ghost" 
@@ -283,8 +283,8 @@ function LayoutContent({ children, currentPageName }) {
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-16 left-0 bottom-0 w-72 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 z-50 flex flex-col transform transition-transform duration-300",
-        "lg:top-0 lg:translate-x-0 lg:block",
+        "fixed top-14 left-0 bottom-0 w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 z-50 flex flex-col transform transition-transform duration-300",
+        "lg:top-0 lg:w-72 lg:translate-x-0 lg:block",
         sidebarOpen ? "translate-x-0" : "-translate-x-full",
         !sidebarOpen && "lg:translate-x-0"
       )}>
@@ -355,12 +355,12 @@ function LayoutContent({ children, currentPageName }) {
 
       {/* Main Content */}
       <main className={cn(
-        "pt-16 lg:pt-16 min-h-screen flex flex-col",
+        "pt-14 lg:pt-16 min-h-screen flex flex-col",
         "lg:pl-72",
-        mobileNavItems.length > 0 && "pb-20 lg:pb-0"
+        mobileNavItems.length > 0 && "pb-16 lg:pb-0"
       )}>
         {isMainTab && window.innerWidth < 1024 ? (
-          <div className="p-4 lg:p-8 flex-1">
+          <div className="p-3 lg:p-8 flex-1">
             <TabContainer
               tabs={mobileNavItems.map(item => ({
                 id: item.page,
@@ -371,14 +371,14 @@ function LayoutContent({ children, currentPageName }) {
           </div>
         ) : (
           <AnimatePresence mode="wait">
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0, y: isMainTab ? 0 : 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: isMainTab ? 0 : -10 }}
-              transition={{ duration: isMainTab ? 0.15 : 0.2 }}
-              className="p-4 lg:p-8 flex-1"
-            >
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: isMainTab ? 0 : 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: isMainTab ? 0 : -10 }}
+                transition={{ duration: isMainTab ? 0.15 : 0.2 }}
+                className="p-3 lg:p-8 flex-1"
+              >
               {children}
             </motion.div>
           </AnimatePresence>
@@ -400,7 +400,7 @@ function LayoutContent({ children, currentPageName }) {
       {/* Bottom Tab Bar - Mobile Only */}
       {mobileNavItems.length > 0 && (
         <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 z-50 select-none lg:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-          <div className="flex justify-around items-center h-16 px-2">
+          <div className="flex justify-around items-center h-14 px-1">
             {mobileNavItems.map((item) => {
               const isActive = currentPageName === item.page;
               return (
@@ -408,17 +408,17 @@ function LayoutContent({ children, currentPageName }) {
                   key={item.page}
                   onClick={(e) => handleMobileTabClick(e, item.page)}
                   className={cn(
-                    "flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-all duration-200 select-none active:scale-95",
+                    "flex flex-col items-center justify-center gap-0.5 flex-1 py-1.5 rounded-lg transition-all duration-200 select-none active:scale-95",
                     isActive 
                       ? "text-teal-600 dark:text-teal-400" 
                       : "text-slate-500 dark:text-slate-400"
                   )}
                 >
                   <item.icon className={cn(
-                    "w-6 h-6 transition-transform",
+                    "w-5 h-5 transition-transform",
                     isActive && "text-teal-600 dark:text-teal-400 scale-110"
                   )} />
-                  <span className="text-xs font-medium">{item.name}</span>
+                  <span className="text-[10px] font-medium">{item.name}</span>
                   {isActive && (
                     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-teal-600 dark:bg-teal-400 rounded-t-full" />
                   )}
