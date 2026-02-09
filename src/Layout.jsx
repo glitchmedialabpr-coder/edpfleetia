@@ -45,6 +45,7 @@ function LayoutContent({ children, currentPageName }) {
 
   const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
   
+  const shouldShowLayout = !noLayoutPages.includes(currentPageName);
   const isAdmin = user?.role === 'admin';
   const isDriver = user?.user_type === 'driver';
   const isPassenger = !isAdmin && !isDriver;
