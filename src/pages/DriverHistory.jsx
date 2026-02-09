@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '../components/auth/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -26,27 +27,18 @@ import { format, subDays } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 export default function DriverHistory() {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    loadUser();
-  }, []);
-
-  const loadUser = async () => {
-    const userData = await base44.auth.me();
-    setUser(userData);
-  };
-
   const { data: trips = [] } = useQuery({
-    queryKey: ['driver-history', user?.id, user?.role],
+    queryKey: ['driver-history', user?.driver_id, user?.role],
     queryFn: () => {
       if (user?.role === 'admin') {
         return base44.entities.Trip.list('-scheduled_date', 100);
       }
-      return base44.entities.Trip.filter({ driver_id: user?.id }, '-scheduled_date', 100);
+      return base44.entities.Trip.filter({ driver_id: user?.driver_id }, '-scheduled_date', 100);
     },
-    enabled: !!user?.id,
+    enabled: !!user && (!!user.driver_id || user.role === 'admin'),
     staleTime: 1000 * 60 * 5
   });
 

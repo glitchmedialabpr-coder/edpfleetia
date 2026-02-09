@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
+import { useAuth } from '../components/auth/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,7 +40,7 @@ const statusConfig = {
 
 export default function DriverRequests() {
   const queryClient = useQueryClient();
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [selectedVehicle, setSelectedVehicle] = useState('');
   const navigate = useNavigate();
   const [refreshing, setRefreshing] = useState(false);
@@ -51,32 +52,23 @@ export default function DriverRequests() {
   const [hasNewRequest, setHasNewRequest] = useState(false);
 
   useEffect(() => {
-    loadUser();
     requestNotificationPermission();
   }, []);
 
-  // Sincronizar vehículo cuando el usuario se carga
   useEffect(() => {
-    if (user && user.selected_vehicle_id && !selectedVehicle) {
-      setSelectedVehicle(user.selected_vehicle_id);
+    if (!user?.driver_id) return;
+    const savedVehicleId = localStorage.getItem(`driver_${user.driver_id}_selected_vehicle`);
+    if (savedVehicleId) {
+      setSelectedVehicle(savedVehicleId);
+    } else {
+      checkAndSetVehicleFromSchedule();
     }
   }, [user?.driver_id]);
 
-  useEffect(() => {
-    if (user?.driver_id) {
-      checkAndSetVehicleFromSchedule();
-    }
-  }, [user?.driver_id, user?.selected_vehicle_id]);
-
   const checkAndSetVehicleFromSchedule = async () => {
+    if (!user?.driver_id) return;
+    
     try {
-      // Prioridad 1: Vehículo del usuario (guardado durante login)
-      if (user?.selected_vehicle_id) {
-        setSelectedVehicle(user.selected_vehicle_id);
-        return;
-      }
-
-      // Prioridad 2: Vehículo asignado automático (horario laboral)
       const drivers = await base44.entities.Driver.filter({ driver_id: user.driver_id });
       if (drivers && drivers.length > 0) {
         const driver = drivers[0];
@@ -93,7 +85,7 @@ export default function DriverRequests() {
             
             if (currentTime >= shiftStartMinutes && currentTime < shiftEndMinutes) {
               setSelectedVehicle(driver.assigned_vehicle_id);
-              return;
+              localStorage.setItem(`driver_${user.driver_id}_selected_vehicle`, driver.assigned_vehicle_id);
             }
           }
         }
@@ -109,32 +101,18 @@ export default function DriverRequests() {
     }
   };
 
-  const loadUser = async () => {
-    try {
-      const pinUser = localStorage.getItem('pin_user');
-      if (pinUser) {
-        const userData = JSON.parse(pinUser);
-        setUser(userData);
-        // Set vehículo si existe en user
-        if (userData.selected_vehicle_id) {
-          setSelectedVehicle(userData.selected_vehicle_id);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading user:', error);
-    }
-  };
-
   const { data: vehicles = [] } = useQuery({
     queryKey: ['vehicles'],
     queryFn: () => base44.entities.Vehicle.filter({ status: 'available' }),
+    enabled: !!user,
     staleTime: 1000 * 60 * 5
   });
 
   const { data: pendingRequests = [] } = useQuery({
     queryKey: ['pending-requests'],
     queryFn: () => base44.entities.TripRequest.filter({ status: 'pending' }, '-created_date', 50),
-    refetchInterval: false // Disabled for battery optimization, using real-time subscriptions
+    enabled: !!user,
+    refetchInterval: false
   });
 
   const { data: acceptedRequests = [] } = useQuery({
