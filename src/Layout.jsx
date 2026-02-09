@@ -45,6 +45,16 @@ function LayoutContent({ children, currentPageName }) {
 
   // Define these BEFORE any conditional logic
   const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
+
+  // Early return for no-layout pages BEFORE any user checks
+  if (noLayoutPages.includes(currentPageName)) {
+    return (
+      <ErrorBoundary>
+        {children}
+      </ErrorBoundary>
+    );
+  }
+
   const isAdmin = user?.role === 'admin';
   const isDriver = user?.user_type === 'driver';
   const isPassenger = !isAdmin && !isDriver;
@@ -124,17 +134,6 @@ function LayoutContent({ children, currentPageName }) {
     await logout();
     navigate(createPageUrl('Home'));
   };
-
-
-
-  // Public pages without layout - early return
-  if (noLayoutPages.includes(currentPageName)) {
-    return (
-      <ErrorBoundary>
-        {children}
-      </ErrorBoundary>
-    );
-  }
 
   // Block rendering until session validation completes
   if (loading) {
