@@ -14,7 +14,6 @@ function checkLoginAttempts(driverId) {
     return { allowed: true };
   }
   
-  // Si está bloqueado
   if (attempts.lockedUntil && now < attempts.lockedUntil) {
     const remainingMinutes = Math.ceil((attempts.lockedUntil - now) / 60000);
     return { 
@@ -23,13 +22,11 @@ function checkLoginAttempts(driverId) {
     };
   }
   
-  // Reset si pasó el tiempo de lockout
   if (attempts.lockedUntil && now >= attempts.lockedUntil) {
     loginAttempts.set(driverId, { count: 1, firstAttempt: now, lockedUntil: null });
     return { allowed: true };
   }
   
-  // Incrementar intentos
   attempts.count++;
   
   if (attempts.count >= MAX_ATTEMPTS) {
@@ -108,22 +105,25 @@ Deno.serve(async (req) => {
       });
     }
     
-    // Login exitoso - reset intentos
+    // Login exitoso - reset intentos y crear sesión
     resetLoginAttempts(sanitizedId);
     
     const driver = drivers[0];
+
+    const sessionResponse = await base44.asServiceRole.functions.invoke('createUserSession', {
+      id: driver.id,
+      email: driver.email,
+      full_name: driver.full_name,
+      phone: driver.phone,
+      role: 'user',
+      user_type: 'driver',
+      driver_id: driver.driver_id
+    });
+
     return Response.json({ 
       success: true,
-      user: {
-        id: driver.id,
-        email: driver.email,
-        full_name: driver.full_name,
-        phone: driver.phone,
-        role: 'user',
-        user_type: 'driver',
-        driver_id: driver.driver_id,
-        session_expiry: Date.now() + (12 * 60 * 60 * 1000)
-      }
+      user: sessionResponse.data.user,
+      session_token: sessionResponse.data.session_token
     }, {
       status: 200,
       headers: {

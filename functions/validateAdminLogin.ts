@@ -57,6 +57,7 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const base44 = createClientFromRequest(req);
     const { pin } = await req.json();
     
     // Obtener IP del cliente
@@ -99,17 +100,21 @@ Deno.serve(async (req) => {
       });
     }
     
-    // Login exitoso
+    // Login exitoso - crear sesión en backend
     resetAdminAttempts(clientIp);
+
+    const sessionResponse = await base44.asServiceRole.functions.invoke('createUserSession', {
+      id: 'admin',
+      role: 'admin',
+      user_type: 'admin',
+      email: 'admin@edp.edu',
+      full_name: 'Administrador'
+    });
     
     return Response.json({ 
       success: true,
-      user: {
-        email: 'admin@edp.edu',
-        full_name: 'Administrador',
-        role: 'admin',
-        session_expiry: Date.now() + (8 * 60 * 60 * 1000)
-      }
+      user: sessionResponse.data.user,
+      session_token: sessionResponse.data.session_token
     }, {
       status: 200,
       headers: {

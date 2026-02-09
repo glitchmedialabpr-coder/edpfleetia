@@ -52,7 +52,6 @@ function resetStudentAttempts(studentId) {
 async function loadStudentCache(base44) {
    const now = Date.now();
 
-   // Solo recargar si pasó más de 1 hora o si el cache está vacío
    if (studentCache.size === 0 || now - lastCacheLoad > CACHE_TTL) {
      try {
        const students = await base44.asServiceRole.entities.Student.list();
@@ -65,13 +64,11 @@ async function loadStudentCache(base44) {
         });
         lastCacheLoad = now;
       } else {
-        // Si la consulta retorna vacío, no actualizar el timestamp
-        // para reintentar en el próximo request
         throw new Error('No students found in database');
       }
     } catch (error) {
       console.error('[Cache] Error loading students:', error);
-      throw error; // Propagar el error para que se maneje en el handler
+      throw error;
     }
   }
 }
@@ -122,7 +119,7 @@ Deno.serve(async (req) => {
       });
     }
     
-    // Cargar cache - propagar error si falla
+    // Cargar cache
      try {
        await loadStudentCache(base44);
      } catch (cacheError) {
@@ -146,23 +143,24 @@ Deno.serve(async (req) => {
       });
     }
     
-    // Login exitoso
+    // Login exitoso - crear sesión
     resetStudentAttempts(sanitizedId);
+
+    const sessionResponse = await base44.asServiceRole.functions.invoke('createUserSession', {
+      id: student.id,
+      email: student.email || `student_${student.student_id}@edp.edu`,
+      full_name: student.full_name,
+      phone: student.phone,
+      role: 'user',
+      user_type: 'passenger',
+      student_id: student.student_id,
+      housing_name: student.housing_name
+    });
     
     return Response.json({ 
       success: true,
-      user: {
-        id: student.id,
-        email: student.email || `student_${student.student_id}@edp.edu`,
-        full_name: student.full_name,
-        phone: student.phone,
-        role: 'user',
-        user_type: 'passenger',
-        student_id: student.student_id,
-        housing_name: student.housing_name,
-        session_expiry: Date.now() + (3 * 60 * 60 * 1000), // 3 horas
-        login_time: Date.now()
-      }
+      user: sessionResponse.data.user,
+      session_token: sessionResponse.data.session_token
     }, {
       status: 200,
       headers: {
