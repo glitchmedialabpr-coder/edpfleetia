@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
+import { useAuth } from '../components/auth/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Shield, Lock } from 'lucide-react';
@@ -30,9 +31,15 @@ export default function AdminLogin() {
         const sessionResponse = await base44.functions.invoke('createUserSession', userData);
         if (sessionResponse?.data?.success) {
           const token = sessionResponse.data.session_token;
-          sessionStorage.setItem('session_token', token);
-          toast.success('Acceso autorizado');
-          window.location.href = createPageUrl('Dashboard');
+          const loginResult = await login(token);
+          if (loginResult.success) {
+            toast.success('Acceso autorizado');
+            window.location.href = createPageUrl('Dashboard');
+          } else {
+            toast.error('Error al iniciar sesión');
+            setPin('');
+            setLoading(false);
+          }
         } else {
           toast.error(sessionResponse?.data?.error || 'Error al crear sesión');
           setPin('');
