@@ -68,7 +68,10 @@ const SelectContent = React.forwardRef(({ className, children, position = "poppe
   if (isMobile) {
     return (
       <SelectPrimitive.Portal>
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-end">
+        <SelectPrimitive.Content
+          ref={ref}
+          className="fixed inset-0 z-50 bg-black/50 flex items-end"
+          {...props}>
           <div className="w-full bg-white dark:bg-slate-800 rounded-t-2xl max-h-[70vh] flex flex-col">
             <div className="p-4 border-b border-slate-200 dark:border-slate-700">
               <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mb-3" />
@@ -78,7 +81,7 @@ const SelectContent = React.forwardRef(({ className, children, position = "poppe
               {children}
             </SelectPrimitive.Viewport>
           </div>
-        </div>
+        </SelectPrimitive.Content>
       </SelectPrimitive.Portal>
     );
   }
