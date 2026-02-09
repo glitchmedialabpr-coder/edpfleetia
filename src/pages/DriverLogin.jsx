@@ -35,6 +35,7 @@ export default function DriverLogin() {
         if (sessionResponse?.data?.success) {
           const token = sessionResponse.data.session_token;
           sessionStorage.setItem('session_token', token);
+          localStorage.setItem('driver_data', JSON.stringify(user));
           toast.success(`¡Bienvenido ${user.full_name}!`);
           window.location.href = createPageUrl('DriverDashboard');
         } else {
