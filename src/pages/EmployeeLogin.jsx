@@ -81,17 +81,17 @@ export default function EmployeeLogin() {
             <div className="flex gap-2 text-sm text-purple-200">
               <span>¿Acceso diferente?</span>
             </div>
-            <div className="flex gap-2 mt-2">
+            <div className="flex flex-col gap-2 mt-2">
               <Button 
                 variant="ghost" 
-                className="flex-1 text-purple-200 hover:bg-white/10"
+                className="w-full text-purple-200 hover:bg-white/10 h-12"
                 onClick={() => navigate(createPageUrl('AdminLogin'))}
               >
                 Admin
               </Button>
               <Button 
                 variant="ghost" 
-                className="flex-1 text-purple-200 hover:bg-white/10"
+                className="w-full text-purple-200 hover:bg-white/10 h-12"
                 onClick={() => navigate(createPageUrl('DriverLogin'))}
               >
                 Conductor
