@@ -118,6 +118,29 @@ function LayoutContent({ children, currentPageName }) {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [isDriver, location, mobileNavItems]);
 
+  // Enforce role-based routing with useEffect (must be before early returns)
+  useEffect(() => {
+    if (!user || loading) return;
+
+    const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
+    if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
+      navigate(createPageUrl('Home'), { replace: true });
+      return;
+    }
+  
+    const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory', 'NotificationSettings'];
+    if (driverPages.includes(currentPageName) && user?.user_type !== 'driver') {
+      navigate(createPageUrl('Home'), { replace: true });
+      return;
+    }
+  
+    const passengerPages = ['PassengerTrips'];
+    if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger') {
+      navigate(createPageUrl('Home'), { replace: true });
+      return;
+    }
+  }, [user, loading, currentPageName, navigate]);
+
   const navItems = useMemo(() => {
     if (isAdmin) {
         return [
