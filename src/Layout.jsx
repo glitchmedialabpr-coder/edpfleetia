@@ -190,24 +190,28 @@ function LayoutContent({ children, currentPageName }) {
     );
   }
 
-  // Enforce role-based routing
-  const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
-  if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
-    navigate(createPageUrl('Home'), { replace: true });
-    return null;
-  }
+  // Enforce role-based routing with useEffect
+  useEffect(() => {
+    if (!user) return;
 
-  const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory', 'NotificationSettings'];
-  if (driverPages.includes(currentPageName) && user?.user_type !== 'driver') {
-    navigate(createPageUrl('Home'), { replace: true });
-    return null;
-  }
+    const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
+    if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
+      navigate(createPageUrl('Home'), { replace: true });
+      return;
+    }
 
-  const passengerPages = ['PassengerTrips'];
-  if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger') {
-    navigate(createPageUrl('Home'), { replace: true });
-    return null;
-  }
+    const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory', 'NotificationSettings'];
+    if (driverPages.includes(currentPageName) && user?.user_type !== 'driver') {
+      navigate(createPageUrl('Home'), { replace: true });
+      return;
+    }
+
+    const passengerPages = ['PassengerTrips'];
+    if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger') {
+      navigate(createPageUrl('Home'), { replace: true });
+      return;
+    }
+  }, [user, currentPageName, navigate]);
 
 
 
