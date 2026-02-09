@@ -99,17 +99,17 @@ export default function AdminLogin() {
             <div className="flex gap-2 text-sm text-slate-400">
               <span>¿Eres conductor o estudiante?</span>
             </div>
-            <div className="flex gap-2 mt-2">
+            <div className="flex flex-col gap-2 mt-2">
               <Button 
                 variant="ghost" 
-                className="flex-1 text-slate-300 hover:bg-white/10"
+                className="w-full text-slate-300 hover:bg-white/10 h-12"
                 onClick={() => navigate(createPageUrl('DriverLogin'))}
               >
                 Conductor
               </Button>
               <Button 
                 variant="ghost" 
-                className="flex-1 text-slate-300 hover:bg-white/10"
+                className="w-full text-slate-300 hover:bg-white/10 h-12"
                 onClick={() => navigate(createPageUrl('PassengerLogin'))}
               >
                 Estudiante
