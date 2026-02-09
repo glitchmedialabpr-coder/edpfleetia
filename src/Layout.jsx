@@ -98,53 +98,6 @@ function LayoutContent({ children, currentPageName }) {
     return !mainPages.includes(currentPageName);
   };
 
-  // Intercept browser back button on mobile for proper tab navigation
-  useEffect(() => {
-    if (!isDriver || window.innerWidth >= 1024) return;
-
-    const handlePopState = (e) => {
-      const path = location.pathname;
-      const isTabPage = mobileNavItems.some(item => 
-        path.includes(item.page) || path === createPageUrl(item.page)
-      );
-      
-      if (isTabPage) {
-        // Allow normal navigation for tab pages
-        return;
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [isDriver, location, mobileNavItems]);
-
-  // Enforce role-based routing with useEffect (must be before early returns)
-  useEffect(() => {
-    // Don't redirect while still loading session
-    if (loading) return;
-    
-    // Only enforce after session is fully loaded
-    if (!user) return;
-
-    const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
-    if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
-      window.location.href = createPageUrl('Home');
-      return;
-    }
-  
-    const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory'];
-    if (driverPages.includes(currentPageName) && user?.user_type !== 'driver') {
-      window.location.href = createPageUrl('Home');
-      return;
-    }
-  
-    const passengerPages = ['PassengerTrips'];
-    if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger') {
-      window.location.href = createPageUrl('Home');
-      return;
-    }
-  }, [user, loading, currentPageName]);
-
   const navItems = useMemo(() => {
     if (isAdmin) {
         return [
@@ -180,8 +133,60 @@ function LayoutContent({ children, currentPageName }) {
     return [];
   }, [isAdmin, isDriver, isPassenger]);
 
-  // Public pages without layout
   const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
+
+  // Intercept browser back button on mobile for proper tab navigation
+  useEffect(() => {
+    if (!isDriver || window.innerWidth >= 1024) return;
+
+    const handlePopState = (e) => {
+      const path = location.pathname;
+      const isTabPage = mobileNavItems.some(item => 
+        path.includes(item.page) || path === createPageUrl(item.page)
+      );
+      
+      if (isTabPage) {
+        // Allow normal navigation for tab pages
+        return;
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [isDriver, location, mobileNavItems]);
+
+  // Enforce role-based routing with useEffect
+  useEffect(() => {
+    if (loading) return;
+    if (!user) return;
+
+    const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
+    if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
+      window.location.href = createPageUrl('Home');
+      return;
+    }
+  
+    const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory'];
+    if (driverPages.includes(currentPageName) && user?.user_type !== 'driver') {
+      window.location.href = createPageUrl('Home');
+      return;
+    }
+  
+    const passengerPages = ['PassengerTrips'];
+    if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger') {
+      window.location.href = createPageUrl('Home');
+      return;
+    }
+  }, [user, loading, currentPageName]);
+
+  // Protected pages - redirect to Home if no valid session
+  useEffect(() => {
+    if (!loading && !user && !noLayoutPages.includes(currentPageName)) {
+      window.location.href = createPageUrl('Home');
+    }
+  }, [loading, user, currentPageName]);
+
+  // Public pages without layout
   if (noLayoutPages.includes(currentPageName)) {
     return (
       <ErrorBoundary>
@@ -203,13 +208,6 @@ function LayoutContent({ children, currentPageName }) {
       </div>
     );
   }
-
-  // Protected pages - redirect to Home if no valid session
-  useEffect(() => {
-    if (!loading && !user && !noLayoutPages.includes(currentPageName)) {
-      window.location.href = createPageUrl('Home');
-    }
-  }, [loading, user, currentPageName]);
 
   if (!user) {
     return (
