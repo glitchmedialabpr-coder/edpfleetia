@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
+import { useAuth } from '../components/auth/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Truck, Hash } from 'lucide-react';
@@ -9,6 +10,7 @@ import { toast } from 'sonner';
 
 export default function DriverLogin() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [driverId, setDriverId] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -34,10 +36,15 @@ export default function DriverLogin() {
         const sessionResponse = await base44.functions.invoke('createUserSession', user);
         if (sessionResponse?.data?.success) {
           const token = sessionResponse.data.session_token;
-          sessionStorage.setItem('session_token', token);
-          localStorage.setItem('driver_data', JSON.stringify(user));
-          toast.success(`¡Bienvenido ${user.full_name}!`);
-          window.location.href = createPageUrl('DriverDashboard');
+          const loginResult = await login(token);
+          if (loginResult.success) {
+            toast.success(`¡Bienvenido ${user.full_name}!`);
+            window.location.href = createPageUrl('DriverDashboard');
+          } else {
+            toast.error('Error al iniciar sesión');
+            setDriverId('');
+            setLoading(false);
+          }
         } else {
           toast.error('Error al crear sesión');
           setDriverId('');
