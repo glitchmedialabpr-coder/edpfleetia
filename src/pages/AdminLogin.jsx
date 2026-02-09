@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
-import { useAuth } from '@/components/auth/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Shield, Lock } from 'lucide-react';
@@ -10,7 +9,6 @@ import { toast } from 'sonner';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
-  const { login } = useAuth();
   const [pin, setPin] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -22,25 +20,18 @@ export default function AdminLogin() {
 
     try {
       const response = await base44.functions.invoke('validateAdminLogin', { pin });
-      
+
       if (response?.data?.success) {
         const userData = response.data.user;
         userData.role = 'admin';
         userData.user_type = 'admin';
-        
+
         const sessionResponse = await base44.functions.invoke('createUserSession', userData);
         if (sessionResponse?.data?.success) {
           const token = sessionResponse.data.session_token;
-          const loginResult = await login(token);
-          
-          if (loginResult.success) {
-            toast.success('Acceso autorizado');
-            navigate(createPageUrl('Dashboard'), { replace: true });
-          } else {
-            toast.error('Error al validar sesión');
-            setPin('');
-            setLoading(false);
-          }
+          sessionStorage.setItem('session_token', token);
+          toast.success('Acceso autorizado');
+          navigate(createPageUrl('Dashboard'), { replace: true });
         } else {
           toast.error(sessionResponse?.data?.error || 'Error al crear sesión');
           setPin('');

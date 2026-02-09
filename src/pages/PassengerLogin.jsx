@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
-import { useAuth } from '@/components/auth/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { GraduationCap, Hash } from 'lucide-react';
@@ -10,7 +9,6 @@ import { toast } from 'sonner';
 
 export default function PassengerLogin() {
   const navigate = useNavigate();
-  const { login } = useAuth();
   const [studentId, setStudentId] = useState('');
   const [loading, setLoading] = useState(false);
 
