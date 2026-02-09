@@ -25,10 +25,13 @@ export default function AdminLogin() {
 
       if (response?.data?.success) {
         const userData = response.data.user;
-        userData.role = 'admin';
-        userData.user_type = 'admin';
-
+        const sessionToken = response.data.session_token;
+        
         await login(userData);
+        
+        // Guardar solo el token de sesión en cookies
+        document.cookie = `session_token=${sessionToken}; path=/; max-age=${5*60*60}; secure; samesite=strict`;
+        
         toast.success('Acceso autorizado');
         navigate(createPageUrl('Dashboard'));
       } else {
