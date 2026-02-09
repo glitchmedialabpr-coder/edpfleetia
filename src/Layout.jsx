@@ -48,6 +48,8 @@ function LayoutContent({ children, currentPageName }) {
     window.location.href = createPageUrl('Home');
   };
 
+  const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
+
   const isAdmin = user?.role === 'admin';
   const isDriver = user?.user_type === 'driver';
   const isPassenger = !isAdmin && !isDriver;
@@ -82,21 +84,6 @@ function LayoutContent({ children, currentPageName }) {
   const isMainTab = useMemo(() => {
     return mobileNavItems.some(item => item.page === currentPageName);
   }, [mobileNavItems, currentPageName]);
-
-  // Handle mobile tab navigation with state preservation
-  const handleMobileTabClick = (e, page) => {
-    if (window.innerWidth >= 1024) return; // Only for mobile
-    
-    e.preventDefault();
-    navigate(createPageUrl(page), { replace: false });
-  };
-
-  // Check if current page needs back button
-  const needsBackButton = () => {
-    if (isDriver && isMainTab) return false; // Main tabs don't need back button
-    const mainPages = ['DriverDashboard', 'Dashboard', 'PassengerTrips'];
-    return !mainPages.includes(currentPageName);
-  };
 
   const navItems = useMemo(() => {
     if (isAdmin) {
@@ -133,8 +120,6 @@ function LayoutContent({ children, currentPageName }) {
     return [];
   }, [isAdmin, isDriver, isPassenger]);
 
-  const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
-
   // Intercept browser back button on mobile for proper tab navigation
   useEffect(() => {
     if (!isDriver || window.innerWidth >= 1024) return;
@@ -155,10 +140,9 @@ function LayoutContent({ children, currentPageName }) {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [isDriver, location, mobileNavItems]);
 
-  // Enforce role-based routing with useEffect
+  // Enforce role-based routing
   useEffect(() => {
-    if (loading) return;
-    if (!user) return;
+    if (loading || !user) return;
 
     const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
     if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
@@ -186,7 +170,21 @@ function LayoutContent({ children, currentPageName }) {
     }
   }, [loading, user, currentPageName]);
 
-  // Public pages without layout
+  // Handle mobile tab navigation with state preservation
+  const handleMobileTabClick = (e, page) => {
+    if (window.innerWidth >= 1024) return;
+    e.preventDefault();
+    navigate(createPageUrl(page), { replace: false });
+  };
+
+  // Check if current page needs back button
+  const needsBackButton = () => {
+    if (isDriver && isMainTab) return false;
+    const mainPages = ['DriverDashboard', 'Dashboard', 'PassengerTrips'];
+    return !mainPages.includes(currentPageName);
+  };
+
+  // Public pages without layout - early return
   if (noLayoutPages.includes(currentPageName)) {
     return (
       <ErrorBoundary>
