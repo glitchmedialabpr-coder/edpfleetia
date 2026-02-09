@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
-import { useAuth } from '../components/auth/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { GraduationCap, Hash } from 'lucide-react';
@@ -10,7 +9,6 @@ import { toast } from 'sonner';
 
 export default function PassengerLogin() {
   const navigate = useNavigate();
-  const { login } = useAuth();
   const [studentId, setStudentId] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -36,15 +34,13 @@ export default function PassengerLogin() {
         const sessionResponse = await base44.functions.invoke('createUserSession', userData);
         if (sessionResponse?.data?.success) {
           const token = sessionResponse.data.session_token;
-          const loginResult = await login(token);
-          if (loginResult.success) {
-            toast.success(`¡Bienvenido ${userData.full_name}!`);
-            window.location.href = createPageUrl('PassengerTrips');
-          } else {
-            toast.error('Error al iniciar sesión');
-            setStudentId('');
-            setLoading(false);
+          try {
+            sessionStorage.setItem('session_token', token);
+          } catch (e) {
+            console.error('sessionStorage error:', e);
           }
+          toast.success(`¡Bienvenido ${userData.full_name}!`);
+          window.location.href = createPageUrl('PassengerTrips');
         } else {
           toast.error('Error al crear sesión');
           setStudentId('');
