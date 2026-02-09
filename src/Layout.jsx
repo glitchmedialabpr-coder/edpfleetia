@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { useAuth, AuthProvider } from './components/auth/AuthContext';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import AppInitializer from './components/common/AppInitializer';
 import { AnimatePresence, motion } from 'framer-motion';
 import TabContainer from './components/mobile/TabContainer';
 import { 
@@ -41,6 +42,7 @@ function LayoutContent({ children, currentPageName }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading, logout } = useAuth();
+  const [initialized, setInitialized] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Define these BEFORE any conditional logic
@@ -182,8 +184,17 @@ function LayoutContent({ children, currentPageName }) {
     );
   }
 
+  // Enhanced initialization guard for APK stability
+  useEffect(() => {
+    if (!loading) {
+      // Small delay to ensure all systems are ready in APK
+      const timer = setTimeout(() => setInitialized(true), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
+
   // Block rendering until session validation completes
-  if (loading) {
+  if (loading || !initialized) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="animate-pulse flex flex-col items-center gap-4">

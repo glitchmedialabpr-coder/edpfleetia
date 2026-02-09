@@ -8,10 +8,21 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   // On app init, validate session from sessionStorage
+  // Enhanced for APK stability - ensures sessionStorage is accessible
   useEffect(() => {
     const validateSession = async () => {
       try {
-        const sessionToken = sessionStorage.getItem('session_token');
+        // Add delay for APK WebView initialization
+        await new Promise(resolve => setTimeout(resolve, 50));
+        
+        let sessionToken;
+        try {
+          sessionToken = sessionStorage.getItem('session_token');
+        } catch (storageError) {
+          console.warn('sessionStorage access failed:', storageError);
+          sessionToken = null;
+        }
+
         if (sessionToken) {
           const response = await base44.functions.invoke('getCurrentUser', { 
             session_token: sessionToken 
@@ -20,7 +31,11 @@ export function AuthProvider({ children }) {
           if (response?.data?.success) {
             setUser(response.data.user);
           } else {
-            sessionStorage.removeItem('session_token');
+            try {
+              sessionStorage.removeItem('session_token');
+            } catch (e) {
+              console.warn('sessionStorage cleanup failed:', e);
+            }
             setUser(null);
           }
         } else {
@@ -28,7 +43,11 @@ export function AuthProvider({ children }) {
         }
       } catch (error) {
         console.error('Session validation error:', error);
-        sessionStorage.removeItem('session_token');
+        try {
+          sessionStorage.removeItem('session_token');
+        } catch (e) {
+          console.warn('sessionStorage cleanup failed:', e);
+        }
         setUser(null);
       } finally {
         setLoading(false);
@@ -40,7 +59,14 @@ export function AuthProvider({ children }) {
 
   const login = async (sessionToken) => {
     try {
-      sessionStorage.setItem('session_token', sessionToken);
+      // Enhanced sessionStorage handling for APK
+      try {
+        sessionStorage.setItem('session_token', sessionToken);
+      } catch (storageError) {
+        console.error('sessionStorage write failed:', storageError);
+        return { success: false, error: 'Storage not available' };
+      }
+
       const response = await base44.functions.invoke('getCurrentUser', { 
         session_token: sessionToken 
       });
@@ -49,26 +75,47 @@ export function AuthProvider({ children }) {
         setUser(response.data.user);
         return { success: true, user: response.data.user };
       } else {
-        sessionStorage.removeItem('session_token');
+        try {
+          sessionStorage.removeItem('session_token');
+        } catch (e) {
+          console.warn('sessionStorage cleanup failed:', e);
+        }
         setUser(null);
         return { success: false, error: response?.data?.error || 'Login failed' };
       }
     } catch (error) {
       console.error('Login error:', error);
-      sessionStorage.removeItem('session_token');
+      try {
+        sessionStorage.removeItem('session_token');
+      } catch (e) {
+        console.warn('sessionStorage cleanup failed:', e);
+      }
       setUser(null);
       return { success: false, error: error.message };
     }
   };
 
   const logout = async () => {
-    const sessionToken = sessionStorage.getItem('session_token');
+    let sessionToken;
     try {
-      await base44.functions.invoke('logout', { session_token: sessionToken });
+      sessionToken = sessionStorage.getItem('session_token');
+    } catch (e) {
+      console.warn('sessionStorage read failed:', e);
+    }
+
+    try {
+      if (sessionToken) {
+        await base44.functions.invoke('logout', { session_token: sessionToken });
+      }
     } catch (error) {
       console.error('Logout error:', error);
     }
-    sessionStorage.removeItem('session_token');
+
+    try {
+      sessionStorage.removeItem('session_token');
+    } catch (e) {
+      console.warn('sessionStorage cleanup failed:', e);
+    }
     setUser(null);
   };
 
