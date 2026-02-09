@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [pin, setPin] = useState('');
   const [loading, setLoading] = useState(false);
 

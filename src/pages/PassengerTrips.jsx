@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { useAuth } from '../components/auth/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,29 +35,13 @@ const statusConfig = {
 
 export default function PassengerTrips() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
-  const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     destination_type: '',
     destination_other: ''
   });
   const [refreshing, setRefreshing] = useState(false);
-
-  useEffect(() => {
-    loadUser();
-  }, []);
-
-  const loadUser = async () => {
-    try {
-      const pinUser = localStorage.getItem('pin_user');
-      if (pinUser) {
-        const userData = JSON.parse(pinUser);
-        setUser(userData);
-      }
-    } catch (error) {
-      console.error('Error loading user:', error);
-    }
-  };
 
   const { data: requests = [] } = useQuery({
     queryKey: ['trip-requests', user?.student_id],

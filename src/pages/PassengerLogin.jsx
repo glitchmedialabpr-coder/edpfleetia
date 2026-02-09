@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 
 export default function PassengerLogin() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [studentId, setStudentId] = useState('');
   const [loading, setLoading] = useState(false);
 
