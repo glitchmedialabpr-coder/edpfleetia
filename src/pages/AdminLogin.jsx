@@ -31,7 +31,7 @@ export default function AdminLogin() {
           const token = sessionResponse.data.session_token;
           sessionStorage.setItem('session_token', token);
           toast.success('Acceso autorizado');
-          navigate(createPageUrl('Dashboard'), { replace: true });
+          window.location.href = createPageUrl('Dashboard');
         } else {
           toast.error(sessionResponse?.data?.error || 'Error al crear sesión');
           setPin('');

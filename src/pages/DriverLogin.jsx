@@ -36,7 +36,7 @@ export default function DriverLogin() {
           const token = sessionResponse.data.session_token;
           sessionStorage.setItem('session_token', token);
           toast.success(`¡Bienvenido ${user.full_name}!`);
-          navigate(createPageUrl('DriverDashboard'), { replace: true });
+          window.location.href = createPageUrl('DriverDashboard');
         } else {
           toast.error('Error al crear sesión');
           setDriverId('');

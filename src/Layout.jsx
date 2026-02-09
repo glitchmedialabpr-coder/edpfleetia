@@ -201,6 +201,12 @@ function LayoutContent({ children, currentPageName }) {
   }
 
   // Protected pages - redirect to Home if no valid session
+  useEffect(() => {
+    if (!loading && !user) {
+      window.location.href = createPageUrl('Home');
+    }
+  }, [loading, user]);
+
   if (!user) {
     return (
       <ErrorBoundary>

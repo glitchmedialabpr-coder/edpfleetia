@@ -36,7 +36,7 @@ export default function PassengerLogin() {
           const token = sessionResponse.data.session_token;
           sessionStorage.setItem('session_token', token);
           toast.success(`¡Bienvenido ${userData.full_name}!`);
-          navigate(createPageUrl('PassengerTrips'), { replace: true });
+          window.location.href = createPageUrl('PassengerTrips');
         } else {
           toast.error('Error al crear sesión');
           setStudentId('');
