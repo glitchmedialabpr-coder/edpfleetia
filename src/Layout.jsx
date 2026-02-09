@@ -43,31 +43,18 @@ function LayoutContent({ children, currentPageName }) {
   const { user, loading, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Define these BEFORE any conditional logic
   const noLayoutPages = ['Home', 'AdminLogin', 'DriverLogin', 'PassengerLogin', 'EmployeeLogin', 'EmployeeComplaintForm', 'EmployeeComplaintHistory'];
-
-  // Early return for no-layout pages BEFORE any user checks
-  if (noLayoutPages.includes(currentPageName)) {
-    return (
-      <ErrorBoundary>
-        {children}
-      </ErrorBoundary>
-    );
-  }
-
+  
   const isAdmin = user?.role === 'admin';
   const isDriver = user?.user_type === 'driver';
   const isPassenger = !isAdmin && !isDriver;
 
-  // ALL useMemo and useEffect hooks MUST be declared here, before any conditional returns
   const getHomePage = () => {
     if (isDriver) return 'DriverDashboard';
     if (isPassenger) return 'PassengerTrips';
     if (isAdmin) return 'Dashboard';
     return 'Home';
   };
-
-
 
   const navItems = useMemo(() => {
     if (isAdmin) {
@@ -104,9 +91,6 @@ function LayoutContent({ children, currentPageName }) {
     return [];
   }, [isAdmin, isDriver, isPassenger]);
 
-  // ALL useEffect hooks - must be before any conditional returns
-
-
   useEffect(() => {
     if (loading) return;
     if (noLayoutPages.includes(currentPageName)) return;
@@ -127,13 +111,20 @@ function LayoutContent({ children, currentPageName }) {
     } else if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger' && user?.role !== 'admin') {
       navigate(createPageUrl('Home'));
     }
-  }, [user, loading, currentPageName, noLayoutPages]);
+  }, [user, loading, currentPageName, navigate]);
 
-  // Helper functions
   const handleLogout = async () => {
     await logout();
     navigate(createPageUrl('Home'));
   };
+
+  if (noLayoutPages.includes(currentPageName)) {
+    return (
+      <ErrorBoundary>
+        {children}
+      </ErrorBoundary>
+    );
+  }
 
   // Block rendering until session validation completes
   if (loading) {
