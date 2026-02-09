@@ -120,26 +120,30 @@ function LayoutContent({ children, currentPageName }) {
 
   // Enforce role-based routing with useEffect (must be before early returns)
   useEffect(() => {
-    if (!user || loading) return;
+    // Don't redirect while still loading session
+    if (loading) return;
+    
+    // Only enforce after session is fully loaded
+    if (!user) return;
 
     const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
     if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
-      navigate(createPageUrl('Home'), { replace: true });
+      window.location.href = createPageUrl('Home');
       return;
     }
   
-    const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory', 'NotificationSettings'];
+    const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory'];
     if (driverPages.includes(currentPageName) && user?.user_type !== 'driver') {
-      navigate(createPageUrl('Home'), { replace: true });
+      window.location.href = createPageUrl('Home');
       return;
     }
   
     const passengerPages = ['PassengerTrips'];
     if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger') {
-      navigate(createPageUrl('Home'), { replace: true });
+      window.location.href = createPageUrl('Home');
       return;
     }
-  }, [user, loading, currentPageName, navigate]);
+  }, [user, loading, currentPageName]);
 
   const navItems = useMemo(() => {
     if (isAdmin) {
@@ -202,10 +206,10 @@ function LayoutContent({ children, currentPageName }) {
 
   // Protected pages - redirect to Home if no valid session
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !user && !noLayoutPages.includes(currentPageName)) {
       window.location.href = createPageUrl('Home');
     }
-  }, [loading, user]);
+  }, [loading, user, currentPageName]);
 
   if (!user) {
     return (
