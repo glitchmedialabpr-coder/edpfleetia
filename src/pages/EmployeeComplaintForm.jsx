@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertCircle, Upload, X, FileText } from 'lucide-react';
+import { AlertCircle, Upload, X, FileText, LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function EmployeeComplaintForm() {
@@ -48,6 +48,13 @@ export default function EmployeeComplaintForm() {
     setDocuments(documents.filter((_, i) => i !== index));
   };
 
+  const handleLogout = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    navigate(createPageUrl('EmployeeLogin'));
+    toast.success('Sesión cerrada');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -70,9 +77,20 @@ export default function EmployeeComplaintForm() {
   return (
     <div className="min-h-screen bg-slate-50 p-4 lg:p-8">
       <div className="max-w-3xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">Registrar Solicitud</h1>
-          <p className="text-slate-600">Complete el formulario para registrar su solicitud</p>
+        <div className="flex justify-between items-start mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">Registrar Solicitud</h1>
+            <p className="text-slate-600">Complete el formulario para registrar su solicitud</p>
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleLogout}
+            className="text-slate-600 hover:text-red-600 hover:bg-red-50"
+            title="Cerrar sesión"
+          >
+            <LogOut className="w-5 h-5" />
+          </Button>
         </div>
 
         <Card>
