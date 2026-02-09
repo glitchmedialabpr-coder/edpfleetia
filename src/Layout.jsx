@@ -143,17 +143,17 @@ function LayoutContent({ children, currentPageName }) {
     }
 
     const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
-    const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory'];
+    const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory', 'NotificationSettings'];
     const passengerPages = ['PassengerTrips'];
 
     if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
       window.location.href = createPageUrl('Home');
     } else if (driverPages.includes(currentPageName) && user?.user_type !== 'driver') {
       window.location.href = createPageUrl('Home');
-    } else if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger') {
+    } else if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger' && user?.role !== 'admin') {
       window.location.href = createPageUrl('Home');
     }
-  }, [user, loading, currentPageName]);
+  }, [user, loading, currentPageName, noLayoutPages]);
 
   // Helper functions
   const handleLogout = async () => {
