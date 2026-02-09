@@ -34,16 +34,9 @@ export default function PassengerLogin() {
         const sessionResponse = await base44.functions.invoke('createUserSession', userData);
         if (sessionResponse?.data?.success) {
           const token = sessionResponse.data.session_token;
-          const loginResult = await login(token);
-          
-          if (loginResult.success) {
-            toast.success(`¡Bienvenido ${userData.full_name}!`);
-            navigate(createPageUrl('PassengerTrips'), { replace: true });
-          } else {
-            toast.error('Error al validar sesión');
-            setStudentId('');
-            setLoading(false);
-          }
+          sessionStorage.setItem('session_token', token);
+          toast.success(`¡Bienvenido ${userData.full_name}!`);
+          navigate(createPageUrl('PassengerTrips'), { replace: true });
         } else {
           toast.error('Error al crear sesión');
           setStudentId('');
