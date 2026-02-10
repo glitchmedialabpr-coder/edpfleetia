@@ -14,12 +14,16 @@ export function AuthProvider({ children }) {
   const validateSession = async () => {
     try {
       const isAuth = await base44.auth.isAuthenticated();
-      if (isAuth) {
-        const userData = await base44.auth.me();
-        setUser(userData);
+      if (!isAuth) {
+        setLoading(false);
+        return;
       }
+      
+      const userData = await base44.auth.me();
+      setUser(userData);
     } catch (error) {
-      // Silent catch - user not logged in
+      console.error('Auth validation error:', error);
+      setUser(null);
     } finally {
       setLoading(false);
     }
