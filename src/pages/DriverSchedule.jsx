@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,9 +19,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Clock, Edit2 } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Clock, Edit2, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import EmptyState from '../components/common/EmptyState';
+import { format, startOfWeek, endOfWeek, addWeeks } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
@@ -31,7 +35,25 @@ export default function DriverSchedule() {
     weekly_schedule: []
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const queryClient = useQueryClient();
+
+  const weekRange = useMemo(() => {
+    const start = startOfWeek(selectedDate, { weekStartsOn: 0 });
+    const end = endOfWeek(selectedDate, { weekStartsOn: 0 });
+    return { start, end };
+  }, [selectedDate]);
+
+  const weekDays = useMemo(() => {
+    const days = [];
+    const start = weekRange.start;
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(start);
+      date.setDate(start.getDate() + i);
+      days.push(date);
+    }
+    return days;
+  }, [weekRange]);
 
   const { data: drivers = [], isLoading } = useQuery({
     queryKey: ['drivers'],
@@ -129,16 +151,74 @@ export default function DriverSchedule() {
   return (
     <div className="w-full space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-800">Horarios de Conductores</h1>
-        <p className="text-slate-500 mt-1">Gestiona los horarios de trabajo de conductores</p>
+        <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Horarios de Conductores</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-1">Gestiona los horarios de trabajo de conductores</p>
       </div>
 
-      <Input
-        placeholder="Buscar por nombre o ID..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="max-w-md"
-      />
+      <div className="flex flex-col md:flex-row gap-4">
+        <Input
+          placeholder="Buscar por nombre o ID..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-md"
+        />
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setSelectedDate(prev => addWeeks(prev, -1))}
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="min-w-[280px] justify-start">
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {format(weekRange.start, 'dd MMM', { locale: es })} - {format(weekRange.end, 'dd MMM yyyy', { locale: es })}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => date && setSelectedDate(date)}
+                locale={es}
+              />
+            </PopoverContent>
+          </Popover>
+
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setSelectedDate(prev => addWeeks(prev, 1))}
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={() => setSelectedDate(new Date())}
+          >
+            Hoy
+          </Button>
+        </div>
+      </div>
+
+      <Card className="p-4 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+        <div className="flex items-center gap-2 text-sm text-blue-800 dark:text-blue-200">
+          <CalendarIcon className="w-4 h-4" />
+          <span className="font-medium">Semana seleccionada:</span>
+          <div className="flex gap-2 flex-wrap">
+            {weekDays.map((day, idx) => (
+              <Badge key={idx} variant="outline" className="bg-white dark:bg-slate-800">
+                {DAYS[day.getDay()]} {format(day, 'dd/MM')}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      </Card>
 
       <div className="grid gap-4">
         {filteredDrivers.length === 0 ? (
