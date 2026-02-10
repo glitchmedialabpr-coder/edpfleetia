@@ -323,7 +323,7 @@ export default function DriverSchedule() {
                         <DrawerTitle>Editar Horario - {driver.full_name}</DrawerTitle>
                       </DrawerHeader>
 
-                      <div className="space-y-4 max-h-[80vh] overflow-y-auto">
+                      <div className="space-y-4 px-4 pb-24 overflow-y-auto">
                         <div>
                           <label className="text-sm font-medium text-slate-700 block mb-3">
                             Resumen de Horarios
@@ -429,15 +429,17 @@ export default function DriverSchedule() {
                             ))}
                           </div>
                           </div>
+                          </div>
 
+                          <div className="fixed bottom-0 left-0 right-0 p-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
                           <Button
                           onClick={handleSave}
                           className="w-full bg-teal-600 hover:bg-teal-700"
                           disabled={updateScheduleMutation.isPending}
-                        >
-                          Guardar Cambios
-                        </Button>
-                      </div>
+                          >
+                          {updateScheduleMutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
+                          </Button>
+                          </div>
                     </DrawerContent>
                   </Drawer>
                 </div>
