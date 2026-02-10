@@ -348,7 +348,31 @@ export default function PassengerTrips() {
               </div>
             )}
             <div className="space-y-2">
-              <Label>Tipo de Destino *</Label>
+              <Label>¿Dónde te encuentras? *</Label>
+              <Select 
+                value={formData.origin_type} 
+                onValueChange={(value) => setFormData({ ...formData, origin_type: value })}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona tu ubicación actual" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="biblioteca">Biblioteca</SelectItem>
+                  <SelectItem value="edp_university">EDP University</SelectItem>
+                  <SelectItem value="farmacia">Farmacia</SelectItem>
+                  <SelectItem value="hospital">Hospital</SelectItem>
+                  <SelectItem value="hospedaje">Hospedaje</SelectItem>
+                  <SelectItem value="piedras_blancas">Piedras Blancas</SelectItem>
+                  <SelectItem value="supermercado">Supermercado</SelectItem>
+                  <SelectItem value="wellness_edp">Wellness EDP</SelectItem>
+                  <SelectItem value="otros">Otros</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Destino *</Label>
               <Select 
                 value={formData.destination_type} 
                 onValueChange={(value) => setFormData({ ...formData, destination_type: value })}
