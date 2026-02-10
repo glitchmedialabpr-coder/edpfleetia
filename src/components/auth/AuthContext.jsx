@@ -13,14 +13,14 @@ export function AuthProvider({ children }) {
 
   const validateSession = async () => {
     try {
-      const isAuth = await base44.auth.isAuthenticated();
-      if (!isAuth) {
-        setLoading(false);
-        return;
-      }
+      // Intentar validar desde cookie HttpOnly primero
+      const response = await base44.functions.invoke('getCurrentUserFromCookie', {});
       
-      const userData = await base44.auth.me();
-      setUser(userData);
+      if (response?.data?.authenticated && response?.data?.user) {
+        setUser(response.data.user);
+      } else {
+        setUser(null);
+      }
     } catch (error) {
       console.error('Auth validation error:', error);
       setUser(null);
