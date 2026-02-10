@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { createPageUrl } from '../utils';
 import { format, addDays, subDays } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useAuth } from '@/components/auth/AuthContext';
 import { 
   Plus,
   ChevronLeft,
@@ -40,9 +41,9 @@ import {
 } from '@/components/ui/alert-dialog';
 
 export default function Trips() {
+  const { user, loading } = useAuth();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [user, setUser] = useState(null);
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [editTrip, setEditTrip] = useState(null);
   const [deleteTrip, setDeleteTrip] = useState(null);
@@ -61,35 +62,20 @@ export default function Trips() {
     }
   });
 
-  React.useEffect(() => {
-    const loadUser = async () => {
-      const pinUser = localStorage.getItem('pin_user');
-      if (pinUser) {
-        const userData = JSON.parse(pinUser);
-        if (userData.role !== 'admin') {
-          window.location.href = createPageUrl('Dashboard');
-          return;
-        }
-        setUser(userData);
-      } else {
-        window.location.href = createPageUrl('Home');
-      }
-    };
-    loadUser();
-  }, []);
-
   const formattedDate = format(selectedDate, 'yyyy-MM-dd');
 
   const { data: trips = [], refetch } = useQuery({
     queryKey: ['trips', formattedDate],
     queryFn: () => base44.entities.Trip.filter({ scheduled_date: formattedDate }, '-scheduled_time', 100),
-    staleTime: 1000 * 60 * 3, // 3 minutos
-    cacheTime: 1000 * 60 * 10 // 10 minutos en cache
+    enabled: !!user && !loading,
+    staleTime: 1000 * 60 * 3,
+    cacheTime: 1000 * 60 * 10
   });
 
   const { data: allCompletedTrips = [] } = useQuery({
     queryKey: ['all-completed-trips'],
     queryFn: () => base44.entities.Trip.filter({ status: 'completed' }, '-scheduled_date', 100),
+    enabled: !!user && !loading,
     staleTime: 1000 * 60 * 5
   });
 
