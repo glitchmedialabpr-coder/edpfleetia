@@ -98,20 +98,20 @@ function LayoutContent({ children, currentPageName }) {
     if (noLayoutPages.includes(currentPageName)) return;
 
     if (!user) {
-      navigate(createPageUrl('Home'));
+      navigate(createPageUrl('Home'), { replace: true });
       return;
     }
 
-    const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints'];
+    const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints', 'CRM'];
     const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory', 'NotificationSettings'];
     const passengerPages = ['PassengerTrips'];
 
     if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
-      navigate(createPageUrl('Home'));
+      navigate(createPageUrl('Home'), { replace: true });
     } else if (driverPages.includes(currentPageName) && user?.user_type !== 'driver') {
-      navigate(createPageUrl('Home'));
+      navigate(createPageUrl('Home'), { replace: true });
     } else if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger' && user?.role !== 'admin') {
-      navigate(createPageUrl('Home'));
+      navigate(createPageUrl('Home'), { replace: true });
     }
   }, [user, loading, currentPageName, navigate]);
 
