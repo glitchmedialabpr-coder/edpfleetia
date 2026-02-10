@@ -9,6 +9,7 @@ import StudentsManagement from '@/components/crm/StudentsManagement';
 import DriversManagement from '@/components/crm/DriversManagement';
 import SuppliersManagement from '@/components/crm/SuppliersManagement';
 import CRMReports from '@/components/crm/CRMReports';
+import { useAuth } from '@/components/auth/AuthContext';
 
 export default function CRM() {
   const { user, loading } = useAuth();
