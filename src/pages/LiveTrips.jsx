@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '../utils';
+import { useAuth } from '../components/auth/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -30,25 +31,8 @@ const statusConfig = {
 };
 
 export default function LiveTrips() {
-  const [user, setUser] = React.useState(null);
+  const { user } = useAuth();
   const queryClient = useQueryClient();
-
-  React.useEffect(() => {
-    const loadUser = async () => {
-      const pinUser = localStorage.getItem('pin_user');
-      if (pinUser) {
-        const userData = JSON.parse(pinUser);
-        if (userData.role !== 'admin') {
-          window.location.href = createPageUrl('Home');
-          return;
-        }
-        setUser(userData);
-      } else {
-        window.location.href = createPageUrl('Home');
-      }
-    };
-    loadUser();
-  }, []);
 
   const { data: allRequests = [], refetch } = useQuery({
     queryKey: ['all-trip-requests'],
