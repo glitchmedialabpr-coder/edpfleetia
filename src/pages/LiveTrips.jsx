@@ -39,7 +39,7 @@ export default function LiveTrips() {
       if (pinUser) {
         const userData = JSON.parse(pinUser);
         if (userData.role !== 'admin') {
-          window.location.href = createPageUrl('Dashboard');
+          window.location.href = createPageUrl('Home');
           return;
         }
         setUser(userData);
