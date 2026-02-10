@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Bell, Lock, LogOut, Trash2 } from 'lucide-react';
+import { Bell, Lock, LogOut, Trash2, Info, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { toast } from 'sonner';
@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 export default function Settings() {
   const navigate = useNavigate();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [expandedSection, setExpandedSection] = useState(null);
 
   const handleLogout = () => {
     localStorage.removeItem('pin_user');
@@ -39,8 +40,86 @@ export default function Settings() {
          <p className="text-slate-500 mt-2">Administra tus preferencias</p>
        </div>
 
+      {/* About Fleetia Section */}
+      <div className="max-w-4xl mb-8">
+        <div className="bg-gradient-to-r from-teal-600/20 to-blue-600/20 rounded-xl border border-teal-500/30 overflow-hidden">
+          <button
+            onClick={() => setExpandedSection(expandedSection === 'about' ? null : 'about')}
+            className="w-full p-6 flex items-center justify-between hover:bg-white/5 transition-colors"
+          >
+            <div className="flex items-center gap-4">
+              <Info className="w-6 h-6 text-teal-500" />
+              <div className="text-left">
+                <h2 className="text-xl font-bold text-slate-800 dark:text-white">Acerca de Fleetia</h2>
+                <p className="text-sm text-slate-500">Conoce todas las características y portales disponibles</p>
+              </div>
+            </div>
+            <ChevronDown className={`w-5 h-5 text-slate-600 transition-transform ${expandedSection === 'about' ? 'rotate-180' : ''}`} />
+          </button>
+          {expandedSection === 'about' && (
+            <div className="p-6 border-t border-teal-500/20 bg-black/5 space-y-6">
+              <div>
+                <h3 className="font-bold text-slate-800 dark:text-white mb-3">Portal Administrador</h3>
+                <div className="grid md:grid-cols-2 gap-2 text-sm text-slate-700 dark:text-slate-300">
+                  <div>✓ Gestión de conductores y datos</div>
+                  <div>✓ Asignación de horarios semanales</div>
+                  <div>✓ Control de vehículos</div>
+                  <div>✓ Registro de mantenimiento</div>
+                  <div>✓ Reportes de accidentes</div>
+                  <div>✓ Monitoreo en vivo de viajes</div>
+                  <div>✓ Gestión de combustible</div>
+                  <div>✓ Reportes consolidados</div>
+                  <div>✓ Advertencias a conductores</div>
+                  <div>✓ Gestión de estudiantes</div>
+                  <div>✓ Trabajos de servicio general</div>
+                  <div>✓ Centro de notificaciones</div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-bold text-slate-800 dark:text-white mb-3">Portal Conductor</h3>
+                <div className="grid md:grid-cols-2 gap-2 text-sm text-slate-700 dark:text-slate-300">
+                  <div>✓ Dashboard de actividad</div>
+                  <div>✓ Recepción de solicitudes</div>
+                  <div>✓ Aceptar/Rechazar viajes</div>
+                  <div>✓ Historial de viajes</div>
+                  <div>✓ Notificaciones en vivo</div>
+                  <div>✓ Perfil y documentos</div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-bold text-slate-800 dark:text-white mb-3">Portal Estudiante</h3>
+                <div className="grid md:grid-cols-2 gap-2 text-sm text-slate-700 dark:text-slate-300">
+                  <div>✓ Solicitar viaje</div>
+                  <div>✓ Ver asignación</div>
+                  <div>✓ Rastrear en tiempo real</div>
+                  <div>✓ Historial de viajes</div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-bold text-slate-800 dark:text-white mb-3">Portal Solicitudes</h3>
+                <div className="grid md:grid-cols-2 gap-2 text-sm text-slate-700 dark:text-slate-300">
+                  <div>✓ Formulario estructurado</div>
+                  <div>✓ Solicitudes anónimas</div>
+                  <div>✓ Seguimiento de estado</div>
+                  <div>✓ Historial de peticiones</div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-teal-500/20">
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <strong>Fleetia</strong> es la plataforma integral para gestión de flota y transporte. Diseñada por <strong>Glitch Media Lab</strong> para proporcionar eficiencia, visibilidad, seguridad y datos en tiempo real.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="grid gap-4 max-w-2xl">
-        {/* Notifications */}
+         {/* Notifications */}
         <Card className="p-6">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-4">
