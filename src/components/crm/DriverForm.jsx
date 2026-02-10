@@ -5,8 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toast } from 'sonner';
-import { X } from 'lucide-react';
+import { X, CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
@@ -18,6 +22,8 @@ export default function DriverForm({ driver, onClose }) {
     phone: '',
     license_number: '',
     license_category: 'B',
+    license_expiry: '',
+    hire_date: '',
     status: 'active',
     weekly_schedule: DAYS.map((dayName, idx) => ({
       day: idx,
@@ -133,6 +139,44 @@ export default function DriverForm({ driver, onClose }) {
                   <SelectItem value="on_leave">Licencia</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Fecha de Contratación</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start text-left font-normal">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {formData.hire_date ? format(new Date(formData.hire_date), 'PPP', { locale: es }) : 'Seleccionar fecha'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={formData.hire_date ? new Date(formData.hire_date) : undefined}
+                    onSelect={(date) => setFormData({...formData, hire_date: date ? format(date, 'yyyy-MM-dd') : ''})}
+                    locale={es}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Vencimiento de Licencia</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start text-left font-normal">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {formData.license_expiry ? format(new Date(formData.license_expiry), 'PPP', { locale: es }) : 'Seleccionar fecha'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={formData.license_expiry ? new Date(formData.license_expiry) : undefined}
+                    onSelect={(date) => setFormData({...formData, license_expiry: date ? format(date, 'yyyy-MM-dd') : ''})}
+                    locale={es}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
