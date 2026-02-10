@@ -172,7 +172,9 @@ export default function DriverSchedule() {
 
     updateScheduleMutation.mutate({
       driverId: editingDriver.id,
-      data: formData
+      data: {
+        weekly_schedule: formData.weekly_schedule
+      }
     });
   };
 
