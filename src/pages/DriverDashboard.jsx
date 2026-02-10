@@ -244,6 +244,42 @@ export default function DriverDashboard() {
 
 
 
+      {/* Weekly Schedule */}
+      {driverData?.shift_days && driverData.shift_days.length > 0 && (
+        <Card className="p-6 bg-gradient-to-br from-purple-50 to-white border-purple-200">
+          <div className="flex items-center gap-3 mb-4">
+            <Calendar className="w-6 h-6 text-purple-600" />
+            <h2 className="text-xl font-semibold text-slate-800">Mi Horario</h2>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {DAYS.map((day, idx) => {
+              const isWorkDay = driverData.shift_days.includes(idx);
+              return (
+                <div
+                  key={idx}
+                  className={`p-3 rounded-lg text-center transition-all ${
+                    isWorkDay
+                      ? 'bg-purple-100 border-2 border-purple-400'
+                      : 'bg-slate-100 border-2 border-slate-200'
+                  }`}
+                >
+                  <p className={`text-sm font-semibold ${isWorkDay ? 'text-purple-800' : 'text-slate-500'}`}>
+                    {day.substring(0, 3)}
+                  </p>
+                  {isWorkDay && driverData.shift_start_time && (
+                    <p className="text-xs text-purple-700 mt-1">{driverData.shift_start_time}</p>
+                  )}
+                  {isWorkDay && driverData.shift_duration && (
+                    <p className="text-xs text-purple-600">{driverData.shift_duration}h</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
+
       {/* Quick Stats */}
       <div className="grid md:grid-cols-3 gap-4">
         <Card className="p-4">
