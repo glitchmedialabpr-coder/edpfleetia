@@ -10,7 +10,7 @@ import { createPageUrl } from '../utils';
 import { format, addDays, subDays } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useAuth } from '@/components/auth/AuthContext';
-import { getCurrentTime12Hour } from '@/components/common/timeUtils';
+import { getCurrentTime12Hour, convertTo12Hour } from '@/components/common/timeUtils';
 import { 
   Plus,
   ChevronLeft,
@@ -301,7 +301,7 @@ export default function Trips() {
                     <div>
                       <p className="text-xs text-slate-500">Horario</p>
                       <p className="text-sm text-slate-600">
-                        {trip.departure_time} - {trip.arrival_time}
+                        {convertTo12Hour(trip.departure_time)} - {convertTo12Hour(trip.arrival_time)}
                       </p>
                     </div>
                   </div>
@@ -370,14 +370,14 @@ export default function Trips() {
                   <p className="text-sm text-slate-500">Hora de Salida</p>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-slate-400" />
-                    <span className="font-medium text-slate-700">{selectedTrip.departure_time || '-'}</span>
+                    <span className="font-medium text-slate-700">{convertTo12Hour(selectedTrip.departure_time) || '-'}</span>
                   </div>
                 </div>
                 <div>
                   <p className="text-sm text-slate-500">Hora de Llegada</p>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-600" />
-                    <span className="font-medium text-slate-700">{selectedTrip.arrival_time || '-'}</span>
+                    <span className="font-medium text-slate-700">{convertTo12Hour(selectedTrip.arrival_time) || '-'}</span>
                   </div>
                 </div>
               </div>
