@@ -27,7 +27,7 @@ import EmptyState from '../components/common/EmptyState';
 import { format, startOfWeek, endOfWeek, addWeeks } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
 export default function DriverSchedule() {
   const [editingDriver, setEditingDriver] = useState(null);
@@ -39,8 +39,8 @@ export default function DriverSchedule() {
   const queryClient = useQueryClient();
 
   const weekRange = useMemo(() => {
-    const start = startOfWeek(selectedDate, { weekStartsOn: 0 });
-    const end = endOfWeek(selectedDate, { weekStartsOn: 0 });
+    const start = startOfWeek(selectedDate, { weekStartsOn: 1 });
+    const end = endOfWeek(selectedDate, { weekStartsOn: 1 });
     return { start, end };
   }, [selectedDate]);
 
@@ -213,7 +213,7 @@ export default function DriverSchedule() {
           <div className="flex gap-2 flex-wrap">
             {weekDays.map((day, idx) => (
               <Badge key={idx} variant="outline" className="bg-white dark:bg-slate-800">
-                {DAYS[day.getDay()]} {format(day, 'dd/MM')}
+                {DAYS[idx]} {format(day, 'dd/MM')}
               </Badge>
             ))}
           </div>
