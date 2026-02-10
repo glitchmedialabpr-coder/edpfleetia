@@ -44,7 +44,32 @@ export default function Settings() {
          <p className="text-slate-500 mt-2">Administra tus preferencias</p>
        </div>
 
-
+      {/* Fleetia Proposal - Admin Only */}
+      {isAdmin && (
+      <div className="max-w-4xl mb-8">
+        <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200 dark:border-blue-800">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                <Presentation className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800 dark:text-white">Presentación de Fleetia</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Visualiza la propuesta completa y características detalladas</p>
+              </div>
+            </div>
+            <Button 
+              onClick={() => navigate(createPageUrl('FleetiaProposal'))}
+              className="bg-blue-600 hover:bg-blue-700"
+              size="sm"
+            >
+              <ArrowRight className="w-4 h-4 mr-2" />
+              Ver
+            </Button>
+          </div>
+        </Card>
+      </div>
+      )}
 
       {/* About Fleetia Section */}
       <div className="max-w-4xl mb-8">
