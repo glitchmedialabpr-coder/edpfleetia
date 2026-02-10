@@ -422,6 +422,7 @@ export default function PassengerTrips() {
                 type="submit" 
                 className="flex-1 bg-teal-600 hover:bg-teal-700 h-11"
                 disabled={
+                  !formData.origin_type ||
                   !formData.destination_type ||
                   (formData.destination_type === 'otros' && !formData.destination_other)
                 }
