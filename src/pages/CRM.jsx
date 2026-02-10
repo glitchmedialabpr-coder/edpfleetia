@@ -16,17 +16,29 @@ export default function CRM() {
   // Fetch statistics
   const { data: students = [] } = useQuery({
     queryKey: ['students'],
-    queryFn: () => base44.entities.Student.list(),
+    queryFn: async () => {
+      const isAuth = await base44.auth.isAuthenticated();
+      if (!isAuth) return [];
+      return base44.entities.Student.list();
+    },
   });
 
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers'],
-    queryFn: () => base44.entities.Driver.list(),
+    queryFn: async () => {
+      const isAuth = await base44.auth.isAuthenticated();
+      if (!isAuth) return [];
+      return base44.entities.Driver.list();
+    },
   });
 
   const { data: suppliers = [] } = useQuery({
     queryKey: ['suppliers'],
-    queryFn: () => base44.entities.Supplier.list(),
+    queryFn: async () => {
+      const isAuth = await base44.auth.isAuthenticated();
+      if (!isAuth) return [];
+      return base44.entities.Supplier.list();
+    },
   });
 
   return (
