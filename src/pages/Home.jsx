@@ -26,29 +26,7 @@ export default function Home() {
           <p className="text-xl text-slate-300">La plataforma más completa para administrar conductores, vehículos, rutas y operaciones</p>
         </div>
 
-        {/* Value Proposition */}
-        <div className="grid md:grid-cols-4 gap-4 mb-20">
-          <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
-            <Zap className="w-8 h-8 text-yellow-400 mb-3" />
-            <h3 className="text-white font-bold mb-2">Eficiencia</h3>
-            <p className="text-slate-400 text-sm">Optimiza rutas y reduce costos operativos</p>
-          </div>
-          <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
-            <Eye className="w-8 h-8 text-blue-400 mb-3" />
-            <h3 className="text-white font-bold mb-2">Visibilidad</h3>
-            <p className="text-slate-400 text-sm">Monitoreo en tiempo real de todas las operaciones</p>
-          </div>
-          <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
-            <AlertCircle className="w-8 h-8 text-red-400 mb-3" />
-            <h3 className="text-white font-bold mb-2">Seguridad</h3>
-            <p className="text-slate-400 text-sm">Control y reportes de incidentes y mantenimiento</p>
-          </div>
-          <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
-            <BarChart3 className="w-8 h-8 text-green-400 mb-3" />
-            <h3 className="text-white font-bold mb-2">Datos</h3>
-            <p className="text-slate-400 text-sm">Reportes detallados y análisis completo</p>
-          </div>
-        </div>
+
 
         {/* Portals Section */}
         <div className="mb-20">
