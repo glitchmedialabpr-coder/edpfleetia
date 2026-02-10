@@ -83,34 +83,7 @@ export default function DriverSchedule() {
 
 
 
-  const updateScheduleMutation = useMutation({
-    mutationFn: async ({ driverId, data }) => {
-      await base44.entities.Driver.update(driverId, data);
-      
-      // Crear notificación para admins
-      await base44.entities.Notification.create({
-        type: 'schedule_change',
-        title: 'Horario de Conductor Actualizado',
-        message: `Se actualizó el horario de ${editingDriver.full_name}`,
-        driver_id: editingDriver.driver_id,
-        driver_name: editingDriver.full_name,
-        priority: 'medium',
-        data: {
-          weekly_schedule: data.weekly_schedule
-        }
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['drivers'] });
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-      toast.success('Horario actualizado exitosamente');
-      handleCloseDialog();
-    },
-    onError: (error) => {
-      console.error('Error:', error);
-      toast.error('Error al actualizar horario');
-    }
-  });
+
 
   const handleOpenDialog = (driver) => {
     setEditingDriver(driver);
