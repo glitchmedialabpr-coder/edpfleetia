@@ -142,33 +142,41 @@ export default function DriverSchedule() {
     }));
   };
 
-  const handleSave = () => {
-    console.log('handleSave llamado');
-    console.log('formData:', formData);
-    console.log('editingDriver:', editingDriver);
-    
+  const handleSave = async () => {
     const hasActiveDay = formData.weekly_schedule.some(day => day.active);
     const allActiveDaysHaveTimes = formData.weekly_schedule
       .filter(day => day.active)
       .every(day => day.start_time && day.end_time);
-    
-    console.log('hasActiveDay:', hasActiveDay);
-    console.log('allActiveDaysHaveTimes:', allActiveDaysHaveTimes);
     
     if (!hasActiveDay || !allActiveDaysHaveTimes) {
       toast.error('Completa todos los campos requeridos');
       return;
     }
 
-    console.log('Enviando mutation con:', {
-      driverId: editingDriver.id,
-      data: formData
-    });
+    try {
+      await base44.entities.Driver.update(editingDriver.id, {
+        weekly_schedule: formData.weekly_schedule
+      });
+      
+      await base44.entities.Notification.create({
+        type: 'schedule_change',
+        title: 'Horario de Conductor Actualizado',
+        message: `Se actualizó el horario de ${editingDriver.full_name}`,
+        driver_id: editingDriver.driver_id,
+        driver_name: editingDriver.full_name,
+        priority: 'medium',
+        data: {
+          weekly_schedule: formData.weekly_schedule
+        }
+      });
 
-    updateScheduleMutation.mutate({
-      driverId: editingDriver.id,
-      data: formData
-    });
+      queryClient.invalidateQueries({ queryKey: ['drivers'] });
+      toast.success('Horario actualizado exitosamente');
+      handleCloseDialog();
+    } catch (error) {
+      console.error('Error guardando horario:', error);
+      toast.error('Error al actualizar horario: ' + error.message);
+    }
   };
 
   const handleCopyToAllDays = (dayIndex) => {
