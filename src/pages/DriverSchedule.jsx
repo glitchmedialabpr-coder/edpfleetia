@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Clock, Edit2, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Clock, Edit2, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import EmptyState from '../components/common/EmptyState';
 import { format, startOfWeek, endOfWeek, addWeeks } from 'date-fns';
@@ -137,6 +137,25 @@ export default function DriverSchedule() {
       driverId: editingDriver.id,
       data: formData
     });
+  };
+
+  const handleCopyToAllDays = (dayIndex) => {
+    const selectedDay = formData.weekly_schedule[dayIndex];
+    if (!selectedDay.active || !selectedDay.start_time || !selectedDay.end_time) {
+      toast.error('Selecciona un día con horario completo');
+      return;
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      weekly_schedule: prev.weekly_schedule.map(day => ({
+        ...day,
+        active: true,
+        start_time: selectedDay.start_time,
+        end_time: selectedDay.end_time
+      }))
+    }));
+    toast.success('Horario aplicado a todos los días');
   };
 
   const filteredDrivers = drivers.filter(driver =>
@@ -296,25 +315,37 @@ export default function DriverSchedule() {
                                     </label>
                                   </div>
                                   {day.active && (
-                                    <div className="grid grid-cols-2 gap-2 ml-6">
-                                      <div>
-                                        <label className="text-xs text-slate-600">Entrada</label>
-                                        <Input
-                                          type="time"
-                                          value={day.start_time}
-                                          onChange={(e) => updateScheduleDay(idx, 'start_time', e.target.value)}
-                                          className="h-9"
-                                        />
+                                    <div className="space-y-2 ml-6">
+                                      <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                          <label className="text-xs text-slate-600">Entrada</label>
+                                          <Input
+                                            type="time"
+                                            value={day.start_time}
+                                            onChange={(e) => updateScheduleDay(idx, 'start_time', e.target.value)}
+                                            className="h-9"
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="text-xs text-slate-600">Salida</label>
+                                          <Input
+                                            type="time"
+                                            value={day.end_time}
+                                            onChange={(e) => updateScheduleDay(idx, 'end_time', e.target.value)}
+                                            className="h-9"
+                                          />
+                                        </div>
                                       </div>
-                                      <div>
-                                        <label className="text-xs text-slate-600">Salida</label>
-                                        <Input
-                                          type="time"
-                                          value={day.end_time}
-                                          onChange={(e) => updateScheduleDay(idx, 'end_time', e.target.value)}
-                                          className="h-9"
-                                        />
-                                      </div>
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleCopyToAllDays(idx)}
+                                        className="w-full h-8 text-xs"
+                                      >
+                                        <Copy className="w-3 h-3 mr-1" />
+                                        Copiar a todos los días
+                                      </Button>
                                     </div>
                                   )}
                                 </CardContent>
