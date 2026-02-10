@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Shield, Truck, Users, ClipboardList, BarChart3, Zap, Lock, Bell, FileText } from 'lucide-react';
+import { ChevronDown, ChevronUp, Shield, Truck, Users, ClipboardList, BarChart3, Zap, Lock, Bell, FileText, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '../utils';
 
 export default function FleetiaProposal() {
+  const navigate = useNavigate();
   const [expandedSection, setExpandedSection] = useState(null);
 
   const sections = [
@@ -203,6 +206,18 @@ export default function FleetiaProposal() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 py-12">
+      {/* Header with Back Button */}
+      <div className="max-w-6xl mx-auto px-4 mb-8">
+        <Button
+          variant="outline"
+          onClick={() => navigate(createPageUrl('Settings'))}
+          className="mb-6"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Volver a Configuración
+        </Button>
+      </div>
+
       {/* Header */}
       <div className="max-w-6xl mx-auto px-4 mb-12">
         <div className="text-center mb-8">
