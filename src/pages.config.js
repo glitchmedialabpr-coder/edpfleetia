@@ -49,6 +49,7 @@
  */
 import Accidents from './pages/Accidents';
 import AdminLogin from './pages/AdminLogin';
+import CRM from './pages/CRM';
 import ConsolidatedReports from './pages/ConsolidatedReports';
 import DailyReports from './pages/DailyReports';
 import Dashboard from './pages/Dashboard';
@@ -89,13 +90,13 @@ import Trips from './pages/Trips';
 import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
-import CRM from './pages/CRM';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Accidents": Accidents,
     "AdminLogin": AdminLogin,
+    "CRM": CRM,
     "ConsolidatedReports": ConsolidatedReports,
     "DailyReports": DailyReports,
     "Dashboard": Dashboard,
@@ -136,7 +137,6 @@ export const PAGES = {
     "VehicleManagement": VehicleManagement,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
-    "CRM": CRM,
 }
 
 export const pagesConfig = {
