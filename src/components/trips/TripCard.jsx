@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { convertTo12Hour } from '@/lib/timeUtils';
 
 const statusConfig = {
   scheduled: { label: 'Programado', color: 'bg-blue-100 text-blue-700' },
@@ -74,7 +75,7 @@ const TripCard = React.memo(({ trip, showDriver, onStart, onComplete, onEdit, on
         {trip.scheduled_time && (
           <div className="flex items-center gap-2 text-sm">
             <Clock className="w-4 h-4 text-slate-400" />
-            <span className="text-slate-600">{trip.scheduled_time}</span>
+            <span className="text-slate-600">{convertTo12Hour(trip.scheduled_time)}</span>
           </div>
         )}
 

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import StatsCard from '../components/common/StatsCard';
+import { convertTo12Hour } from '@/lib/timeUtils';
 
 const statusConfig = {
   pending: { label: 'Pendiente', color: 'bg-yellow-100 text-yellow-700' },
@@ -276,7 +277,7 @@ function TripRequestCard({ request, onDelete }) {
             {request.pickup_time && (
               <div className="flex items-center gap-1">
                 <Clock className="w-4 h-4" />
-                <span>{request.pickup_time}</span>
+                <span>{convertTo12Hour(request.pickup_time)}</span>
               </div>
             )}
           </div>

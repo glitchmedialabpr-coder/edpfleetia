@@ -10,6 +10,7 @@ import { createPageUrl } from '../utils';
 import { format, addDays, subDays } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useAuth } from '@/components/auth/AuthContext';
+import { getCurrentTime12Hour } from '@/lib/timeUtils';
 import { 
   Plus,
   ChevronLeft,
@@ -85,7 +86,7 @@ export default function Trips() {
 
   const handleStartTrip = async (trip) => {
     try {
-      const now = format(new Date(), 'HH:mm');
+      const now = getCurrentTime12Hour();
       await base44.entities.Trip.update(trip.id, {
         status: 'in_progress',
         departure_time: now
@@ -98,7 +99,7 @@ export default function Trips() {
 
   const handleCompleteTrip = async (trip) => {
     try {
-      const now = format(new Date(), 'HH:mm');
+      const now = getCurrentTime12Hour();
       await base44.entities.Trip.update(trip.id, {
         status: 'completed',
         arrival_time: now

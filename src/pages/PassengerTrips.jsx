@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import EmptyState from '../components/common/EmptyState';
+import { convertTo12Hour } from '@/lib/timeUtils';
 
 const statusConfig = {
   pending: { label: 'Buscando conductor', color: 'bg-yellow-100 text-yellow-700' },
@@ -255,7 +256,7 @@ export default function PassengerTrips() {
                   {request.pickup_time && (
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-slate-400" />
-                      <span className="text-sm text-slate-600">{request.pickup_time}</span>
+                      <span className="text-sm text-slate-600">{convertTo12Hour(request.pickup_time)}</span>
                     </div>
                   )}
 
