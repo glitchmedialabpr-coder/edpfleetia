@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import EmptyState from '../components/common/EmptyState';
-import { convertTo12Hour } from '@/lib/timeUtils';
+import { convertTo12Hour } from '@/components/common/timeUtils';
 
 const statusConfig = {
   pending: { label: 'Buscando conductor', color: 'bg-yellow-100 text-yellow-700' },

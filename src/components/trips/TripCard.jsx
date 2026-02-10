@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { convertTo12Hour } from '@/lib/timeUtils';
+import { convertTo12Hour } from '@/components/common/timeUtils';
 
 const statusConfig = {
   scheduled: { label: 'Programado', color: 'bg-blue-100 text-blue-700' },

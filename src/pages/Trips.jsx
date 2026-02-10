@@ -10,7 +10,7 @@ import { createPageUrl } from '../utils';
 import { format, addDays, subDays } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useAuth } from '@/components/auth/AuthContext';
-import { getCurrentTime12Hour } from '@/lib/timeUtils';
+import { getCurrentTime12Hour } from '@/components/common/timeUtils';
 import { 
   Plus,
   ChevronLeft,

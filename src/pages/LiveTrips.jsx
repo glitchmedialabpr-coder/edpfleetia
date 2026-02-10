@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import StatsCard from '../components/common/StatsCard';
-import { convertTo12Hour } from '@/lib/timeUtils';
+import { convertTo12Hour } from '@/components/common/timeUtils';
 
 const statusConfig = {
   pending: { label: 'Pendiente', color: 'bg-yellow-100 text-yellow-700' },
