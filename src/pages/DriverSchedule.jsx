@@ -22,6 +22,14 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Clock, Edit2, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { toast } from 'sonner';
 import EmptyState from '../components/common/EmptyState';
 import { format, startOfWeek, endOfWeek, addWeeks } from 'date-fns';
