@@ -89,6 +89,7 @@ import Trips from './pages/Trips';
 import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
+import FleetiaPresentation from './pages/FleetiaPresentation';
 import __Layout from './Layout.jsx';
 
 
@@ -135,6 +136,7 @@ export const PAGES = {
     "VehicleManagement": VehicleManagement,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
+    "FleetiaPresentation": FleetiaPresentation,
 }
 
 export const pagesConfig = {
