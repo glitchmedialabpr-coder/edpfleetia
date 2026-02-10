@@ -29,8 +29,8 @@ export default function AdminLogin() {
         
         await login(userData);
         
-        // Guardar el token de sesión en cookies con duración extendida (30 días)
-        document.cookie = `session_token=${sessionToken}; path=/; max-age=${30*24*60*60}; secure; samesite=strict`;
+        // Guardar el token de sesión en cookies (24 horas)
+        document.cookie = `session_token=${sessionToken}; path=/; max-age=${24*60*60}; secure; samesite=strict`;
         
         toast.success('Acceso autorizado');
         navigate(createPageUrl('Dashboard'));
