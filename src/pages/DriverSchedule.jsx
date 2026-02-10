@@ -378,12 +378,47 @@ export default function DriverSchedule() {
                                         <Copy className="w-3 h-3 mr-1" />
                                         Copiar a todos los días
                                       </Button>
-                                    </div>
-                                  )}
+                                      </div>
+                                      )}
                                 </CardContent>
                               </Card>
                             ))}
                           </div>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium text-slate-700 block mb-3">
+                            Resumen de Horarios
+                          </label>
+                          <Card className="border-slate-200 bg-slate-50">
+                            <CardContent className="p-3">
+                              {formData.weekly_schedule.filter(day => day.active).length === 0 ? (
+                                <p className="text-xs text-slate-500 text-center py-2">No hay horarios seleccionados</p>
+                              ) : (
+                                <div className="space-y-2">
+                                  {formData.weekly_schedule.map((day, idx) => (
+                                    day.active && (
+                                      <div key={idx} className="flex items-center justify-between bg-white p-2 rounded border border-slate-200">
+                                        <div className="flex-1">
+                                          <p className="text-xs font-medium text-slate-700">
+                                            {day.dayName}
+                                          </p>
+                                          <p className="text-xs text-slate-500">
+                                            {format(weekDays[idx], 'dd MMM yyyy', { locale: es })}
+                                          </p>
+                                        </div>
+                                        <div className="text-right">
+                                          <p className="text-xs font-semibold text-teal-600">
+                                            {day.start_time} - {day.end_time}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    )
+                                  ))}
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
                         </div>
 
                         <Button
