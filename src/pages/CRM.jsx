@@ -11,34 +11,26 @@ import SuppliersManagement from '@/components/crm/SuppliersManagement';
 import CRMReports from '@/components/crm/CRMReports';
 
 export default function CRM() {
+  const { user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('students');
 
   // Fetch statistics
   const { data: students = [] } = useQuery({
     queryKey: ['students'],
-    queryFn: async () => {
-      const isAuth = await base44.auth.isAuthenticated();
-      if (!isAuth) return [];
-      return base44.entities.Student.list();
-    },
+    queryFn: () => base44.entities.Student.list(),
+    enabled: !!user && !loading,
   });
 
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers'],
-    queryFn: async () => {
-      const isAuth = await base44.auth.isAuthenticated();
-      if (!isAuth) return [];
-      return base44.entities.Driver.list();
-    },
+    queryFn: () => base44.entities.Driver.list(),
+    enabled: !!user && !loading,
   });
 
   const { data: suppliers = [] } = useQuery({
     queryKey: ['suppliers'],
-    queryFn: async () => {
-      const isAuth = await base44.auth.isAuthenticated();
-      if (!isAuth) return [];
-      return base44.entities.Supplier.list();
-    },
+    queryFn: () => base44.entities.Supplier.list(),
+    enabled: !!user && !loading,
   });
 
   return (
