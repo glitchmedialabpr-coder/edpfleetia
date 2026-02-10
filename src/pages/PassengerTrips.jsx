@@ -39,6 +39,7 @@ export default function PassengerTrips() {
   const { user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState({
+    origin_type: '',
     destination_type: '',
     destination_other: ''
   });

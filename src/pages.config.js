@@ -66,6 +66,7 @@ import EmployeeComplaintHistory from './pages/EmployeeComplaintHistory';
 import EmployeeComplaints from './pages/EmployeeComplaints';
 import EmployeeLogin from './pages/EmployeeLogin';
 import FleetiaPresentation from './pages/FleetiaPresentation';
+import FleetiaProposal from './pages/FleetiaProposal';
 import FuelRecords from './pages/FuelRecords';
 import GeneralServiceJobs from './pages/GeneralServiceJobs';
 import GeneralServicePurchases from './pages/GeneralServicePurchases';
@@ -90,7 +91,6 @@ import Trips from './pages/Trips';
 import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
-import FleetiaProposal from './pages/FleetiaProposal';
 import __Layout from './Layout.jsx';
 
 
@@ -114,6 +114,7 @@ export const PAGES = {
     "EmployeeComplaints": EmployeeComplaints,
     "EmployeeLogin": EmployeeLogin,
     "FleetiaPresentation": FleetiaPresentation,
+    "FleetiaProposal": FleetiaProposal,
     "FuelRecords": FuelRecords,
     "GeneralServiceJobs": GeneralServiceJobs,
     "GeneralServicePurchases": GeneralServicePurchases,
@@ -138,7 +139,6 @@ export const PAGES = {
     "VehicleManagement": VehicleManagement,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
-    "FleetiaProposal": FleetiaProposal,
 }
 
 export const pagesConfig = {
