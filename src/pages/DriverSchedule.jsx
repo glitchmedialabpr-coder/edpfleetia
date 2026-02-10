@@ -143,15 +143,27 @@ export default function DriverSchedule() {
   };
 
   const handleSave = () => {
+    console.log('handleSave llamado');
+    console.log('formData:', formData);
+    console.log('editingDriver:', editingDriver);
+    
     const hasActiveDay = formData.weekly_schedule.some(day => day.active);
     const allActiveDaysHaveTimes = formData.weekly_schedule
       .filter(day => day.active)
       .every(day => day.start_time && day.end_time);
     
+    console.log('hasActiveDay:', hasActiveDay);
+    console.log('allActiveDaysHaveTimes:', allActiveDaysHaveTimes);
+    
     if (!hasActiveDay || !allActiveDaysHaveTimes) {
       toast.error('Completa todos los campos requeridos');
       return;
     }
+
+    console.log('Enviando mutation con:', {
+      driverId: editingDriver.id,
+      data: formData
+    });
 
     updateScheduleMutation.mutate({
       driverId: editingDriver.id,
