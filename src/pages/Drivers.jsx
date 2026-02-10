@@ -95,7 +95,7 @@ const warningStatusConfig = {
   dismissed: { label: 'Desestimada', color: 'bg-slate-100 text-slate-700' }
 };
 
-const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
 
 export default function Drivers() {
   const queryClient = useQueryClient();
@@ -110,7 +110,6 @@ export default function Drivers() {
   const [warningSearch, setWarningSearch] = useState('');
   const [driverFilter, setDriverFilter] = useState('all');
   const [uploading, setUploading] = useState(false);
-  const [scheduleSearchTerm, setScheduleSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     driver_id: '',
     full_name: '',
@@ -248,11 +247,7 @@ export default function Drivers() {
     return matchesSearch && matchesDriver;
   });
 
-  const { data: vehicles = [] } = useQuery({
-    queryKey: ['vehicles'],
-    queryFn: () => base44.entities.Vehicle.filter({ status: 'available' }),
-    staleTime: 1000 * 60 * 5
-  });
+
 
   const [editingScheduleDriver, setEditingScheduleDriver] = useState(null);
   const [scheduleFormData, setScheduleFormData] = useState({
@@ -436,10 +431,6 @@ export default function Drivers() {
           <TabsTrigger value="warnings">
             <AlertTriangle className="w-4 h-4 mr-2" />
             Advertencias
-          </TabsTrigger>
-          <TabsTrigger value="schedules">
-            <Clock className="w-4 h-4 mr-2" />
-            Horarios
           </TabsTrigger>
         </TabsList>
 
@@ -1161,183 +1152,6 @@ export default function Drivers() {
               )}
             </DialogContent>
           </Dialog>
-        </TabsContent>
-
-        {/* Horarios Tab */}
-        <TabsContent value="schedules" className="space-y-4">
-          <Input
-            placeholder="Buscar por nombre o ID..."
-            value={scheduleSearchTerm}
-            onChange={(e) => setScheduleSearchTerm(e.target.value)}
-            className="max-w-md"
-          />
-
-          <div className="grid gap-4">
-            {filteredScheduleDrivers.length === 0 ? (
-              <Card className="p-8">
-                <EmptyState
-                  icon={Clock}
-                  title="No hay conductores"
-                  description="No se encontraron conductores activos"
-                />
-              </Card>
-            ) : (
-              filteredScheduleDrivers.map(driver => {
-                const vehicle = vehicles.find(v => v.id === driver.assigned_vehicle_id);
-
-                return (
-                  <Card key={driver.id} className="p-6 hover:shadow-lg transition-shadow">
-                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div>
-                            <h3 className="font-semibold text-slate-800 text-lg">{driver.full_name}</h3>
-                            <p className="text-sm text-slate-500">ID: {driver.driver_id}</p>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2 text-sm">
-                          {driver.shift_start_time && (
-                            <div className="flex items-center gap-2 text-slate-700">
-                              <Clock className="w-4 h-4 text-teal-600" />
-                              <span>
-                                {driver.shift_start_time} - {driver.shift_duration} horas
-                              </span>
-                            </div>
-                          )}
-
-                          {driver.shift_days && driver.shift_days.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              {driver.shift_days.map(dayIdx => (
-                                <Badge key={dayIdx} variant="outline" className="bg-blue-50 text-blue-700">
-                                  {DAYS[dayIdx]}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-
-                          {vehicle && (
-                            <div className="flex items-center gap-2 text-slate-700">
-                              <CheckCircle className="w-4 h-4 text-green-600" />
-                              <span>Vehículo: {vehicle.brand} {vehicle.model} - {vehicle.plate}</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <Dialog open={editingScheduleDriver?.id === driver.id} onOpenChange={(open) => {
-                        if (!open) handleCloseScheduleDialog();
-                      }}>
-                        <DialogTrigger asChild>
-                          <Button
-                            onClick={() => handleOpenScheduleDialog(driver)}
-                            className="bg-teal-600 hover:bg-teal-700"
-                          >
-                            <Edit2 className="w-4 h-4 mr-2" />
-                            Editar Horario
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-md">
-                          <DialogHeader>
-                            <DialogTitle>Editar Horario - {driver.full_name}</DialogTitle>
-                          </DialogHeader>
-
-                          <div className="space-y-4">
-                            <div>
-                              <label className="text-sm font-medium text-slate-700">
-                                Duración del Turno
-                              </label>
-                              <Select
-                                value={String(scheduleFormData.shift_duration)}
-                                onValueChange={(val) =>
-                                  setScheduleFormData(prev => ({ ...prev, shift_duration: parseInt(val) }))
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="8">8 horas</SelectItem>
-                                  <SelectItem value="12">12 horas</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            <div>
-                              <label className="text-sm font-medium text-slate-700">
-                                Hora de Inicio
-                              </label>
-                              <Input
-                                type="time"
-                                value={scheduleFormData.shift_start_time}
-                                onChange={(e) =>
-                                  setScheduleFormData(prev => ({ ...prev, shift_start_time: e.target.value }))
-                                }
-                              />
-                            </div>
-
-                            <div>
-                              <label className="text-sm font-medium text-slate-700 block mb-2">
-                                Días de Trabajo
-                              </label>
-                              <div className="grid grid-cols-2 gap-2">
-                                {DAYS.map((day, idx) => (
-                                  <Button
-                                    key={idx}
-                                    variant={scheduleFormData.shift_days.includes(idx) ? 'default' : 'outline'}
-                                    onClick={() => toggleDay(idx)}
-                                    className={
-                                      scheduleFormData.shift_days.includes(idx)
-                                        ? 'bg-teal-600 hover:bg-teal-700'
-                                        : ''
-                                    }
-                                    size="sm"
-                                  >
-                                    {day.substring(0, 3)}
-                                  </Button>
-                                ))}
-                              </div>
-                            </div>
-
-                            <div>
-                              <label className="text-sm font-medium text-slate-700">
-                                Vehículo Asignado
-                              </label>
-                              <Select
-                                value={scheduleFormData.assigned_vehicle_id}
-                                onValueChange={(val) =>
-                                  setScheduleFormData(prev => ({ ...prev, assigned_vehicle_id: val }))
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Selecciona vehículo" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {vehicles.map(v => (
-                                    <SelectItem key={v.id} value={v.id}>
-                                      {v.brand} {v.model} - {v.plate}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            <Button
-                              onClick={handleScheduleSave}
-                              className="w-full bg-teal-600 hover:bg-teal-700"
-                              disabled={updateScheduleMutation.isPending}
-                            >
-                              Guardar Cambios
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                  </Card>
-                );
-              })
-            )}
-          </div>
         </TabsContent>
       </Tabs>
 
