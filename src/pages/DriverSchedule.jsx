@@ -178,6 +178,15 @@ export default function DriverSchedule() {
     toast.success('Horario aplicado a todos los días');
   };
 
+  const convertTo12Hour = (time24) => {
+    if (!time24) return '';
+    const [hours, minutes] = time24.split(':');
+    const hour = parseInt(hours);
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    const period = hour < 12 ? 'AM' : 'PM';
+    return `${displayHour}:${minutes} ${period}`;
+  };
+
   const filteredDrivers = drivers.filter(driver =>
     driver.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     driver.driver_id.includes(searchTerm)
@@ -408,10 +417,10 @@ export default function DriverSchedule() {
                                           </p>
                                         </div>
                                         <div className="text-right">
-                                          <p className="text-xs font-semibold text-teal-600">
-                                            {day.start_time} - {day.end_time}
-                                          </p>
-                                        </div>
+                                           <p className="text-xs font-semibold text-teal-600">
+                                             {convertTo12Hour(day.start_time)} - {convertTo12Hour(day.end_time)}
+                                           </p>
+                                         </div>
                                       </div>
                                     )
                                   ))}
