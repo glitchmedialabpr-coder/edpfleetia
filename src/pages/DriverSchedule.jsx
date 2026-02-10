@@ -323,7 +323,42 @@ export default function DriverSchedule() {
                         <DialogTitle>Editar Horario - {driver.full_name}</DialogTitle>
                       </DialogHeader>
 
-                      <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+                      <div className="space-y-4 max-h-[80vh] overflow-y-auto">
+                        <div>
+                          <label className="text-sm font-medium text-slate-700 block mb-3">
+                            Resumen de Horarios
+                          </label>
+                          <Card className="border-slate-200 bg-slate-50 mb-4">
+                            <CardContent className="p-3">
+                              {formData.weekly_schedule.filter(day => day.active).length === 0 ? (
+                                <p className="text-xs text-slate-500 text-center py-2">No hay horarios seleccionados</p>
+                              ) : (
+                                <div className="space-y-2">
+                                  {formData.weekly_schedule.map((day, idx) => (
+                                    day.active && (
+                                      <div key={idx} className="flex items-center justify-between bg-white p-2 rounded border border-slate-200">
+                                        <div className="flex-1">
+                                          <p className="text-xs font-medium text-slate-700">
+                                            {day.dayName}
+                                          </p>
+                                          <p className="text-xs text-slate-500">
+                                            {format(weekDays[idx], 'dd MMM yyyy', { locale: es })}
+                                          </p>
+                                        </div>
+                                        <div className="text-right">
+                                          <p className="text-xs font-semibold text-teal-600">
+                                            {convertTo12Hour(day.start_time)} - {convertTo12Hour(day.end_time)}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    )
+                                  ))}
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        </div>
+
                         <div>
                           <label className="text-sm font-medium text-slate-700 block mb-3">
                             Horario Semanal
@@ -393,44 +428,9 @@ export default function DriverSchedule() {
                               </Card>
                             ))}
                           </div>
-                        </div>
+                          </div>
 
-                        <div>
-                          <label className="text-sm font-medium text-slate-700 block mb-3">
-                            Resumen de Horarios
-                          </label>
-                          <Card className="border-slate-200 bg-slate-50">
-                            <CardContent className="p-3">
-                              {formData.weekly_schedule.filter(day => day.active).length === 0 ? (
-                                <p className="text-xs text-slate-500 text-center py-2">No hay horarios seleccionados</p>
-                              ) : (
-                                <div className="space-y-2">
-                                  {formData.weekly_schedule.map((day, idx) => (
-                                    day.active && (
-                                      <div key={idx} className="flex items-center justify-between bg-white p-2 rounded border border-slate-200">
-                                        <div className="flex-1">
-                                          <p className="text-xs font-medium text-slate-700">
-                                            {day.dayName}
-                                          </p>
-                                          <p className="text-xs text-slate-500">
-                                            {format(weekDays[idx], 'dd MMM yyyy', { locale: es })}
-                                          </p>
-                                        </div>
-                                        <div className="text-right">
-                                           <p className="text-xs font-semibold text-teal-600">
-                                             {convertTo12Hour(day.start_time)} - {convertTo12Hour(day.end_time)}
-                                           </p>
-                                         </div>
-                                      </div>
-                                    )
-                                  ))}
-                                </div>
-                              )}
-                            </CardContent>
-                          </Card>
-                        </div>
-
-                        <Button
+                          <Button
                           onClick={handleSave}
                           className="w-full bg-teal-600 hover:bg-teal-700"
                           disabled={updateScheduleMutation.isPending}
