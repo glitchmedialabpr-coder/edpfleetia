@@ -105,8 +105,13 @@ export default function PassengerTrips() {
       return;
     }
 
+    if (!formData.origin_type) {
+      toast.error('Selecciona dónde te encuentras');
+      return;
+    }
+
     if (!formData.destination_type) {
-      toast.error('Selecciona un destino');
+      toast.error('Selecciona tu destino');
       return;
     }
 
@@ -116,6 +121,7 @@ export default function PassengerTrips() {
     }
 
     const requestData = {
+      origin_type: formData.origin_type,
       destination_type: formData.destination_type,
       destination_other: formData.destination_other,
       student_id: user.student_id,
