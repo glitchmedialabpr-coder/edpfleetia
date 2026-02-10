@@ -11,16 +11,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Bell, Lock, LogOut, Trash2, Info, ChevronDown, FileText, ArrowRight } from 'lucide-react';
+import { Bell, Lock, LogOut, Trash2, Info, ChevronDown, FileText, ArrowRight, Presentation } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
+import { useAuth } from '../components/auth/AuthContext';
 
 export default function Settings() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [expandedSection, setExpandedSection] = useState(null);
+  const isAdmin = user?.role === 'admin';
 
   const handleLogout = () => {
     localStorage.removeItem('pin_user');
@@ -41,30 +44,7 @@ export default function Settings() {
          <p className="text-slate-500 mt-2">Administra tus preferencias</p>
        </div>
 
-      {/* View Presentation */}
-      <div className="max-w-4xl mb-8">
-        <Card className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-lg bg-green-600/20 flex items-center justify-center">
-                <FileText className="w-6 h-6 text-green-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-slate-800 dark:text-white">Presentación Fleetia</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Ver presentación interactiva completa (9 diapositivas)</p>
-              </div>
-            </div>
-            <Button 
-              onClick={() => navigate(createPageUrl('FleetiaPresentation'))}
-              className="bg-green-600 hover:bg-green-700"
-              size="sm"
-            >
-              <ArrowRight className="w-4 h-4 mr-2" />
-              Ver
-            </Button>
-          </div>
-        </Card>
-      </div>
+
 
       {/* About Fleetia Section */}
       <div className="max-w-4xl mb-8">
