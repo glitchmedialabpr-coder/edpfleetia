@@ -391,13 +391,22 @@ export default function Purchases() {
             </div>
 
             <div className="space-y-2">
-              <Label>Tienda / Lugar *</Label>
-              <Input
-                value={formData.store}
-                onChange={(e) => setFormData({ ...formData, store: e.target.value })}
-                placeholder="Ej: AutoZone, Home Depot, etc."
-                required
-              />
+              <Label>Proveedor / Tienda *</Label>
+              <Select 
+                value={formData.store} 
+                onValueChange={(val) => setFormData({ ...formData, store: val })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona un proveedor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {suppliers.map(s => (
+                    <SelectItem key={s.id} value={s.name}>
+                      {s.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
