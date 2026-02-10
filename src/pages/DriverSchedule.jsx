@@ -308,21 +308,7 @@ export default function DriverSchedule() {
                       </div>
                     </div>
 
-                    <div className="space-y-2 text-sm">
-                      {driver.weekly_schedule && driver.weekly_schedule.length > 0 && (
-                        <div className="space-y-1">
-                          {driver.weekly_schedule.filter(day => day.active).map(day => (
-                            <div key={day.day} className="flex items-center gap-2 text-slate-700">
-                              <Clock className="w-4 h-4 text-teal-600" />
-                              <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                                {day.dayName}
-                              </Badge>
-                              <span>{day.start_time} - {day.end_time}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+
                   </div>
 
                   <Drawer open={editingDriver?.id === driver.id} onOpenChange={(open) => {
