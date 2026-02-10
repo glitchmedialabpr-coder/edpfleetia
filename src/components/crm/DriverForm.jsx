@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { X } from 'lucide-react';
 
+const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
 export default function DriverForm({ driver, onClose }) {
   const [formData, setFormData] = useState(driver || {
     driver_id: '',
@@ -17,6 +19,13 @@ export default function DriverForm({ driver, onClose }) {
     license_number: '',
     license_category: 'B',
     status: 'active',
+    weekly_schedule: DAYS.map((dayName, idx) => ({
+      day: idx,
+      dayName,
+      start_time: '',
+      end_time: '',
+      active: false
+    }))
   });
 
   const queryClient = useQueryClient();
@@ -31,6 +40,15 @@ export default function DriverForm({ driver, onClose }) {
     },
     onError: () => toast.error('Error al guardar conductor'),
   });
+
+  const updateScheduleDay = (dayIndex, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      weekly_schedule: prev.weekly_schedule.map((day, idx) =>
+        idx === dayIndex ? { ...day, [field]: value } : day
+      )
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -117,6 +135,52 @@ export default function DriverForm({ driver, onClose }) {
               </Select>
             </div>
           </div>
+
+          <div>
+            <label className="text-sm font-medium mb-2 block">Horario Semanal</label>
+            <div className="space-y-2 max-h-80 overflow-y-auto">
+              {formData.weekly_schedule?.map((day, idx) => (
+                <Card key={idx} className={day.active ? 'border-teal-200 bg-teal-50/50' : 'border-slate-200'}>
+                  <CardContent className="p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <input
+                        type="checkbox"
+                        checked={day.active}
+                        onChange={(e) => updateScheduleDay(idx, 'active', e.target.checked)}
+                        className="w-4 h-4 rounded border-slate-300"
+                      />
+                      <label className="font-medium text-slate-700 text-sm">
+                        {day.dayName}
+                      </label>
+                    </div>
+                    {day.active && (
+                      <div className="grid grid-cols-2 gap-2 ml-6">
+                        <div>
+                          <label className="text-xs text-slate-600">Entrada</label>
+                          <Input
+                            type="time"
+                            value={day.start_time}
+                            onChange={(e) => updateScheduleDay(idx, 'start_time', e.target.value)}
+                            className="h-9"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-slate-600">Salida</label>
+                          <Input
+                            type="time"
+                            value={day.end_time}
+                            onChange={(e) => updateScheduleDay(idx, 'end_time', e.target.value)}
+                            className="h-9"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
           <div className="flex gap-2 justify-end">
             <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
             <Button type="submit" disabled={mutation.isPending}>
