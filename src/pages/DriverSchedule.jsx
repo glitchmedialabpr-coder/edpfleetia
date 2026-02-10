@@ -468,6 +468,80 @@ export default function DriverSchedule() {
           )
         )}
       </div>
+
+      {/* Tabla de Resumen de Horarios */}
+      {filteredDrivers.length > 0 && (
+        <Card className="border-0 shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-slate-200">
+            <h2 className="font-semibold text-slate-800">Resumen de Horarios Semanales</h2>
+            <p className="text-sm text-slate-500 mt-1">
+              {format(weekRange.start, 'dd MMM', { locale: es })} - {format(weekRange.end, 'dd MMM yyyy', { locale: es })}
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-slate-50">
+                  <TableHead>Conductor</TableHead>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Fecha Semana</TableHead>
+                  <TableHead>Horario</TableHead>
+                  <TableHead>Días de Trabajo</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredDrivers.map(driver => {
+                  const schedule = driver.weekly_schedule || [];
+                  const activeDays = schedule.filter(day => day.active);
+                  const hasSchedule = activeDays.length > 0;
+
+                  return (
+                    <TableRow key={driver.id} className="hover:bg-slate-50">
+                      <TableCell className="font-medium text-slate-800">{driver.full_name}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200 font-mono">
+                          {driver.driver_id}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-slate-600">
+                        {format(weekRange.start, 'dd MMM', { locale: es })} - {format(weekRange.end, 'dd MMM', { locale: es })}
+                      </TableCell>
+                      <TableCell>
+                        {hasSchedule ? (
+                          <div className="space-y-1">
+                            {activeDays.map(day => (
+                              <div key={day.day} className="text-sm">
+                                <span className="font-medium">{convertTo12Hour(day.start_time)}</span>
+                                <span className="text-slate-500"> - </span>
+                                <span className="font-medium">{convertTo12Hour(day.end_time)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 text-sm">Sin horario</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {hasSchedule ? (
+                          <div className="flex gap-1 flex-wrap">
+                            {activeDays.map(day => (
+                              <Badge key={day.day} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                                {day.dayName.substring(0, 3)}
+                              </Badge>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 text-sm">-</span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }
