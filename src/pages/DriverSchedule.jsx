@@ -19,7 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Clock, Edit2, Plus, Trash2, CheckCircle } from 'lucide-react';
+import { Clock, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
 import EmptyState from '../components/common/EmptyState';
 
@@ -28,8 +28,7 @@ const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', '
 export default function DriverSchedule() {
   const [editingDriver, setEditingDriver] = useState(null);
   const [formData, setFormData] = useState({
-    weekly_schedule: [],
-    assigned_vehicle_id: ''
+    weekly_schedule: []
   });
   const [searchTerm, setSearchTerm] = useState('');
   const queryClient = useQueryClient();
@@ -40,11 +39,7 @@ export default function DriverSchedule() {
     staleTime: 1000 * 60 * 5
   });
 
-  const { data: vehicles = [] } = useQuery({
-    queryKey: ['vehicles'],
-    queryFn: () => base44.entities.Vehicle.filter({ status: 'available' }),
-    staleTime: 1000 * 60 * 5
-  });
+
 
   const updateScheduleMutation = useMutation({
     mutationFn: async ({ driverId, data }) => {
@@ -85,16 +80,14 @@ export default function DriverSchedule() {
       active: false
     }));
     setFormData({
-      weekly_schedule: schedule,
-      assigned_vehicle_id: driver.assigned_vehicle_id || ''
+      weekly_schedule: schedule
     });
   };
 
   const handleCloseDialog = () => {
     setEditingDriver(null);
     setFormData({
-      weekly_schedule: [],
-      assigned_vehicle_id: ''
+      weekly_schedule: []
     });
   };
 
@@ -113,7 +106,7 @@ export default function DriverSchedule() {
       .filter(day => day.active)
       .every(day => day.start_time && day.end_time);
     
-    if (!hasActiveDay || !allActiveDaysHaveTimes || !formData.assigned_vehicle_id) {
+    if (!hasActiveDay || !allActiveDaysHaveTimes) {
       toast.error('Completa todos los campos requeridos');
       return;
     }
@@ -137,7 +130,7 @@ export default function DriverSchedule() {
     <div className="w-full space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-slate-800">Horarios de Conductores</h1>
-        <p className="text-slate-500 mt-1">Gestiona turnos y asignaciones de vehículos</p>
+        <p className="text-slate-500 mt-1">Gestiona los horarios de trabajo de conductores</p>
       </div>
 
       <Input
@@ -157,17 +150,7 @@ export default function DriverSchedule() {
             />
           </Card>
         ) : (
-          filteredDrivers.map(driver => {
-            const vehicle = vehicles.find(v => v.id === driver.assigned_vehicle_id);
-            const shiftEndTime = driver.shift_start_time
-              ? new Date(`2000-01-01 ${driver.shift_start_time}`)
-                  .setHours(
-                    new Date(`2000-01-01 ${driver.shift_start_time}`).getHours() +
-                    (driver.shift_duration || 8)
-                  )
-              : null;
-
-            return (
+          filteredDrivers.map(driver => (
               <Card key={driver.id} className="p-6 hover:shadow-lg transition-shadow">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                   <div className="flex-1">
@@ -190,13 +173,6 @@ export default function DriverSchedule() {
                               <span>{day.start_time} - {day.end_time}</span>
                             </div>
                           ))}
-                        </div>
-                      )}
-
-                      {vehicle && (
-                        <div className="flex items-center gap-2 text-slate-700">
-                          <CheckCircle className="w-4 h-4 text-green-600" />
-                          <span>Vehículo: {vehicle.brand} {vehicle.model} - {vehicle.plate}</span>
                         </div>
                       )}
                     </div>
@@ -267,29 +243,6 @@ export default function DriverSchedule() {
                           </div>
                         </div>
 
-                        <div>
-                          <label className="text-sm font-medium text-slate-700">
-                            Vehículo Asignado
-                          </label>
-                          <Select
-                            value={formData.assigned_vehicle_id}
-                            onValueChange={(val) =>
-                              setFormData(prev => ({ ...prev, assigned_vehicle_id: val }))
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecciona vehículo" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {vehicles.map(v => (
-                                <SelectItem key={v.id} value={v.id}>
-                                  {v.brand} {v.model} - {v.plate}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-
                         <Button
                           onClick={handleSave}
                           className="w-full bg-teal-600 hover:bg-teal-700"
@@ -302,8 +255,8 @@ export default function DriverSchedule() {
                   </Dialog>
                 </div>
               </Card>
-            );
-          })
+            )
+          )
         )}
       </div>
     </div>
