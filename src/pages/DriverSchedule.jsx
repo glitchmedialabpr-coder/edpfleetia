@@ -104,10 +104,12 @@ export default function DriverSchedule() {
       }
     },
     onSuccess: (data) => {
-      console.log('onSuccess ejecutado');
+      console.log('onSuccess ejecutado', data);
       toast.success('Horario actualizado exitosamente');
       queryClient.invalidateQueries({ queryKey: ['drivers'] });
-      handleCloseDialog();
+      setTimeout(() => {
+        handleCloseDialog();
+      }, 300);
     },
     onError: (error) => {
       console.error('onError ejecutado:', error);
@@ -322,7 +324,7 @@ export default function DriverSchedule() {
                   </div>
 
                   <Drawer open={editingDriver?.id === driver.id} onOpenChange={(open) => {
-                    if (!open) handleCloseDialog();
+                    if (!open && !updateScheduleMutation.isPending) handleCloseDialog();
                   }}>
                     <DrawerTrigger asChild>
                       <Button
