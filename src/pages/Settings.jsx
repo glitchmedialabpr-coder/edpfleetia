@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Bell, Lock, LogOut, Trash2, Info, ChevronDown, Download, Loader2, FileText } from 'lucide-react';
+import { Bell, Lock, LogOut, Trash2, Info, ChevronDown, FileText, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { toast } from 'sonner';
@@ -21,28 +21,6 @@ export default function Settings() {
   const navigate = useNavigate();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [expandedSection, setExpandedSection] = useState(null);
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-
-  const handleDownloadPresentation = async () => {
-    setIsGeneratingPDF(true);
-    try {
-      const response = await base44.functions.invoke('generateFleetiaPresentation');
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'Fleetia_Presentacion.pdf';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      toast.success('Presentación descargada');
-    } catch (error) {
-      toast.error('Error al descargar');
-    } finally {
-      setIsGeneratingPDF(false);
-    }
-  };
 
   const handleLogout = () => {
     localStorage.removeItem('pin_user');
@@ -63,7 +41,7 @@ export default function Settings() {
          <p className="text-slate-500 mt-2">Administra tus preferencias</p>
        </div>
 
-      {/* Download Presentation */}
+      {/* View Presentation */}
       <div className="max-w-4xl mb-8">
         <Card className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800">
           <div className="flex items-center justify-between gap-4">
@@ -72,27 +50,17 @@ export default function Settings() {
                 <FileText className="w-6 h-6 text-green-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-slate-800 dark:text-white">Descargar Presentación</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Documento PDF completo sobre Fleetia (9 páginas)</p>
+                <h3 className="font-semibold text-slate-800 dark:text-white">Presentación Fleetia</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Ver presentación interactiva completa (9 diapositivas)</p>
               </div>
             </div>
             <Button 
-              onClick={handleDownloadPresentation}
-              disabled={isGeneratingPDF}
+              onClick={() => navigate(createPageUrl('FleetiaPresentation'))}
               className="bg-green-600 hover:bg-green-700"
               size="sm"
             >
-              {isGeneratingPDF ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Generando...
-                </>
-              ) : (
-                <>
-                  <Download className="w-4 h-4 mr-2" />
-                  Descargar
-                </>
-              )}
+              <ArrowRight className="w-4 h-4 mr-2" />
+              Ver
             </Button>
           </div>
         </Card>
