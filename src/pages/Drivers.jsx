@@ -124,6 +124,9 @@ export default function Drivers() {
     address: '',
     emergency_contact: '',
     emergency_phone: '',
+    shift_duration: 8,
+    shift_start_time: '06:00',
+    shift_days: [],
     notes: ''
   });
 
@@ -354,6 +357,9 @@ export default function Drivers() {
       address: '',
       emergency_contact: '',
       emergency_phone: '',
+      shift_duration: 8,
+      shift_start_time: '06:00',
+      shift_days: [],
       notes: ''
     });
     setModalOpen(true);
@@ -375,6 +381,9 @@ export default function Drivers() {
       address: driver.address || '',
       emergency_contact: driver.emergency_contact || '',
       emergency_phone: driver.emergency_phone || '',
+      shift_duration: driver.shift_duration || 8,
+      shift_start_time: driver.shift_start_time || '06:00',
+      shift_days: driver.shift_days || [],
       notes: driver.notes || ''
     });
     setModalOpen(true);
@@ -1304,6 +1313,62 @@ export default function Drivers() {
               </div>
             </div>
 
+            {/* Horario de Trabajo */}
+            <div className="border-t pt-4">
+              <h3 className="font-semibold text-slate-800 mb-3">Horario de Trabajo</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="space-y-2">
+                  <Label>Duración del Turno</Label>
+                  <Select 
+                    value={String(formData.shift_duration)} 
+                    onValueChange={(val) => setFormData({ ...formData, shift_duration: parseInt(val) })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="8">8 horas</SelectItem>
+                      <SelectItem value="12">12 horas</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Hora de Inicio</Label>
+                  <Input
+                    type="time"
+                    value={formData.shift_start_time}
+                    onChange={(e) => setFormData({ ...formData, shift_start_time: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <Label>Días de Trabajo</Label>
+                <div className="grid grid-cols-4 gap-2">
+                  {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sab'].map((day, idx) => (
+                    <Button
+                      key={idx}
+                      type="button"
+                      variant={formData.shift_days.includes(idx) ? 'default' : 'outline'}
+                      onClick={() => {
+                        setFormData({
+                          ...formData,
+                          shift_days: formData.shift_days.includes(idx)
+                            ? formData.shift_days.filter(d => d !== idx)
+                            : [...formData.shift_days, idx].sort((a, b) => a - b)
+                        });
+                      }}
+                      className={formData.shift_days.includes(idx) ? 'bg-teal-600 hover:bg-teal-700' : ''}
+                      size="sm"
+                    >
+                      {day}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {/* Status & Notes */}
             <div className="border-t pt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1490,6 +1555,61 @@ export default function Drivers() {
                       onChange={(e) => setFormData({ ...formData, emergency_phone: e.target.value })}
                       placeholder="(787) 123-4567"
                     />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <h3 className="font-semibold text-slate-800 mb-3">Horario de Trabajo</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div className="space-y-2">
+                    <Label>Duración del Turno</Label>
+                    <Select 
+                      value={String(formData.shift_duration)} 
+                      onValueChange={(val) => setFormData({ ...formData, shift_duration: parseInt(val) })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="8">8 horas</SelectItem>
+                        <SelectItem value="12">12 horas</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Hora de Inicio</Label>
+                    <Input
+                      type="time"
+                      value={formData.shift_start_time}
+                      onChange={(e) => setFormData({ ...formData, shift_start_time: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2 mb-4">
+                  <Label>Días de Trabajo</Label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sab'].map((day, idx) => (
+                      <Button
+                        key={idx}
+                        type="button"
+                        variant={formData.shift_days.includes(idx) ? 'default' : 'outline'}
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            shift_days: formData.shift_days.includes(idx)
+                              ? formData.shift_days.filter(d => d !== idx)
+                              : [...formData.shift_days, idx].sort((a, b) => a - b)
+                          });
+                        }}
+                        className={formData.shift_days.includes(idx) ? 'bg-teal-600 hover:bg-teal-700' : ''}
+                        size="sm"
+                      >
+                        {day}
+                      </Button>
+                    ))}
                   </div>
                 </div>
               </div>
