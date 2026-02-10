@@ -1,15 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Shield, Truck, GraduationCap } from 'lucide-react';
 
 export default function Index() {
-  const navigate = React.useNavigate?.() || undefined;
+  const navigate = useNavigate();
 
-  React.useEffect(() => {
-    if (navigate) {
-      navigate(createPageUrl('Home'), { replace: true });
-    }
+  useEffect(() => {
+    navigate(createPageUrl('Home'), { replace: true });
   }, [navigate]);
 
   // Renderiza el contenido de Home directamente
