@@ -62,12 +62,26 @@ export default function EditTripModal({ trip, open, onClose, onUpdated }) {
           </div>
 
           <div>
-            <Label>Hora</Label>
+            <Label>Hora (12 horas)</Label>
             <Input
               type="time"
-              value={formData.scheduled_time}
-              onChange={(e) => setFormData({ ...formData, scheduled_time: e.target.value })}
+              onChange={(e) => {
+                const time24 = e.target.value;
+                if (time24) {
+                  const [hours, minutes] = time24.split(':');
+                  const hour = parseInt(hours);
+                  const period = hour >= 12 ? 'PM' : 'AM';
+                  const hour12 = hour % 12 || 12;
+                  const time12 = `${hour12}:${minutes} ${period}`;
+                  setFormData({ ...formData, scheduled_time: time12 });
+                } else {
+                  setFormData({ ...formData, scheduled_time: '' });
+                }
+              }}
             />
+            {formData.scheduled_time && (
+              <p className="text-xs text-slate-500 mt-1">{formData.scheduled_time}</p>
+            )}
           </div>
 
           <div>
