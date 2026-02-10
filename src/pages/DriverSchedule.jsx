@@ -28,9 +28,7 @@ const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', '
 export default function DriverSchedule() {
   const [editingDriver, setEditingDriver] = useState(null);
   const [formData, setFormData] = useState({
-    shift_duration: 8,
-    shift_start_time: '06:00',
-    shift_days: [],
+    weekly_schedule: [],
     assigned_vehicle_id: ''
   });
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,9 +59,7 @@ export default function DriverSchedule() {
         driver_name: editingDriver.full_name,
         priority: 'medium',
         data: {
-          shift_duration: data.shift_duration,
-          shift_start_time: data.shift_start_time,
-          shift_days: data.shift_days
+          weekly_schedule: data.weekly_schedule
         }
       });
     },
@@ -81,10 +77,15 @@ export default function DriverSchedule() {
 
   const handleOpenDialog = (driver) => {
     setEditingDriver(driver);
+    const schedule = driver.weekly_schedule || DAYS.map((_, idx) => ({
+      day: idx,
+      dayName: DAYS[idx],
+      start_time: '',
+      end_time: '',
+      active: false
+    }));
     setFormData({
-      shift_duration: driver.shift_duration || 8,
-      shift_start_time: driver.shift_start_time || '06:00',
-      shift_days: driver.shift_days || [],
+      weekly_schedule: schedule,
       assigned_vehicle_id: driver.assigned_vehicle_id || ''
     });
   };
@@ -92,25 +93,28 @@ export default function DriverSchedule() {
   const handleCloseDialog = () => {
     setEditingDriver(null);
     setFormData({
-      shift_duration: 8,
-      shift_start_time: '06:00',
-      shift_days: [],
+      weekly_schedule: [],
       assigned_vehicle_id: ''
     });
   };
 
-  const toggleDay = (dayIndex) => {
+  const updateScheduleDay = (dayIndex, field, value) => {
     setFormData(prev => ({
       ...prev,
-      shift_days: prev.shift_days.includes(dayIndex)
-        ? prev.shift_days.filter(d => d !== dayIndex)
-        : [...prev.shift_days, dayIndex].sort((a, b) => a - b)
+      weekly_schedule: prev.weekly_schedule.map((day, idx) =>
+        idx === dayIndex ? { ...day, [field]: value } : day
+      )
     }));
   };
 
   const handleSave = () => {
-    if (!formData.shift_start_time || formData.shift_days.length === 0 || !formData.assigned_vehicle_id) {
-      toast.error('Completa todos los campos');
+    const hasActiveDay = formData.weekly_schedule.some(day => day.active);
+    const allActiveDaysHaveTimes = formData.weekly_schedule
+      .filter(day => day.active)
+      .every(day => day.start_time && day.end_time);
+    
+    if (!hasActiveDay || !allActiveDaysHaveTimes || !formData.assigned_vehicle_id) {
+      toast.error('Completa todos los campos requeridos');
       return;
     }
 
@@ -175,21 +179,16 @@ export default function DriverSchedule() {
                     </div>
 
                     <div className="space-y-2 text-sm">
-                      {driver.shift_start_time && (
-                        <div className="flex items-center gap-2 text-slate-700">
-                          <Clock className="w-4 h-4 text-teal-600" />
-                          <span>
-                            {driver.shift_start_time} - {driver.shift_duration} horas
-                          </span>
-                        </div>
-                      )}
-
-                      {driver.shift_days && driver.shift_days.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                          {driver.shift_days.map(dayIdx => (
-                            <Badge key={dayIdx} variant="outline" className="bg-blue-50 text-blue-700">
-                              {DAYS[dayIdx]}
-                            </Badge>
+                      {driver.weekly_schedule && driver.weekly_schedule.length > 0 && (
+                        <div className="space-y-1">
+                          {driver.weekly_schedule.filter(day => day.active).map(day => (
+                            <div key={day.day} className="flex items-center gap-2 text-slate-700">
+                              <Clock className="w-4 h-4 text-teal-600" />
+                              <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                                {day.dayName}
+                              </Badge>
+                              <span>{day.start_time} - {day.end_time}</span>
+                            </div>
                           ))}
                         </div>
                       )}
@@ -220,59 +219,50 @@ export default function DriverSchedule() {
                         <DialogTitle>Editar Horario - {driver.full_name}</DialogTitle>
                       </DialogHeader>
 
-                      <div className="space-y-4">
+                      <div className="space-y-4 max-h-[70vh] overflow-y-auto">
                         <div>
-                          <label className="text-sm font-medium text-slate-700">
-                            Duración del Turno
+                          <label className="text-sm font-medium text-slate-700 block mb-3">
+                            Horario Semanal
                           </label>
-                          <Select
-                            value={String(formData.shift_duration)}
-                            onValueChange={(val) =>
-                              setFormData(prev => ({ ...prev, shift_duration: parseInt(val) }))
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="8">8 horas</SelectItem>
-                              <SelectItem value="12">12 horas</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div>
-                          <label className="text-sm font-medium text-slate-700">
-                            Hora de Inicio
-                          </label>
-                          <Input
-                            type="time"
-                            value={formData.shift_start_time}
-                            onChange={(e) =>
-                              setFormData(prev => ({ ...prev, shift_start_time: e.target.value }))
-                            }
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-sm font-medium text-slate-700 block mb-2">
-                            Días de Trabajo
-                          </label>
-                          <div className="grid grid-cols-2 gap-2">
-                            {DAYS.map((day, idx) => (
-                              <Button
-                                key={idx}
-                                variant={formData.shift_days.includes(idx) ? 'default' : 'outline'}
-                                onClick={() => toggleDay(idx)}
-                                className={
-                                  formData.shift_days.includes(idx)
-                                    ? 'bg-teal-600 hover:bg-teal-700'
-                                    : ''
-                                }
-                                size="sm"
-                              >
-                                {day.substring(0, 3)}
-                              </Button>
+                          <div className="space-y-3">
+                            {formData.weekly_schedule.map((day, idx) => (
+                              <Card key={idx} className={day.active ? 'border-teal-200 bg-teal-50/50' : 'border-slate-200'}>
+                                <CardContent className="p-3">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <input
+                                      type="checkbox"
+                                      checked={day.active}
+                                      onChange={(e) => updateScheduleDay(idx, 'active', e.target.checked)}
+                                      className="w-4 h-4 rounded border-slate-300"
+                                    />
+                                    <label className="font-medium text-slate-700">
+                                      {day.dayName}
+                                    </label>
+                                  </div>
+                                  {day.active && (
+                                    <div className="grid grid-cols-2 gap-2 ml-6">
+                                      <div>
+                                        <label className="text-xs text-slate-600">Entrada</label>
+                                        <Input
+                                          type="time"
+                                          value={day.start_time}
+                                          onChange={(e) => updateScheduleDay(idx, 'start_time', e.target.value)}
+                                          className="h-9"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="text-xs text-slate-600">Salida</label>
+                                        <Input
+                                          type="time"
+                                          value={day.end_time}
+                                          onChange={(e) => updateScheduleDay(idx, 'end_time', e.target.value)}
+                                          className="h-9"
+                                        />
+                                      </div>
+                                    </div>
+                                  )}
+                                </CardContent>
+                              </Card>
                             ))}
                           </div>
                         </div>
