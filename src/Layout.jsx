@@ -61,7 +61,6 @@ function LayoutContent({ children, currentPageName }) {
     if (isAdmin) {
           return [
             { name: 'Dashboard', page: 'Dashboard', icon: LayoutDashboard },
-            { name: 'CRM', page: 'CRM', icon: Users },
             { name: 'Viajes', page: 'Trips', icon: Bus },
             { name: 'Viajes en Vivo', page: 'LiveTrips', icon: Bus },
             { name: 'Vehículos', page: 'VehicleManagement', icon: Car },
@@ -103,7 +102,7 @@ function LayoutContent({ children, currentPageName }) {
       return;
     }
 
-    const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints', 'CRM', 'DriverSchedule'];
+    const adminPages = ['Drivers', 'Students', 'VehicleManagement', 'Vehicles', 'Dashboard', 'Trips', 'Maintenance', 'Accidents', 'Reports', 'DailyReports', 'GeneralServiceJobs', 'PurchaseReports', 'Housing', 'History', 'ResponseHistory', 'Settings', 'FuelRecords', 'Purchases', 'LiveTrips', 'ConsolidatedReports', 'EmployeeComplaints', 'DriverSchedule'];
     const driverPages = ['DriverDashboard', 'DriverRequests', 'DriverTrips', 'DriverHistory', 'NotificationSettings'];
     const passengerPages = ['PassengerTrips'];
 

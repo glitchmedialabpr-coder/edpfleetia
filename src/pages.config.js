@@ -49,7 +49,6 @@
  */
 import Accidents from './pages/Accidents';
 import AdminLogin from './pages/AdminLogin';
-import CRM from './pages/CRM';
 import ConsolidatedReports from './pages/ConsolidatedReports';
 import DailyReports from './pages/DailyReports';
 import Dashboard from './pages/Dashboard';
@@ -96,7 +95,6 @@ import __Layout from './Layout.jsx';
 export const PAGES = {
     "Accidents": Accidents,
     "AdminLogin": AdminLogin,
-    "CRM": CRM,
     "ConsolidatedReports": ConsolidatedReports,
     "DailyReports": DailyReports,
     "Dashboard": Dashboard,
