@@ -13,12 +13,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Clock, Edit2, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
@@ -306,10 +306,10 @@ export default function DriverSchedule() {
                     </div>
                   </div>
 
-                  <Dialog open={editingDriver?.id === driver.id} onOpenChange={(open) => {
+                  <Drawer open={editingDriver?.id === driver.id} onOpenChange={(open) => {
                     if (!open) handleCloseDialog();
                   }}>
-                    <DialogTrigger asChild>
+                    <DrawerTrigger asChild>
                       <Button
                         onClick={() => handleOpenDialog(driver)}
                         className="bg-teal-600 hover:bg-teal-700"
@@ -317,11 +317,11 @@ export default function DriverSchedule() {
                         <Edit2 className="w-4 h-4 mr-2" />
                         Editar Horario
                       </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Editar Horario - {driver.full_name}</DialogTitle>
-                      </DialogHeader>
+                    </DrawerTrigger>
+                    <DrawerContent>
+                      <DrawerHeader>
+                        <DrawerTitle>Editar Horario - {driver.full_name}</DrawerTitle>
+                      </DrawerHeader>
 
                       <div className="space-y-4 max-h-[80vh] overflow-y-auto">
                         <div>
@@ -438,8 +438,8 @@ export default function DriverSchedule() {
                           Guardar Cambios
                         </Button>
                       </div>
-                    </DialogContent>
-                  </Dialog>
+                    </DrawerContent>
+                  </Drawer>
                 </div>
               </Card>
             )
