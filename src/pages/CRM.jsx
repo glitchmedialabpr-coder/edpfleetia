@@ -8,7 +8,7 @@ import { Users, Truck, Building2, ShoppingCart, BarChart3, Plus } from 'lucide-r
 import StudentsManagement from '@/components/crm/StudentsManagement';
 import DriversManagement from '@/components/crm/DriversManagement';
 import SuppliersManagement from '@/components/crm/SuppliersManagement';
-import CRMReports from '@/components/crm/CRMReports';
+import CRMReports from '@/components/crm/CRMReports.js';
 
 export default function CRM() {
   const [activeTab, setActiveTab] = useState('students');
