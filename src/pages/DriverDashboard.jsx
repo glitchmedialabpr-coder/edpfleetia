@@ -22,6 +22,8 @@ import {
 import { toast } from 'sonner';
 import WebSocketNotificationClient from '@/components/notifications/WebSocketNotificationClient';
 
+const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
 export default function DriverDashboard() {
   const { user, loading: authLoading } = useAuth();
   const [selectedVehicle, setSelectedVehicle] = useState('');
@@ -59,6 +61,16 @@ export default function DriverDashboard() {
     }, '-created_date'),
     enabled: !!user?.driver_id && !authLoading,
     staleTime: 1000 * 30
+  });
+
+  const { data: driverData = null } = useQuery({
+    queryKey: ['driver', user?.driver_id],
+    queryFn: () => {
+      if (!user?.driver_id) return null;
+      return base44.entities.Driver.filter({ driver_id: user.driver_id }).then(drivers => drivers[0]);
+    },
+    enabled: !!user?.driver_id && !authLoading,
+    staleTime: 1000 * 60 * 5
   });
 
   // Load vehicle data when selectedVehicle changes
