@@ -67,6 +67,12 @@ export default function Purchases() {
     staleTime: 1000 * 60 * 5
   });
 
+  const { data: suppliers = [] } = useQuery({
+    queryKey: ['suppliers'],
+    queryFn: () => base44.entities.Supplier.list(),
+    staleTime: 1000 * 60 * 5
+  });
+
   // Filter purchases
   const filteredPurchases = purchases.filter(purchase => {
     const matchesSearch = purchase.store?.toLowerCase().includes(search.toLowerCase()) ||
