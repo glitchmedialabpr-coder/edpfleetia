@@ -29,6 +29,19 @@ import { es } from 'date-fns/locale';
 
 const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
+const generateTimeOptions = () => {
+  const options = [];
+  for (let hour = 0; hour < 24; hour++) {
+    for (let minute = 0; minute < 60; minute += 30) {
+      const timeStr = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+      options.push(timeStr);
+    }
+  }
+  return options;
+};
+
+const TIME_OPTIONS = generateTimeOptions();
+
 export default function DriverSchedule() {
   const [editingDriver, setEditingDriver] = useState(null);
   const [formData, setFormData] = useState({
@@ -319,21 +332,33 @@ export default function DriverSchedule() {
                                       <div className="grid grid-cols-2 gap-2">
                                         <div>
                                           <label className="text-xs text-slate-600">Entrada</label>
-                                          <Input
-                                            type="time"
-                                            value={day.start_time}
-                                            onChange={(e) => updateScheduleDay(idx, 'start_time', e.target.value)}
-                                            className="h-9"
-                                          />
+                                          <Select value={day.start_time} onValueChange={(value) => updateScheduleDay(idx, 'start_time', value)}>
+                                            <SelectTrigger className="h-9">
+                                              <SelectValue placeholder="Seleccionar" />
+                                            </SelectTrigger>
+                                            <SelectContent className="max-h-48">
+                                              {TIME_OPTIONS.map((time) => (
+                                                <SelectItem key={time} value={time}>
+                                                  {time}
+                                                </SelectItem>
+                                              ))}
+                                            </SelectContent>
+                                          </Select>
                                         </div>
                                         <div>
                                           <label className="text-xs text-slate-600">Salida</label>
-                                          <Input
-                                            type="time"
-                                            value={day.end_time}
-                                            onChange={(e) => updateScheduleDay(idx, 'end_time', e.target.value)}
-                                            className="h-9"
-                                          />
+                                          <Select value={day.end_time} onValueChange={(value) => updateScheduleDay(idx, 'end_time', value)}>
+                                            <SelectTrigger className="h-9">
+                                              <SelectValue placeholder="Seleccionar" />
+                                            </SelectTrigger>
+                                            <SelectContent className="max-h-48">
+                                              {TIME_OPTIONS.map((time) => (
+                                                <SelectItem key={time} value={time}>
+                                                  {time}
+                                                </SelectItem>
+                                              ))}
+                                            </SelectContent>
+                                          </Select>
                                         </div>
                                       </div>
                                       <Button
