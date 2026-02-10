@@ -33,8 +33,15 @@ const generateTimeOptions = () => {
   const options = [];
   for (let hour = 0; hour < 24; hour++) {
     for (let minute = 0; minute < 60; minute += 30) {
-      const timeStr = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-      options.push(timeStr);
+      const hour24 = String(hour).padStart(2, '0');
+      const minuteStr = String(minute).padStart(2, '0');
+      const time24 = `${hour24}:${minuteStr}`;
+      
+      const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+      const period = hour < 12 ? 'AM' : 'PM';
+      const displayStr = `${displayHour}:${minuteStr} ${period}`;
+      
+      options.push({ value: time24, display: displayStr });
     }
   }
   return options;
@@ -338,8 +345,8 @@ export default function DriverSchedule() {
                                             </SelectTrigger>
                                             <SelectContent className="max-h-48">
                                               {TIME_OPTIONS.map((time) => (
-                                                <SelectItem key={time} value={time}>
-                                                  {time}
+                                                <SelectItem key={time.value} value={time.value}>
+                                                  {time.display}
                                                 </SelectItem>
                                               ))}
                                             </SelectContent>
@@ -353,8 +360,8 @@ export default function DriverSchedule() {
                                             </SelectTrigger>
                                             <SelectContent className="max-h-48">
                                               {TIME_OPTIONS.map((time) => (
-                                                <SelectItem key={time} value={time}>
-                                                  {time}
+                                                <SelectItem key={time.value} value={time.value}>
+                                                  {time.display}
                                                 </SelectItem>
                                               ))}
                                             </SelectContent>
