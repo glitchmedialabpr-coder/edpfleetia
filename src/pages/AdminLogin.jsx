@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
@@ -13,24 +13,59 @@ export default function AdminLogin() {
   const { login } = useAuth();
   const [pin, setPin] = useState('');
   const [loading, setLoading] = useState(false);
+  const [csrfToken, setCsrfToken] = useState('');
 
 
+
+  // Obtener CSRF token al montar el componente
+  useEffect(() => {
+    const fetchCsrfToken = async () => {
+      try {
+        const response = await base44.functions.invoke('generateCsrfToken');
+        if (response?.data?.success) {
+          setCsrfToken(response.data.csrf_token);
+        }
+      } catch (error) {
+        console.error('Error obteniendo CSRF token:', error);
+        toast.error('Error de seguridad: no se pudo generar token');
+      }
+    };
+    fetchCsrfToken();
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
+    if (!csrfToken) {
+      toast.error('Token de seguridad no disponible');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const response = await base44.functions.invoke('validateAdminLogin', { pin });
+      const response = await base44.functions.invoke('validateAdminLogin', { 
+        pin,
+        csrf_token: csrfToken
+      }, {
+        headers: {
+          'X-CSRF-Token': csrfToken
+        }
+      });
 
       if (response?.data?.success) {
         const userData = response.data.user;
         const sessionToken = response.data.session_token;
+        const newCsrfToken = response.data.csrf_token;
         
         await login(userData);
         
-        // Guardar el token de sesión en cookies (24 horas)
+        // Guardar tokens en cookies
         document.cookie = `session_token=${sessionToken}; path=/; max-age=${24*60*60}; secure; samesite=strict`;
+        document.cookie = `csrf_token=${newCsrfToken}; path=/; max-age=${24*60*60}; secure; samesite=strict`;
+        
+        // Actualizar CSRF token para futuras requests
+        setCsrfToken(newCsrfToken);
         
         toast.success('Acceso autorizado');
         navigate(createPageUrl('Dashboard'));
