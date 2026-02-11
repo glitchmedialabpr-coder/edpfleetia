@@ -1,5 +1,4 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-import * as bcrypt from 'https://deno.land/x/bcrypt@v0.4.1/mod.ts';
 
 // Rate limiting para admin
 const adminAttempts = new Map();
