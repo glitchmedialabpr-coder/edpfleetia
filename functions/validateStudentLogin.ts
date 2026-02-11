@@ -132,7 +132,7 @@ Deno.serve(async (req) => {
 
     const sessionToken = crypto.randomUUID();
     const now = new Date();
-    const expiresAt = new Date(now.getTime() + 12 * 60 * 60 * 1000);
+    const expiresAt = new Date(now.getTime() + 10 * 60 * 1000); // 10 minutos
     
     const clientIp = req.headers.get('x-forwarded-for') || 
                      req.headers.get('x-real-ip') || 
@@ -216,7 +216,7 @@ Deno.serve(async (req) => {
         'Access-Control-Allow-Origin': req.headers.get('origin') || '*',
         'Access-Control-Allow-Credentials': 'true',
         'Content-Type': 'application/json',
-        'Set-Cookie': `session_token=${sessionToken}; Path=/; Max-Age=${12*60*60}; HttpOnly; Secure; SameSite=Strict`,
+        'Set-Cookie': `session_token=${sessionToken}; Path=/; Max-Age=${10*60}; HttpOnly; Secure; SameSite=Strict`,
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '1; mode=block'
