@@ -111,27 +111,54 @@ Deno.serve(async (req) => {
     
     const driver = drivers[0];
 
-    const sessionResponse = await base44.asServiceRole.functions.invoke('createUserSession', {
-      id: driver.id,
-      email: driver.email,
+    // Crear sesión directamente sin invocar otra función
+    const sessionToken = crypto.randomUUID();
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 12 * 60 * 60 * 1000);
+    
+    const sessionData = {
+      user_id: driver.id,
       full_name: driver.full_name,
-      phone: driver.phone,
+      email: driver.email || '',
+      phone: driver.phone || '',
       role: 'user',
       user_type: 'driver',
-      driver_id: driver.driver_id
+      driver_id: driver.driver_id,
+      session_token: sessionToken,
+      last_activity: now.toISOString(),
+      expires_at: expiresAt.toISOString()
+    };
+    
+    // Limpiar sesiones antiguas del conductor
+    const oldSessions = await base44.asServiceRole.entities.UserSession.filter({
+      user_id: driver.id
     });
+    
+    for (const oldSession of oldSessions) {
+      await base44.asServiceRole.entities.UserSession.delete(oldSession.id);
+    }
+    
+    await base44.asServiceRole.entities.UserSession.create(sessionData);
 
     return Response.json({ 
       success: true,
-      user: sessionResponse.data.user,
-      session_token: sessionResponse.data.session_token
+      user: {
+        id: driver.id,
+        full_name: driver.full_name,
+        email: driver.email,
+        phone: driver.phone,
+        role: 'user',
+        user_type: 'driver',
+        driver_id: driver.driver_id
+      },
+      session_token: sessionToken
     }, {
       status: 200,
       headers: {
         'Access-Control-Allow-Origin': req.headers.get('origin') || '*',
         'Access-Control-Allow-Credentials': 'true',
         'Content-Type': 'application/json',
-        'Set-Cookie': `session_token=${sessionResponse.data.session_token}; Path=/; Max-Age=${12*60*60}; HttpOnly; Secure; SameSite=Strict`,
+        'Set-Cookie': `session_token=${sessionToken}; Path=/; Max-Age=${12*60*60}; HttpOnly; Secure; SameSite=Strict`,
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '1; mode=block'

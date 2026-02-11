@@ -100,28 +100,52 @@ Deno.serve(async (req) => {
       });
     }
     
-    // Login exitoso - crear sesión en backend
+    // Login exitoso - crear sesión directamente
     resetAdminAttempts(clientIp);
 
-    const sessionResponse = await base44.asServiceRole.functions.invoke('createUserSession', {
-      id: 'admin',
+    const sessionToken = crypto.randomUUID();
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 5 * 60 * 60 * 1000);
+    
+    const sessionData = {
+      user_id: 'admin',
+      full_name: 'Administrador',
+      email: 'admin@edp.edu',
       role: 'admin',
       user_type: 'admin',
-      email: 'admin@edp.edu',
-      full_name: 'Administrador'
+      session_token: sessionToken,
+      last_activity: now.toISOString(),
+      expires_at: expiresAt.toISOString()
+    };
+    
+    // Limpiar sesiones antiguas del admin
+    const oldSessions = await base44.asServiceRole.entities.UserSession.filter({
+      user_id: 'admin'
     });
+    
+    for (const oldSession of oldSessions) {
+      await base44.asServiceRole.entities.UserSession.delete(oldSession.id);
+    }
+    
+    await base44.asServiceRole.entities.UserSession.create(sessionData);
     
     return Response.json({ 
       success: true,
-      user: sessionResponse.data.user,
-      session_token: sessionResponse.data.session_token
+      user: {
+        id: 'admin',
+        full_name: 'Administrador',
+        email: 'admin@edp.edu',
+        role: 'admin',
+        user_type: 'admin'
+      },
+      session_token: sessionToken
     }, {
       status: 200,
       headers: {
         'Access-Control-Allow-Origin': req.headers.get('origin') || '*',
         'Access-Control-Allow-Credentials': 'true',
         'Content-Type': 'application/json',
-        'Set-Cookie': `session_token=${sessionResponse.data.session_token}; Path=/; Max-Age=${5*60*60}; HttpOnly; Secure; SameSite=Strict`,
+        'Set-Cookie': `session_token=${sessionToken}; Path=/; Max-Age=${5*60*60}; HttpOnly; Secure; SameSite=Strict`,
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '1; mode=block'
