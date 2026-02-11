@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import * as bcrypt from 'https://deno.land/x/bcrypt@v0.4.1/mod.ts';
 
 // Rate limiting para admin
 const adminAttempts = new Map();
@@ -98,9 +99,21 @@ Deno.serve(async (req) => {
       });
     }
     
-    const ADMIN_PIN = Deno.env.get('ADMIN_PIN');
-    
-    if (pin !== ADMIN_PIN) {
+    const ADMIN_PIN_HASH = Deno.env.get('ADMIN_PIN_HASH');
+
+    if (!ADMIN_PIN_HASH) {
+      return Response.json({ 
+        success: false, 
+        error: 'Configuración incompleta' 
+      }, { 
+        status: 500,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
+    }
+
+    const isValidPin = await bcrypt.compare(pin, ADMIN_PIN_HASH);
+
+    if (!isValidPin) {
       return Response.json({ 
         success: false, 
         error: 'PIN incorrecto' 
