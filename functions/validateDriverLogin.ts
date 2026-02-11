@@ -14,7 +14,29 @@ Deno.serve(async (req) => {
 
   try {
     const base44 = createClientFromRequest(req);
-    const { driverId } = await req.json();
+    const { driverId, csrf_token } = await req.json();
+    
+    // CSRF Protection - OBLIGATORIO
+    if (!csrf_token || typeof csrf_token !== 'string') {
+      return Response.json({ 
+        success: false,
+        error: 'Token CSRF inválido' 
+      }, { 
+        status: 403,
+        headers: { 'Access-Control-Allow-Origin': req.headers.get('origin') || '*' }
+      });
+    }
+    
+    const headerCsrf = req.headers.get('X-CSRF-Token');
+    if (headerCsrf !== csrf_token) {
+      return Response.json({ 
+        success: false,
+        error: 'Validación CSRF fallida' 
+      }, { 
+        status: 403,
+        headers: { 'Access-Control-Allow-Origin': req.headers.get('origin') || '*' }
+      });
+    }
     
     // Validación
      if (!driverId || typeof driverId !== 'string' || driverId.length !== 3) {
@@ -103,7 +125,17 @@ Deno.serve(async (req) => {
     });
     
     const tokens = tokensResponse.data;
-    
+
+    // Generar session fingerprint
+    const acceptLanguage = req.headers.get('accept-language') || 'unknown';
+    const fingerprintResponse = await base44.functions.invoke('generateSessionFingerprint', {
+      ip_address: clientIp,
+      user_agent: req.headers.get('user-agent') || 'unknown',
+      accept_language: acceptLanguage
+    });
+
+    const fingerprint = fingerprintResponse.data.fingerprint;
+
     const sessionData = {
       user_id: driver.id,
       full_name: driver.full_name,
@@ -113,6 +145,7 @@ Deno.serve(async (req) => {
       user_type: 'driver',
       driver_id: driver.driver_id,
       session_token: sessionToken,
+      session_fingerprint: fingerprint,
       access_token: tokens.access_token,
       refresh_token: tokens.refresh_token,
       access_token_expires: tokens.access_token_expires,
