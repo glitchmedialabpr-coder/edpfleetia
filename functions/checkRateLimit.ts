@@ -16,6 +16,7 @@ Deno.serve(async (req) => {
     const now = new Date();
 
     // Buscar rate limit existente
+    const base44 = createClientFromRequest(req);
     const rateLimits = await base44.asServiceRole.entities.RateLimitLog.filter({
       identifier,
       attempt_type
