@@ -42,6 +42,19 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
+      // Log logout event
+      if (user) {
+        await base44.functions.invoke('logSecurityEvent', {
+          event_type: 'logout',
+          user_id: user.id,
+          user_email: user.email,
+          user_type: user.user_type || user.role,
+          details: {},
+          severity: 'low',
+          success: true
+        });
+      }
+      
       await base44.auth.logout();
     } catch (error) {
       console.error('Logout error:', error);

@@ -1,49 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
-// Rate limiting
-const loginAttempts = new Map();
-const MAX_ATTEMPTS = 5;
-const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutos
-
-function checkLoginAttempts(driverId) {
-  const now = Date.now();
-  const attempts = loginAttempts.get(driverId);
-  
-  if (!attempts) {
-    loginAttempts.set(driverId, { count: 1, firstAttempt: now, lockedUntil: null });
-    return { allowed: true };
-  }
-  
-  if (attempts.lockedUntil && now < attempts.lockedUntil) {
-    const remainingMinutes = Math.ceil((attempts.lockedUntil - now) / 60000);
-    return { 
-      allowed: false, 
-      message: `Cuenta bloqueada. Intenta en ${remainingMinutes} minutos.` 
-    };
-  }
-  
-  if (attempts.lockedUntil && now >= attempts.lockedUntil) {
-    loginAttempts.set(driverId, { count: 1, firstAttempt: now, lockedUntil: null });
-    return { allowed: true };
-  }
-  
-  attempts.count++;
-  
-  if (attempts.count >= MAX_ATTEMPTS) {
-    attempts.lockedUntil = now + LOCKOUT_TIME;
-    return { 
-      allowed: false, 
-      message: `Demasiados intentos. Cuenta bloqueada por 15 minutos.` 
-    };
-  }
-  
-  return { allowed: true };
-}
-
-function resetLoginAttempts(driverId) {
-  loginAttempts.delete(driverId);
-}
-
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, {
@@ -78,12 +34,16 @@ Deno.serve(async (req) => {
       });
     }
     
-    // Verificar rate limiting
-     const attemptCheck = checkLoginAttempts(sanitizedId);
-    if (!attemptCheck.allowed) {
+    // Verificar rate limiting con DB persistente
+    const rateLimitCheck = await base44.functions.invoke('checkRateLimit', {
+      identifier: sanitizedId,
+      attempt_type: 'driver_login'
+    });
+    
+    if (!rateLimitCheck.data.allowed) {
       return Response.json({ 
         success: false, 
-        error: attemptCheck.message 
+        error: rateLimitCheck.data.message 
       }, { 
         status: 429,
         headers: { 'Access-Control-Allow-Origin': '*' }
@@ -97,6 +57,15 @@ Deno.serve(async (req) => {
     });
     
     if (!drivers?.length) {
+      await base44.functions.invoke('logSecurityEvent', {
+        event_type: 'login_failed',
+        user_id: sanitizedId,
+        user_type: 'driver',
+        details: { reason: 'driver_not_found' },
+        severity: 'low',
+        success: false
+      });
+      
       return Response.json({ 
         success: false, 
         error: 'Conductor no encontrado' 
@@ -106,8 +75,11 @@ Deno.serve(async (req) => {
       });
     }
     
-    // Login exitoso - reset intentos y crear sesión
-    resetLoginAttempts(sanitizedId);
+    // Login exitoso - reset rate limit
+    await base44.functions.invoke('resetRateLimit', {
+      identifier: sanitizedId,
+      attempt_type: 'driver_login'
+    });
     
     const driver = drivers[0];
 
@@ -141,6 +113,17 @@ Deno.serve(async (req) => {
     }
     
     await base44.asServiceRole.entities.UserSession.create(sessionData);
+
+    // Log login exitoso
+    await base44.functions.invoke('logSecurityEvent', {
+      event_type: 'login_success',
+      user_id: driver.id,
+      user_email: driver.email,
+      user_type: 'driver',
+      details: { driver_id: driver.driver_id },
+      severity: 'low',
+      success: true
+    });
 
     return Response.json({ 
       success: true,

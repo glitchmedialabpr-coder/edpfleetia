@@ -5,50 +5,6 @@ const studentCache = new Map();
 const CACHE_TTL = 60 * 60 * 1000; // 1 hora
 let lastCacheLoad = 0;
 
-// Rate limiting
-const studentAttempts = new Map();
-const MAX_ATTEMPTS = 5;
-const LOCKOUT_TIME = 10 * 60 * 1000; // 10 minutos
-
-function checkStudentAttempts(studentId) {
-  const now = Date.now();
-  const attempts = studentAttempts.get(studentId);
-  
-  if (!attempts) {
-    studentAttempts.set(studentId, { count: 1, firstAttempt: now, lockedUntil: null });
-    return { allowed: true };
-  }
-  
-  if (attempts.lockedUntil && now < attempts.lockedUntil) {
-    const remainingMinutes = Math.ceil((attempts.lockedUntil - now) / 60000);
-    return { 
-      allowed: false, 
-      message: `Bloqueado. Intenta en ${remainingMinutes} minutos.` 
-    };
-  }
-  
-  if (attempts.lockedUntil && now >= attempts.lockedUntil) {
-    studentAttempts.set(studentId, { count: 1, firstAttempt: now, lockedUntil: null });
-    return { allowed: true };
-  }
-  
-  attempts.count++;
-  
-  if (attempts.count >= MAX_ATTEMPTS) {
-    attempts.lockedUntil = now + LOCKOUT_TIME;
-    return { 
-      allowed: false, 
-      message: `Demasiados intentos. Bloqueado por 10 minutos.` 
-    };
-  }
-  
-  return { allowed: true };
-}
-
-function resetStudentAttempts(studentId) {
-  studentAttempts.delete(studentId);
-}
-
 async function loadStudentCache(base44) {
    const now = Date.now();
 
@@ -107,12 +63,16 @@ Deno.serve(async (req) => {
       });
     }
     
-    // Rate limiting
-     const attemptCheck = checkStudentAttempts(sanitizedId);
-    if (!attemptCheck.allowed) {
+    // Rate limiting con DB persistente
+    const rateLimitCheck = await base44.functions.invoke('checkRateLimit', {
+      identifier: sanitizedId,
+      attempt_type: 'student_login'
+    });
+    
+    if (!rateLimitCheck.data.allowed) {
       return Response.json({ 
         success: false, 
-        error: attemptCheck.message 
+        error: rateLimitCheck.data.message 
       }, { 
         status: 429,
         headers: { 'Access-Control-Allow-Origin': '*' }
@@ -144,6 +104,15 @@ Deno.serve(async (req) => {
       });
       
       if (!students?.length) {
+        await base44.functions.invoke('logSecurityEvent', {
+          event_type: 'login_failed',
+          user_id: sanitizedId,
+          user_type: 'passenger',
+          details: { reason: 'student_not_found' },
+          severity: 'low',
+          success: false
+        });
+        
         return Response.json({ success: false, error: 'Estudiante no encontrado' }, { 
           status: 404,
           headers: { 'Access-Control-Allow-Origin': '*' }
@@ -155,8 +124,11 @@ Deno.serve(async (req) => {
       studentCache.set(sanitizedId, student);
     }
     
-    // Login exitoso - crear sesión directamente
-    resetStudentAttempts(sanitizedId);
+    // Login exitoso - reset rate limit
+    await base44.functions.invoke('resetRateLimit', {
+      identifier: sanitizedId,
+      attempt_type: 'student_login'
+    });
 
     const sessionToken = crypto.randomUUID();
     const now = new Date();
@@ -188,6 +160,17 @@ Deno.serve(async (req) => {
     }
     
     await base44.asServiceRole.entities.UserSession.create(sessionData);
+    
+    // Log login exitoso
+    await base44.functions.invoke('logSecurityEvent', {
+      event_type: 'login_success',
+      user_id: student.id,
+      user_email: student.email,
+      user_type: 'passenger',
+      details: { student_id: student.student_id },
+      severity: 'low',
+      success: true
+    });
     
     return Response.json({ 
       success: true,
