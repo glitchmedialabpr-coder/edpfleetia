@@ -265,6 +265,13 @@ function TripRequestCard({ request, onDelete }) {
               </div>
             )}
           </div>
+
+          {request.comments && (
+            <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <p className="text-xs text-slate-500 mb-1">Comentarios:</p>
+              <p className="text-sm text-slate-700">{request.comments}</p>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-2 lg:w-64">
