@@ -13,44 +13,47 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const base44 = createClientFromRequest(req);
-    const { driverId, csrf_token } = await req.json();
-    
-    // CSRF Protection - OBLIGATORIO
-    if (!csrf_token || typeof csrf_token !== 'string') {
-      return Response.json({ 
-        success: false,
-        error: 'Token CSRF inválido' 
-      }, { 
-        status: 403,
-        headers: { 'Access-Control-Allow-Origin': req.headers.get('origin') || '*' }
-      });
-    }
-    
-    // Validación
-     if (!driverId || typeof driverId !== 'string' || driverId.length !== 3) {
-      return Response.json({ success: false, error: 'ID inválido' }, { 
-        status: 400,
-        headers: { 'Access-Control-Allow-Origin': '*' }
-      });
-    }
-    
-    // Sanitizar input
-    const sanitizedId = driverId.trim().replace(/[^0-9]/g, '').slice(0, 3);
-    
-    if (sanitizedId.length !== 3) {
-      return Response.json({ success: false, error: 'ID inválido' }, { 
-        status: 400,
-        headers: { 'Access-Control-Allow-Origin': '*' }
-      });
-    }
-    
-    // Skip rate limiting check para ahora
-    
-    // Usar índice único para búsqueda más rápida
-    const drivers = await base44.asServiceRole.entities.Driver.filter({ 
-      driver_id: sanitizedId
-    });
+      const base44 = createClientFromRequest(req);
+      const { driverId, csrf_token } = await req.json();
+
+      // CSRF Protection - OBLIGATORIO
+      if (!csrf_token || typeof csrf_token !== 'string') {
+        return Response.json({ 
+          success: false,
+          error: 'Token CSRF inválido' 
+        }, { 
+          status: 403,
+          headers: { 'Access-Control-Allow-Origin': req.headers.get('origin') || '*' }
+        });
+      }
+
+      // Validación
+       if (!driverId || typeof driverId !== 'string' || driverId.length !== 3) {
+        return Response.json({ success: false, error: 'ID inválido' }, { 
+          status: 400,
+          headers: { 'Access-Control-Allow-Origin': '*' }
+        });
+      }
+
+      // Sanitizar input
+      const sanitizedId = driverId.trim().replace(/[^0-9]/g, '').slice(0, 3);
+
+      if (sanitizedId.length !== 3) {
+        return Response.json({ success: false, error: 'ID inválido' }, { 
+          status: 400,
+          headers: { 'Access-Control-Allow-Origin': '*' }
+        });
+      }
+
+      // Buscar conductor - use list instead of filter
+      let drivers = [];
+      try {
+        const allDrivers = await base44.asServiceRole.entities.Driver.list('', 100);
+        drivers = allDrivers.filter(d => d.driver_id === sanitizedId);
+      } catch (e) {
+        console.error('Driver fetch error:', e.message);
+        return Response.json({ success: false, error: 'Error fetching drivers' }, { status: 500 });
+      }
     
     if (!drivers?.length) {
       await base44.functions.invoke('logSecurityEvent', {
