@@ -217,28 +217,74 @@ export default function DriverDashboard() {
             </div>
           </Card>
 
-          {/* Vehicle Status Card */}
-          <Card className="p-6">
-            <h3 className="font-semibold text-slate-800 mb-4">Estado y Mantenimiento</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between py-2 border-b border-slate-100">
-                <span className="text-slate-600">Estado</span>
-                <Badge className="bg-green-100 text-green-700">Disponible</Badge>
+          {/* Weekly Schedule Card */}
+          {driverData?.weekly_schedule && driverData.weekly_schedule.length > 0 ? (
+            <Card className="p-6 bg-gradient-to-br from-purple-50 to-white border-purple-200">
+              <div className="flex items-center gap-3 mb-4">
+                <Calendar className="w-6 h-6 text-purple-600" />
+                <h3 className="font-semibold text-slate-800">Mi Horario Semanal</h3>
               </div>
-              <div className="flex justify-between py-2 border-b border-slate-100">
-                <span className="text-slate-600">Kilometraje</span>
-                <span className="font-medium text-slate-800">{currentVehicleData.current_mileage?.toLocaleString()} km</span>
+              
+              <div className="space-y-2">
+                {driverData.weekly_schedule.map((schedule, idx) => {
+                  const isActive = schedule.active;
+                  return (
+                    <div
+                      key={idx}
+                      className={`p-3 rounded-lg flex items-center justify-between transition-all ${
+                        isActive
+                          ? 'bg-purple-100 border border-purple-300'
+                          : 'bg-slate-50 border border-slate-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className={`w-12 text-xs font-semibold ${isActive ? 'text-purple-800' : 'text-slate-400'}`}>
+                          {schedule.dayName.substring(0, 3)}
+                        </div>
+                        
+                        {isActive ? (
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-3.5 h-3.5 text-purple-600" />
+                            <span className="text-xs font-medium text-purple-700">
+                              {schedule.start_time} - {schedule.end_time}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-slate-400">Libre</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <div className="flex justify-between py-2 border-b border-slate-100">
-                <span className="text-slate-600">Próximo Servicio</span>
-                <span className="font-medium text-slate-800">{currentVehicleData.next_service_date || 'No programado'}</span>
+              
+              <p className="text-xs text-slate-500 mt-3 text-center italic">
+                Solo el administrador puede modificar este horario
+              </p>
+            </Card>
+          ) : (
+            <Card className="p-6">
+              <h3 className="font-semibold text-slate-800 mb-4">Estado y Mantenimiento</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between py-2 border-b border-slate-100">
+                  <span className="text-slate-600">Estado</span>
+                  <Badge className="bg-green-100 text-green-700">Disponible</Badge>
+                </div>
+                <div className="flex justify-between py-2 border-b border-slate-100">
+                  <span className="text-slate-600">Kilometraje</span>
+                  <span className="font-medium text-slate-800">{currentVehicleData.current_mileage?.toLocaleString()} km</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-slate-100">
+                  <span className="text-slate-600">Próximo Servicio</span>
+                  <span className="font-medium text-slate-800">{currentVehicleData.next_service_date || 'No programado'}</span>
+                </div>
+                <div className="flex justify-between py-2">
+                  <span className="text-slate-600">Seguro Vence</span>
+                  <span className="font-medium text-slate-800">{currentVehicleData.insurance_expiry || 'No especificado'}</span>
+                </div>
               </div>
-              <div className="flex justify-between py-2">
-                <span className="text-slate-600">Seguro Vence</span>
-                <span className="font-medium text-slate-800">{currentVehicleData.insurance_expiry || 'No especificado'}</span>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          )}
         </div>
       )}
 
