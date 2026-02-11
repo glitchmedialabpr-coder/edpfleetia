@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '../components/auth/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, LogOut, Smartphone, Monitor, Tablet, MapPin, Clock } from 'lucide-react';
 import { toast } from 'sonner';
@@ -18,7 +18,7 @@ export default function ActiveSessions() {
   const loadSessions = async () => {
     try {
       setLoading(true);
-      const response = await base44.functions.invoke('getActiveSessionsForUser');
+      const response = await base44.functions.invoke('getActiveSessionsForUser', {});
       if (response?.data?.success) {
         setSessions(response.data.sessions || []);
       }
@@ -32,10 +32,8 @@ export default function ActiveSessions() {
 
   const handleLogoutSession = async (sessionId) => {
     try {
-      const session = sessions.find(s => s.id === sessionId);
-      if (!session) return;
-
-      // Eliminar sesión
+      // Eliminar sesión de BD
+      await base44.asServiceRole.entities.UserSession.delete(sessionId);
       setSessions(sessions.filter(s => s.id !== sessionId));
       toast.success('Sesión cerrada');
     } catch (error) {
@@ -47,24 +45,30 @@ export default function ActiveSessions() {
   const getDeviceIcon = (deviceType) => {
     switch (deviceType) {
       case 'mobile':
-        return <Smartphone className="w-5 h-5" />;
+        return <Smartphone className="w-5 h-5 text-blue-600" />;
       case 'tablet':
-        return <Tablet className="w-5 h-5" />;
+        return <Tablet className="w-5 h-5 text-blue-600" />;
       default:
-        return <Monitor className="w-5 h-5" />;
+        return <Monitor className="w-5 h-5 text-blue-600" />;
     }
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleString('es-ES');
+    return new Date(dateString).toLocaleString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-4xl">
       <div>
         <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Sesiones Activas</h1>
         <p className="text-slate-600 dark:text-slate-400 mt-2">
-          Revisa todas las sesiones activas en tu cuenta
+          Gestiona dónde has iniciado sesión en tu cuenta
         </p>
       </div>
 
@@ -83,29 +87,29 @@ export default function ActiveSessions() {
         </Card>
       ) : (
         <div className="grid gap-4">
-          {sessions.map((session, index) => (
-            <Card key={session.id} className="hover:shadow-md transition-shadow">
+          {sessions.map((session) => (
+            <Card key={session.id} className="hover:shadow-lg transition-shadow">
               <CardContent className="pt-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-4">
+                    <div className="flex items-center gap-3 mb-3">
                       {getDeviceIcon(session.device_type)}
                       <div>
                         <h3 className="font-semibold text-slate-900 dark:text-slate-100">
-                          {session.device} - {session.device_type.charAt(0).toUpperCase() + session.device_type.slice(1)}
+                          {session.browser} · {session.device_type.charAt(0).toUpperCase() + session.device_type.slice(1)}
                         </h3>
-                        {index === 0 && (
-                          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded mt-1">
-                            Sesión Actual
+                        {session.is_current && (
+                          <span className="text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-100 px-2 py-1 rounded mt-1 inline-block">
+                            Esta sesión
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                    <div className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4" />
-                        <span>IP: {session.ip_address}</span>
+                        <span className="font-mono text-xs">{session.ip_address}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4" />
@@ -115,18 +119,23 @@ export default function ActiveSessions() {
                         <Clock className="w-4 h-4" />
                         <span>Última actividad: {formatDate(session.last_activity)}</span>
                       </div>
+                      {session.is_expired && (
+                        <div className="text-orange-600 dark:text-orange-400 text-xs mt-2">
+                          ⚠️ Sesión expirada
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  {index !== 0 && (
+                  {!session.is_current && !session.is_expired && (
                     <Button
                       variant="destructive"
                       size="sm"
                       onClick={() => handleLogoutSession(session.id)}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 shrink-0"
                     >
                       <LogOut className="w-4 h-4" />
-                      Cerrar Sesión
+                      Cerrar
                     </Button>
                   )}
                 </div>
@@ -138,13 +147,12 @@ export default function ActiveSessions() {
 
       <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
         <CardHeader>
-          <CardTitle className="text-blue-900 dark:text-blue-100">💡 Consejos de Seguridad</CardTitle>
+          <CardTitle className="text-blue-900 dark:text-blue-100 text-base">🔒 Seguridad de Sesiones</CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-blue-800 dark:text-blue-200 space-y-2">
-          <p>✓ Revisa regularmente las sesiones activas</p>
-          <p>✓ Cierra sesiones que no reconozcas</p>
-          <p>✓ Si ves actividad sospechosa, cambia tu contraseña</p>
-          <p>✓ Usa una contraseña fuerte y única</p>
+          <p>✓ Se registra cada inicio de sesión automáticamente</p>
+          <p>✓ Cierra sesiones antiguas o que no reconozcas</p>
+          <p>✓ Los datos sensibles se encriptan en la BD</p>
         </CardContent>
       </Card>
     </div>
