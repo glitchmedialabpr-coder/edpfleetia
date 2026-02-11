@@ -183,6 +183,11 @@ Deno.serve(async (req) => {
     
     await base44.asServiceRole.entities.UserSession.create(sessionData);
     
+    // Generar nuevo CSRF token para próximas requests
+    const newCsrfToken = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+    
     return Response.json({ 
       success: true,
       user: {
@@ -195,7 +200,8 @@ Deno.serve(async (req) => {
       session_token: sessionToken,
       access_token: tokens.access_token,
       refresh_token: tokens.refresh_token,
-      access_token_expires: tokens.access_token_expires
+      access_token_expires: tokens.access_token_expires,
+      csrf_token: newCsrfToken
     }, {
       status: 200,
       headers: {
