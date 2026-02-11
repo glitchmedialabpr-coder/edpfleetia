@@ -49,8 +49,7 @@ Deno.serve(async (req) => {
     
     // Usar índice único para búsqueda más rápida
     const drivers = await base44.asServiceRole.entities.Driver.filter({ 
-      driver_id: sanitizedId,
-      status: 'active'
+      driver_id: sanitizedId
     });
     
     if (!drivers?.length) {
