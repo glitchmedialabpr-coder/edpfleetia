@@ -141,17 +141,6 @@ Deno.serve(async (req) => {
     
     await base44.asServiceRole.entities.UserSession.create(sessionData);
 
-    // Log login exitoso
-    await base44.functions.invoke('logSecurityEvent', {
-      event_type: 'login_success',
-      user_id: driver.id,
-      user_email: driver.email,
-      user_type: 'driver',
-      details: { driver_id: driver.driver_id },
-      severity: 'low',
-      success: true
-    });
-
     return Response.json({ 
       success: true,
       user: {
