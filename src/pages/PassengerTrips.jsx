@@ -409,6 +409,16 @@ export default function PassengerTrips() {
               </div>
             )}
 
+            <div className="space-y-2">
+              <Label>Comentarios (Opcional)</Label>
+              <Textarea
+                placeholder="Añade cualquier detalle importante sobre tu viaje..."
+                value={formData.comments}
+                onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
+                className="min-h-[80px]"
+              />
+            </div>
+
             <div className="p-3 bg-slate-50 rounded-lg text-sm text-slate-600">
               <p className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
