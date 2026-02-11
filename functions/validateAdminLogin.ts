@@ -105,7 +105,7 @@ Deno.serve(async (req) => {
 
     const sessionToken = crypto.randomUUID();
     const now = new Date();
-    const expiresAt = new Date(now.getTime() + 5 * 60 * 60 * 1000);
+    const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 horas
     
     // Generar JWT tokens
     const tokensResponse = await base44.functions.invoke('generateTokens', {
@@ -167,7 +167,7 @@ Deno.serve(async (req) => {
         'Access-Control-Allow-Origin': req.headers.get('origin') || '*',
         'Access-Control-Allow-Credentials': 'true',
         'Content-Type': 'application/json',
-        'Set-Cookie': `session_token=${sessionToken}; Path=/; Max-Age=${5*60*60}; HttpOnly; Secure; SameSite=Strict`,
+        'Set-Cookie': `session_token=${sessionToken}; Path=/; Max-Age=${24*60*60}; HttpOnly; Secure; SameSite=Strict`,
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '1; mode=block'
