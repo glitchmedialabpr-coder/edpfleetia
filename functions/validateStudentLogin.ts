@@ -155,31 +155,58 @@ Deno.serve(async (req) => {
       studentCache.set(sanitizedId, student);
     }
     
-    // Login exitoso - crear sesión
+    // Login exitoso - crear sesión directamente
     resetStudentAttempts(sanitizedId);
 
-    const sessionResponse = await base44.asServiceRole.functions.invoke('createUserSession', {
-      id: student.id,
-      email: student.email || `student_${student.student_id}@edp.edu`,
+    const sessionToken = crypto.randomUUID();
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 12 * 60 * 60 * 1000);
+    
+    const sessionData = {
+      user_id: student.id,
       full_name: student.full_name,
-      phone: student.phone,
+      email: student.email || `student_${student.student_id}@edp.edu`,
+      phone: student.phone || '',
+      student_id: student.student_id,
+      housing_name: student.housing_name || '',
       role: 'user',
       user_type: 'passenger',
-      student_id: student.student_id,
-      housing_name: student.housing_name
+      session_token: sessionToken,
+      last_activity: now.toISOString(),
+      expires_at: expiresAt.toISOString()
+    };
+    
+    // Limpiar sesiones antiguas del estudiante
+    const oldSessions = await base44.asServiceRole.entities.UserSession.filter({
+      user_id: student.id
     });
+    
+    for (const oldSession of oldSessions) {
+      await base44.asServiceRole.entities.UserSession.delete(oldSession.id);
+    }
+    
+    await base44.asServiceRole.entities.UserSession.create(sessionData);
     
     return Response.json({ 
       success: true,
-      user: sessionResponse.data.user,
-      session_token: sessionResponse.data.session_token
+      user: {
+        id: student.id,
+        full_name: student.full_name,
+        email: student.email || `student_${student.student_id}@edp.edu`,
+        phone: student.phone,
+        student_id: student.student_id,
+        housing_name: student.housing_name,
+        role: 'user',
+        user_type: 'passenger'
+      },
+      session_token: sessionToken
     }, {
       status: 200,
       headers: {
         'Access-Control-Allow-Origin': req.headers.get('origin') || '*',
         'Access-Control-Allow-Credentials': 'true',
         'Content-Type': 'application/json',
-        'Set-Cookie': `session_token=${sessionResponse.data.session_token}; Path=/; Max-Age=${30*60}; HttpOnly; Secure; SameSite=Strict`,
+        'Set-Cookie': `session_token=${sessionToken}; Path=/; Max-Age=${12*60*60}; HttpOnly; Secure; SameSite=Strict`,
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '1; mode=block'
