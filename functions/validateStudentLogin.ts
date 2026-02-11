@@ -101,56 +101,24 @@ Deno.serve(async (req) => {
       });
     }
     
-    // Cargar cache
+    // Buscar estudiante
+     let student;
      try {
-       await loadStudentCache(base44);
-     } catch (cacheError) {
-       console.error('[Cache Load] Failed:', cacheError.message);
-       return Response.json({ 
-         success: false, 
-         error: 'Error cargando datos' 
-       }, { 
-         status: 500,
-         headers: { 'Access-Control-Allow-Origin': '*' }
-       });
+       const allStudents = await base44.asServiceRole.entities.Student.list('', 100);
+       const students = allStudents.filter(s => s.student_id === sanitizedId && s.status === 'active');
+
+       if (!students?.length) {
+         return Response.json({ success: false, error: 'Estudiante no encontrado' }, { 
+           status: 404,
+           headers: { 'Access-Control-Allow-Origin': '*' }
+         });
+       }
+
+       student = students[0];
+     } catch (error) {
+       console.error('[validateStudentLogin] Error fetching student:', error);
+       return Response.json({ success: false, error: 'Error fetching student: ' + error.message }, { status: 500 });
      }
-    
-    // Buscar en cache primero
-    let student = studentCache.get(sanitizedId);
-    
-    // Si no está en cache, buscar directamente en DB (más rápido que recargar todo)
-    if (!student) {
-      const students = await base44.asServiceRole.entities.Student.filter({ 
-        student_id: sanitizedId,
-        status: 'active'
-      });
-      
-      if (!students?.length) {
-        await base44.functions.invoke('logSecurityEvent', {
-          event_type: 'login_failed',
-          user_id: sanitizedId,
-          user_type: 'passenger',
-          details: { reason: 'student_not_found' },
-          severity: 'low',
-          success: false
-        });
-        
-        return Response.json({ success: false, error: 'Estudiante no encontrado' }, { 
-          status: 404,
-          headers: { 'Access-Control-Allow-Origin': '*' }
-        });
-      }
-      
-      student = students[0];
-      // Agregar al cache para próximas consultas
-      studentCache.set(sanitizedId, student);
-    }
-    
-    // Login exitoso - reset rate limit
-    await base44.functions.invoke('resetRateLimit', {
-      identifier: sanitizedId,
-      attempt_type: 'student_login'
-    });
 
     const sessionToken = crypto.randomUUID();
     const now = new Date();
