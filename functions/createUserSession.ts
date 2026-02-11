@@ -72,7 +72,16 @@ Deno.serve(async (req) => {
       headers: { 'Access-Control-Allow-Origin': '*' }
     });
   } catch (error) {
-    console.error('[createUserSession]', error);
-    return Response.json({ success: false, error: error.message }, { status: 500 });
+    console.error('[createUserSession] Error:', error);
+    console.error('[createUserSession] Stack:', error.stack);
+    console.error('[createUserSession] Message:', error.message);
+    return Response.json({ 
+      success: false, 
+      error: error.message,
+      details: error.stack 
+    }, { 
+      status: 500,
+      headers: { 'Access-Control-Allow-Origin': '*' }
+    });
   }
 });

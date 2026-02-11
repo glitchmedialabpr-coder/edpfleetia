@@ -139,9 +139,12 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     console.error('[validateDriverLogin] Error:', error);
+    console.error('[validateDriverLogin] Stack:', error.stack);
+    console.error('[validateDriverLogin] Message:', error.message);
     return Response.json({ 
       success: false, 
-      error: 'Error en el servidor' 
+      error: 'Error en el servidor',
+      details: error.message 
     }, { 
       status: 500,
       headers: { 'Access-Control-Allow-Origin': '*' }
