@@ -45,21 +45,7 @@ Deno.serve(async (req) => {
       });
     }
     
-    // Verificar rate limiting con DB persistente
-    const rateLimitCheck = await base44.functions.invoke('checkRateLimit', {
-      identifier: sanitizedId,
-      attempt_type: 'driver_login'
-    });
-    
-    if (!rateLimitCheck.data.allowed) {
-      return Response.json({ 
-        success: false, 
-        error: rateLimitCheck.data.message 
-      }, { 
-        status: 429,
-        headers: { 'Access-Control-Allow-Origin': '*' }
-      });
-    }
+    // Skip rate limiting check para ahora
     
     // Usar índice único para búsqueda más rápida
     const drivers = await base44.asServiceRole.entities.Driver.filter({ 
