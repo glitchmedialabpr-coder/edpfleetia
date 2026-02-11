@@ -16,6 +16,9 @@ export default function EmployeeLogin() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+    console.log('Código ingresado:', accessCode);
+    console.log('Código en minúsculas:', accessCode.toLowerCase());
+    console.log('¿Coincide?', ACCESS_CODES.includes(accessCode.toLowerCase()));
 
     if (ACCESS_CODES.includes(accessCode.toLowerCase())) {
       const user = {
