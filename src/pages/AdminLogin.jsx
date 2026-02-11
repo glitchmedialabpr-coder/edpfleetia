@@ -46,11 +46,8 @@ export default function AdminLogin() {
     try {
       const response = await base44.functions.invoke('validateAdminLogin', { 
         pin,
-        csrf_token: csrfToken
-      }, {
-        headers: {
-          'X-CSRF-Token': csrfToken
-        }
+        csrf_token: csrfToken,
+        'X-CSRF-Token': csrfToken
       });
 
       if (response?.data?.success) {
