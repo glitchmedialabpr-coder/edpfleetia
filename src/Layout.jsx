@@ -107,11 +107,11 @@ function LayoutContent({ children, currentPageName }) {
     const passengerPages = ['PassengerTrips'];
 
     if (adminPages.includes(currentPageName) && user?.role !== 'admin') {
-      navigate(createPageUrl('Home'), { replace: true });
-    } else if (driverPages.includes(currentPageName) && user?.user_type !== 'driver') {
-      navigate(createPageUrl('Home'), { replace: true });
-    } else if (passengerPages.includes(currentPageName) && user?.user_type !== 'passenger' && user?.role !== 'admin') {
-      navigate(createPageUrl('Home'), { replace: true });
+      navigate(createPageUrl(user?.user_type === 'driver' ? 'DriverDashboard' : 'PassengerTrips'), { replace: true });
+    } else if (driverPages.includes(currentPageName) && user?.user_type !== 'driver' && user?.role !== 'admin') {
+      navigate(createPageUrl(user?.role === 'admin' ? 'Dashboard' : 'PassengerTrips'), { replace: true });
+    } else if (passengerPages.includes(currentPageName) && user?.user_type === 'driver') {
+      navigate(createPageUrl('DriverDashboard'), { replace: true });
     }
   }, [user, loading, currentPageName, navigate]);
 
