@@ -20,7 +20,7 @@ import {
   Fuel
 } from 'lucide-react';
 import { toast } from 'sonner';
-import WebSocketNotificationClient from '@/components/notifications/WebSocketNotificationClient';
+import ReportIssueButton from '@/components/driver/ReportIssueButton';
 
 const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
@@ -344,6 +344,11 @@ export default function DriverDashboard() {
           Mis Viajes
           <ChevronRight className="w-4 h-4 ml-auto" />
         </Button>
+      </div>
+
+      {/* Report Issue Button */}
+      <div className="flex justify-center">
+        <ReportIssueButton />
       </div>
 
 
