@@ -90,6 +90,7 @@ Deno.serve(async (req) => {
       });
     }
     
+    // Usar índice único para búsqueda más rápida
     const drivers = await base44.asServiceRole.entities.Driver.filter({ 
       driver_id: sanitizedId,
       status: 'active'
@@ -98,7 +99,7 @@ Deno.serve(async (req) => {
     if (!drivers?.length) {
       return Response.json({ 
         success: false, 
-        error: 'No encontrado' 
+        error: 'Conductor no encontrado' 
       }, { 
         status: 404,
         headers: { 'Access-Control-Allow-Origin': '*' }

@@ -6,6 +6,10 @@ function generateSessionToken() {
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
+// Cache de sesiones activas para evitar consultas repetidas
+const sessionCache = new Map();
+const SESSION_CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204 });
@@ -39,7 +43,22 @@ Deno.serve(async (req) => {
     if (userData.driver_id) sessionData.driver_id = userData.driver_id;
     if (userData.housing_name) sessionData.housing_name = userData.housing_name;
 
+    // Limpiar sesiones antiguas del mismo usuario antes de crear una nueva
+    const existingSessions = await base44.asServiceRole.entities.UserSession.filter({
+      user_id: userId
+    });
+    
+    for (const oldSession of existingSessions) {
+      await base44.asServiceRole.entities.UserSession.delete(oldSession.id);
+    }
+    
     const session = await base44.asServiceRole.entities.UserSession.create(sessionData);
+    
+    // Cachear la sesión
+    sessionCache.set(sessionToken, {
+      session,
+      cachedAt: Date.now()
+    });
 
     return Response.json({
       success: true,

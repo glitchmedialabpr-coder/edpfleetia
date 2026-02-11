@@ -65,10 +65,15 @@ Deno.serve(async (req) => {
       });
     }
     
-    // Actualizar última actividad
-    await base44.asServiceRole.entities.UserSession.update(session.id, {
-      last_activity: now.toISOString()
-    });
+    // Actualizar última actividad solo cada 5 minutos para reducir escrituras
+    const lastActivity = new Date(session.last_activity);
+    const minutesSinceLastUpdate = (now - lastActivity) / (1000 * 60);
+    
+    if (minutesSinceLastUpdate > 5) {
+      await base44.asServiceRole.entities.UserSession.update(session.id, {
+        last_activity: now.toISOString()
+      });
+    }
     
     // Construir objeto de usuario
     const userData = {

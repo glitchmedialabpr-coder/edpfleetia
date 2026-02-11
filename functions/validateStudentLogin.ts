@@ -134,13 +134,25 @@ Deno.serve(async (req) => {
      }
     
     // Buscar en cache primero
-    const student = studentCache.get(sanitizedId);
+    let student = studentCache.get(sanitizedId);
     
+    // Si no está en cache, buscar directamente en DB (más rápido que recargar todo)
     if (!student) {
-      return Response.json({ success: false, error: 'Estudiante no encontrado' }, { 
-        status: 404,
-        headers: { 'Access-Control-Allow-Origin': '*' }
+      const students = await base44.asServiceRole.entities.Student.filter({ 
+        student_id: sanitizedId,
+        status: 'active'
       });
+      
+      if (!students?.length) {
+        return Response.json({ success: false, error: 'Estudiante no encontrado' }, { 
+          status: 404,
+          headers: { 'Access-Control-Allow-Origin': '*' }
+        });
+      }
+      
+      student = students[0];
+      // Agregar al cache para próximas consultas
+      studentCache.set(sanitizedId, student);
     }
     
     // Login exitoso - crear sesión
