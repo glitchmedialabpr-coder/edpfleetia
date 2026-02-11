@@ -29,6 +29,23 @@ Deno.serve(async (req) => {
       });
     }
     
+    // Verificar si el token está en blacklist
+    const blacklistCheck = await base44.functions.invoke('isTokenBlacklisted', {
+      token: sessionToken,
+      token_type: 'session_token'
+    });
+    
+    if (blacklistCheck.data.blacklisted) {
+      return Response.json({ 
+        authenticated: false,
+        user: null,
+        reason: 'token_revoked'
+      }, {
+        status: 200,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
+    }
+    
     // Buscar sesión en la base de datos
     const sessions = await base44.asServiceRole.entities.UserSession.filter({
       session_token: sessionToken

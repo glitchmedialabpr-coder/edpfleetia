@@ -42,19 +42,24 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      // Log logout event
+      // Revocar tokens server-side
       if (user) {
-        await base44.functions.invoke('logSecurityEvent', {
-          event_type: 'logout',
-          user_id: user.id,
-          user_email: user.email,
-          user_type: user.user_type || user.role,
-          details: {},
-          severity: 'low',
-          success: true
+        const sessionToken = localStorage.getItem('session_token');
+        const accessToken = localStorage.getItem('access_token');
+        const refreshToken = localStorage.getItem('refresh_token');
+
+        await base44.functions.invoke('logoutUser', {
+          session_token: sessionToken,
+          access_token: accessToken,
+          refresh_token: refreshToken
         });
+
+        // Limpiar localStorage
+        localStorage.removeItem('session_token');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
       }
-      
+
       await base44.auth.logout();
     } catch (error) {
       console.error('Logout error:', error);
