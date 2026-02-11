@@ -125,6 +125,7 @@ export default function PassengerTrips() {
       origin_type: formData.origin_type,
       destination_type: formData.destination_type,
       destination_other: formData.destination_other,
+      comments: formData.comments,
       student_id: user.student_id,
       student_name: user.full_name,
       student_phone: user.phone || ''
