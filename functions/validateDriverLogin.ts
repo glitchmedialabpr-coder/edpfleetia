@@ -66,15 +66,6 @@ Deno.serve(async (req) => {
       }
 
       if (!drivers?.length) {
-      await base44.functions.invoke('logSecurityEvent', {
-        event_type: 'login_failed',
-        user_id: sanitizedId,
-        user_type: 'driver',
-        details: { reason: 'driver_not_found' },
-        severity: 'low',
-        success: false
-      });
-      
       return Response.json({ 
         success: false, 
         error: 'Conductor no encontrado' 
@@ -83,12 +74,6 @@ Deno.serve(async (req) => {
         headers: { 'Access-Control-Allow-Origin': '*' }
       });
     }
-    
-    // Login exitoso - reset rate limit
-    await base44.functions.invoke('resetRateLimit', {
-      identifier: sanitizedId,
-      attempt_type: 'driver_login'
-    });
     
     const driver = drivers[0];
 
