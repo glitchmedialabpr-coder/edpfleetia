@@ -46,15 +46,36 @@ export function convertTo24Hour(time12) {
 }
 
 /**
- * Obtiene la hora actual en formato 12h
+ * Obtiene la hora actual de Puerto Rico en formato 12h
+ * Puerto Rico usa AST (Atlantic Standard Time) - UTC-4
  * @returns {string} - Hora actual en formato 12h (ej: "2:30 PM")
  */
 export function getCurrentTime12Hour() {
   const now = new Date();
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
+  const prTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Puerto_Rico' }));
+  const hours = prTime.getHours();
+  const minutes = prTime.getMinutes();
   const period = hours >= 12 ? 'PM' : 'AM';
   const hour12 = hours % 12 || 12;
   
   return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+}
+
+/**
+ * Obtiene la fecha y hora actual de Puerto Rico
+ * @returns {Date} - Fecha/hora actual de Puerto Rico
+ */
+export function getPuertoRicoTime() {
+  const now = new Date();
+  return new Date(now.toLocaleString('en-US', { timeZone: 'America/Puerto_Rico' }));
+}
+
+/**
+ * Formatea fecha/hora de Puerto Rico
+ * @param {Date} date - Fecha a formatear (opcional, usa hora actual si no se provee)
+ * @returns {string} - Fecha formateada en formato ISO
+ */
+export function getPuertoRicoISOString(date = null) {
+  const prTime = date || getPuertoRicoTime();
+  return prTime.toISOString();
 }
