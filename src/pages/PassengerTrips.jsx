@@ -91,7 +91,7 @@ export default function PassengerTrips() {
       queryClient.invalidateQueries({ queryKey: ['trip-requests'] });
       queryClient.invalidateQueries({ queryKey: ['pending-requests'] });
       setModalOpen(false);
-      setFormData({ origin_type: '', destination_type: '', destination_other: '' });
+      setFormData({ origin_type: '', destination_type: '', destination_other: '', comments: '' });
       toast.success('✅ Su solicitud ha sido enviada', {
         description: 'Te notificaremos cuando un conductor acepte tu viaje',
         duration: 4000
