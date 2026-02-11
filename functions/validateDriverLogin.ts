@@ -45,17 +45,24 @@ Deno.serve(async (req) => {
         });
       }
 
+      // Test drivers fetch
+      console.log('[validateDriverLogin] Attempting to fetch drivers for ID:', sanitizedId);
+
       // Buscar conductor - use list instead of filter
       let drivers = [];
       try {
         const allDrivers = await base44.asServiceRole.entities.Driver.list('', 100);
+        console.log('[validateDriverLogin] Total drivers fetched:', allDrivers.length);
+        console.log('[validateDriverLogin] First driver:', allDrivers[0]);
         drivers = allDrivers.filter(d => d.driver_id === sanitizedId);
+        console.log('[validateDriverLogin] Matching drivers:', drivers.length);
       } catch (e) {
-        console.error('Driver fetch error:', e.message);
-        return Response.json({ success: false, error: 'Error fetching drivers' }, { status: 500 });
+        console.error('[validateDriverLogin] Driver fetch error:', e.message);
+        console.error('[validateDriverLogin] Error details:', e);
+        return Response.json({ success: false, error: 'Error fetching drivers: ' + e.message }, { status: 500 });
       }
-    
-    if (!drivers?.length) {
+
+      if (!drivers?.length) {
       await base44.functions.invoke('logSecurityEvent', {
         event_type: 'login_failed',
         user_id: sanitizedId,
