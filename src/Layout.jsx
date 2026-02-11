@@ -73,6 +73,7 @@ function LayoutContent({ children, currentPageName }) {
             { name: 'Respuestas y Notificaciones', page: 'ResponseHistory', icon: AlertTriangle },
             { name: 'Historial', page: 'History', icon: History },
             { name: 'Centro de Notificaciones', page: 'NotificationSettings', icon: Bell },
+            { name: 'Mis Sesiones', page: 'ActiveSessions', icon: Shield },
             { name: 'Configuración', page: 'Settings', icon: Shield },
           ];
         }
@@ -82,6 +83,7 @@ function LayoutContent({ children, currentPageName }) {
         { name: 'Solicitudes', page: 'DriverRequests', icon: Bus },
         { name: 'Mis Viajes', page: 'DriverTrips', icon: Bus },
         { name: 'Historial', page: 'DriverHistory', icon: History },
+        { name: 'Mis Sesiones', page: 'ActiveSessions', icon: Shield },
         { name: 'Notificaciones', page: 'NotificationSettings', icon: SettingsIcon },
       ];
     }
