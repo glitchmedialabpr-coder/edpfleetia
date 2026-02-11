@@ -9,7 +9,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { issue_type, description, priority = 'medium', data = {} } = await req.json();
+    const payload = await req.json();
+    const { issue_type, description, priority = 'medium', data = {} } = payload;
 
     if (!issue_type || !description) {
       return Response.json({ error: 'issue_type and description are required' }, { status: 400 });

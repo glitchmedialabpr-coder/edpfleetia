@@ -2,11 +2,9 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 Deno.serve(async (req) => {
   try {
+    const base44 = createClientFromRequest(req);
     const payload = await req.json();
-    const { event, data, old_data, app_id, app_owner } = payload;
-    
-    // Create client with app context from payload
-    const base44 = createClientFromRequest(req, { app_id, app_owner });
+    const { event, data, old_data } = payload;
 
     // Validate event data
     if (!event || !data) {
