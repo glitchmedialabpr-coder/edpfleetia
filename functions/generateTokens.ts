@@ -1,7 +1,14 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import { create } from 'https://deno.land/x/djwt@v3.0.2/mod.ts';
 
-const JWT_SECRET = Deno.env.get('JWT_SECRET') || 'default-secret-change-in-production';
+const JWT_SECRET = Deno.env.get('JWT_SECRET');
+
+// CRITICAL SECURITY: JWT_SECRET must be configured
+if (!JWT_SECRET || JWT_SECRET.length < 32) {
+  console.error('[SECURITY] JWT_SECRET not configured or too weak');
+  throw new Error('CRITICAL: JWT_SECRET must be configured with minimum 32 characters');
+}
+
 const encoder = new TextEncoder();
 const keyData = encoder.encode(JWT_SECRET);
 

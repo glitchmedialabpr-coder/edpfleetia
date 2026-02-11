@@ -58,7 +58,16 @@ Deno.serve(async (req) => {
 
   try {
     const base44 = createClientFromRequest(req);
-    const { pin } = await req.json();
+    const { pin, csrfToken } = await req.json();
+    
+    // CSRF Protection
+    const sessionCsrf = req.headers.get('X-CSRF-Token');
+    if (!sessionCsrf || sessionCsrf !== csrfToken) {
+      return Response.json({ error: 'Invalid CSRF token' }, { 
+        status: 403,
+        headers: { 'Access-Control-Allow-Origin': req.headers.get('origin') || '*' }
+      });
+    }
     
     // Obtener IP del cliente
     const clientIp = req.headers.get('x-forwarded-for') || 
