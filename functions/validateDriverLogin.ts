@@ -13,8 +13,11 @@ Deno.serve(async (req) => {
   }
 
   try {
-      const base44 = createClientFromRequest(req);
-      const { driverId, csrf_token } = await req.json();
+    console.log('[validateDriverLogin] Request received');
+    const base44 = createClientFromRequest(req);
+    console.log('[validateDriverLogin] Base44 client created');
+    const { driverId, csrf_token } = await req.json();
+    console.log('[validateDriverLogin] Request parsed:', { driverId, csrf_token });
 
       // CSRF Protection - OBLIGATORIO
       if (!csrf_token || typeof csrf_token !== 'string') {
