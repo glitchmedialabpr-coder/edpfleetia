@@ -603,6 +603,13 @@ export default function DriverRequests() {
                         <span>{request.passengers_count} pas.</span>
                       </div>
                     </div>
+
+                    {request.comments && (
+                      <div className="mt-2 p-2 bg-slate-50 rounded-lg border border-slate-200">
+                        <p className="text-xs text-slate-500 mb-1 select-none">Comentarios:</p>
+                        <p className="text-xs sm:text-sm text-slate-700">{request.comments}</p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-2">
