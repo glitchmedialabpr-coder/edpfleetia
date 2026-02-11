@@ -22,7 +22,7 @@ export default function EmployeeLogin() {
         role: 'employee',
         user_type: 'employee',
         access_code: accessCode,
-        session_expiry: Date.now() + (24 * 60 * 60 * 1000) // 24 horas
+        session_expiry: Date.now() + (15 * 60 * 1000) // 15 minutos
       };
       localStorage.setItem('pin_user', JSON.stringify(user));
       toast.success('¡Acceso concedido!');
