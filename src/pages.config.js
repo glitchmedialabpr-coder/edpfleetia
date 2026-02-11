@@ -84,6 +84,7 @@ import PurchaseReports from './pages/PurchaseReports';
 import Purchases from './pages/Purchases';
 import Reports from './pages/Reports';
 import ResponseHistory from './pages/ResponseHistory';
+import SecurityLogs from './pages/SecurityLogs';
 import Settings from './pages/Settings';
 import ShareLinks from './pages/ShareLinks';
 import Students from './pages/Students';
@@ -91,7 +92,6 @@ import Trips from './pages/Trips';
 import VehicleManagement from './pages/VehicleManagement';
 import Vehicles from './pages/Vehicles';
 import Warnings from './pages/Warnings';
-import SecurityLogs from './pages/SecurityLogs';
 import __Layout from './Layout.jsx';
 
 
@@ -133,6 +133,7 @@ export const PAGES = {
     "Purchases": Purchases,
     "Reports": Reports,
     "ResponseHistory": ResponseHistory,
+    "SecurityLogs": SecurityLogs,
     "Settings": Settings,
     "ShareLinks": ShareLinks,
     "Students": Students,
@@ -140,7 +141,6 @@ export const PAGES = {
     "VehicleManagement": VehicleManagement,
     "Vehicles": Vehicles,
     "Warnings": Warnings,
-    "SecurityLogs": SecurityLogs,
 }
 
 export const pagesConfig = {

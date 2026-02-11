@@ -65,16 +65,59 @@ Deno.serve(async (req) => {
       });
     }
     
+    // Validar session fingerprint
+    const clientIp = req.headers.get('x-forwarded-for') || 
+                     req.headers.get('x-real-ip') || 
+                     'unknown';
+    const userAgent = req.headers.get('user-agent') || 'unknown';
+    const acceptLanguage = req.headers.get('accept-language') || 'unknown';
+
+    const fingerprintCheck = await base44.functions.invoke('validateSessionFingerprint', {
+      session_id: session.id,
+      ip_address: clientIp,
+      user_agent: userAgent,
+      accept_language: acceptLanguage
+    });
+
+    // Si el fingerprint no coincide y hay cambios sospechosos, rechazar
+    if (!fingerprintCheck.data.valid && fingerprintCheck.data.suspicious) {
+      await base44.functions.invoke('logSecurityEvent', {
+        event_type: 'suspicious_activity',
+        user_id: session.user_id,
+        user_email: session.email,
+        user_type: session.user_type,
+        ip_address: clientIp,
+        details: {
+          reason: 'session_fingerprint_mismatch',
+          changes: fingerprintCheck.data.changes
+        },
+        severity: 'high',
+        success: false
+      });
+
+      // Eliminar sesión comprometida
+      await base44.asServiceRole.entities.UserSession.delete(session.id);
+
+      return Response.json({ 
+        authenticated: false,
+        user: null,
+        reason: 'session_fingerprint_invalid'
+      }, {
+        status: 200,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
+    }
+
     // Actualizar última actividad solo cada 5 minutos para reducir escrituras
     const lastActivity = new Date(session.last_activity);
     const minutesSinceLastUpdate = (now - lastActivity) / (1000 * 60);
-    
+
     if (minutesSinceLastUpdate > 5) {
       await base44.asServiceRole.entities.UserSession.update(session.id, {
         last_activity: now.toISOString()
       });
     }
-    
+
     // Construir objeto de usuario
     const userData = {
       id: session.user_id,

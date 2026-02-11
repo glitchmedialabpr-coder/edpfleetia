@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
@@ -13,11 +13,33 @@ export default function PassengerLogin() {
   const { login } = useAuth();
   const [studentId, setStudentId] = useState('');
   const [loading, setLoading] = useState(false);
+  const [csrfToken, setCsrfToken] = useState('');
 
 
+
+  useEffect(() => {
+    const fetchCsrfToken = async () => {
+      try {
+        const response = await base44.functions.invoke('generateCsrfToken');
+        if (response?.data?.success) {
+          setCsrfToken(response.data.csrf_token);
+        }
+      } catch (error) {
+        console.error('Error obteniendo CSRF token:', error);
+        toast.error('Error de seguridad: no se pudo generar token');
+      }
+    };
+    fetchCsrfToken();
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
+    if (!csrfToken) {
+      toast.error('Token de seguridad no disponible');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -27,7 +49,14 @@ export default function PassengerLogin() {
         return;
       }
 
-      const response = await base44.functions.invoke('validateStudentLogin', { studentId });
+      const response = await base44.functions.invoke('validateStudentLogin', { 
+        studentId,
+        csrf_token: csrfToken
+      }, {
+        headers: {
+          'X-CSRF-Token': csrfToken
+        }
+      });
       
       if (response?.data?.success) {
         const userData = response.data.user;
