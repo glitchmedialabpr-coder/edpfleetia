@@ -71,17 +71,6 @@ Deno.serve(async (req) => {
       });
     }
     
-    const headerCsrf = req.headers.get('X-CSRF-Token');
-    if (headerCsrf !== csrf_token) {
-      return Response.json({ 
-        success: false,
-        error: 'Validación CSRF fallida' 
-      }, { 
-        status: 403,
-        headers: { 'Access-Control-Allow-Origin': req.headers.get('origin') || '*' }
-      });
-    }
-    
     // Obtener IP del cliente
     const clientIp = req.headers.get('x-forwarded-for') || 
                      req.headers.get('x-real-ip') || 
