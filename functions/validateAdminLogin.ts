@@ -122,7 +122,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    const isValidPin = await bcrypt.compare(pin, ADMIN_PIN_HASH);
+    // Comparar PIN usando SHA-256
+    const encoder = new TextEncoder();
+    const data = encoder.encode(pin);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const pinHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    const isValidPin = pinHash === ADMIN_PIN_HASH;
 
     if (!isValidPin) {
       return Response.json({ 
