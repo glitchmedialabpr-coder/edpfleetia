@@ -134,6 +134,22 @@ Deno.serve(async (req) => {
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 12 * 60 * 60 * 1000);
     
+    const clientIp = req.headers.get('x-forwarded-for') || 
+                     req.headers.get('x-real-ip') || 
+                     'unknown';
+    
+    // Generar JWT tokens
+    const tokensResponse = await base44.functions.invoke('generateTokens', {
+      user_id: student.id,
+      full_name: student.full_name,
+      email: student.email || `student_${student.student_id}@edp.edu`,
+      role: 'user',
+      user_type: 'passenger',
+      student_id: student.student_id
+    });
+    
+    const tokens = tokensResponse.data;
+    
     const sessionData = {
       user_id: student.id,
       full_name: student.full_name,
@@ -144,8 +160,14 @@ Deno.serve(async (req) => {
       role: 'user',
       user_type: 'passenger',
       session_token: sessionToken,
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
+      access_token_expires: tokens.access_token_expires,
+      refresh_token_expires: tokens.refresh_token_expires,
       last_activity: now.toISOString(),
-      expires_at: expiresAt.toISOString()
+      expires_at: expiresAt.toISOString(),
+      ip_address: clientIp,
+      user_agent: req.headers.get('user-agent') || 'unknown'
     };
     
     // Limpiar solo la sesión más reciente (más rápido)
@@ -184,7 +206,10 @@ Deno.serve(async (req) => {
         role: 'user',
         user_type: 'passenger'
       },
-      session_token: sessionToken
+      session_token: sessionToken,
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
+      access_token_expires: tokens.access_token_expires
     }, {
       status: 200,
       headers: {
