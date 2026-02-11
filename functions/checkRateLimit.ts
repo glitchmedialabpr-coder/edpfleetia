@@ -5,7 +5,6 @@ const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutos
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
     const { identifier, attempt_type } = await req.json();
 
     if (!identifier || !attempt_type) {
