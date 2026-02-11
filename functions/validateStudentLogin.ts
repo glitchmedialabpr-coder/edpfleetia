@@ -176,13 +176,15 @@ Deno.serve(async (req) => {
       expires_at: expiresAt.toISOString()
     };
     
-    // Limpiar sesiones antiguas del estudiante
-    const oldSessions = await base44.asServiceRole.entities.UserSession.filter({
-      user_id: student.id
-    });
+    // Limpiar solo la sesión más reciente (más rápido)
+    const oldSessions = await base44.asServiceRole.entities.UserSession.filter(
+      { user_id: student.id },
+      '-created_date',
+      1
+    );
     
-    for (const oldSession of oldSessions) {
-      await base44.asServiceRole.entities.UserSession.delete(oldSession.id);
+    if (oldSessions.length > 0) {
+      await base44.asServiceRole.entities.UserSession.delete(oldSessions[0].id);
     }
     
     await base44.asServiceRole.entities.UserSession.create(sessionData);
