@@ -8,7 +8,11 @@ import { cn } from '@/lib/utils';
 
 const typeConfig = {
   new_request: { icon: Bell, color: 'text-blue-600', bg: 'bg-blue-50' },
+  new_trip_request: { icon: Bell, color: 'text-teal-600', bg: 'bg-teal-50' },
   status_change: { icon: AlertCircle, color: 'text-orange-600', bg: 'bg-orange-50' },
+  trip_deleted: { icon: AlertCircle, color: 'text-red-600', bg: 'bg-red-50' },
+  driver_issue: { icon: AlertCircle, color: 'text-yellow-600', bg: 'bg-yellow-50' },
+  task_completed: { icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50' },
   admin_message: { icon: MessageSquare, color: 'text-purple-600', bg: 'bg-purple-50' }
 };
 
@@ -16,25 +20,53 @@ export default function NotificationCenter({ user }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const { data: notifications = [], refetch } = useQuery({
-    queryKey: ['notifications', user?.driver_id],
-    queryFn: () => base44.entities.Notification.filter({
-      driver_id: user?.driver_id
-    }, '-created_date', 20),
-    enabled: !!user?.driver_id,
-    staleTime: 1000 * 10
+    queryKey: ['notifications', user?.driver_id || user?.email],
+    queryFn: async () => {
+      // For drivers, filter by driver_id
+      if (user?.driver_id) {
+        return base44.entities.Notification.filter({
+          driver_id: user.driver_id
+        }, '-created_date', 50);
+      }
+      // For admins, filter by created_by (their email)
+      if (user?.role === 'admin') {
+        return base44.entities.Notification.filter({
+          created_by: user.email
+        }, '-created_date', 50);
+      }
+      return [];
+    },
+    enabled: !!(user?.driver_id || user?.role === 'admin'),
+    staleTime: 1000 * 5,
+    refetchInterval: 1000 * 10
   });
 
   useEffect(() => {
-    if (!user?.driver_id) return;
+    if (!user?.driver_id && user?.role !== 'admin') return;
 
     const unsubscribe = base44.entities.Notification.subscribe((event) => {
-      if (event.data?.driver_id === user.driver_id) {
+      // For drivers, check driver_id
+      if (user?.driver_id && event.data?.driver_id === user.driver_id) {
         refetch();
+        // Play notification sound for high priority
+        if (event.data?.priority === 'high' && event.type === 'create') {
+          const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZSA0PVa3m8KlbGAg+lunywHAlBSuAzPLaizsIGWi77OihUBELTKXh8bVnHgU2jdXx0H0pBSh+yPDajkEKElyx5O+qWBUIQ5zd8sFuJAUthM/z1YU2Bhxqvu7mnU0QDlOq5O+0aBwGNo/U8dCBKgUrfs7y2Iw+CRZmu+rloVITC0mi4PG4aiEFMIjO8tSCMwYfbsDv45lIDg9Wreb0qVoXCT+W6fK+bSMFLIHN8tmJOAgZaLvt559NEAxPqOPwtmQcBjiP1/HNeSYEKn/M8Nr+');
+          audio.play().catch(() => {});
+        }
+      }
+      // For admins, check created_by
+      if (user?.role === 'admin' && event.data?.created_by === user.email) {
+        refetch();
+        // Play notification sound for high priority
+        if (event.data?.priority === 'high' && event.type === 'create') {
+          const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZSA0PVa3m8KlbGAg+lunywHAlBSuAzPLaizsIGWi77OihUBELTKXh8bVnHgU2jdXx0H0pBSh+yPDajkEKElyx5O+qWBUIQ5zd8sFuJAUthM/z1YU2Bhxqvu7mnU0QDlOq5O+0aBwGNo/U8dCBKgUrfs7y2Iw+CRZmu+rloVITC0mi4PG4aiEFMIjO8tSCMwYfbsDv45lIDg9Wreb0qVoXCT+W6fK+bSMFLIHN8tmJOAgZaLvt559NEAxPqOPwtmQcBjiP1/HNeSYEKn/M8Nr+');
+          audio.play().catch(() => {});
+        }
       }
     });
 
     return () => unsubscribe();
-  }, [user?.driver_id, refetch]);
+  }, [user?.driver_id, user?.role, user?.email, refetch]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
