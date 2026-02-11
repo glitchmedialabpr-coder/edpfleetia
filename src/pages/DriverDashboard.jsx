@@ -346,57 +346,7 @@ export default function DriverDashboard() {
         </Button>
       </div>
 
-      {/* Weekly Schedule */}
-      {driverData?.weekly_schedule && driverData.weekly_schedule.length > 0 && (
-        <Card className="p-6 bg-gradient-to-br from-purple-50 to-white border-purple-200">
-          <div className="flex items-center gap-3 mb-4">
-            <Calendar className="w-6 h-6 text-purple-600" />
-            <h2 className="text-xl font-semibold text-slate-800">Mi Horario de la Semana</h2>
-          </div>
-          
-          <div className="space-y-3">
-            {driverData.weekly_schedule.map((schedule, idx) => {
-              const isActive = schedule.active;
-              return (
-                <div
-                  key={idx}
-                  className={`p-4 rounded-lg flex items-center justify-between transition-all ${
-                    isActive
-                      ? 'bg-purple-100 border-2 border-purple-400'
-                      : 'bg-slate-50 border-2 border-slate-200'
-                  }`}
-                >
-                  <div className="flex items-center gap-4 flex-1">
-                    <div className={`w-16 text-center font-semibold ${isActive ? 'text-purple-800' : 'text-slate-400'}`}>
-                      {schedule.dayName}
-                    </div>
-                    
-                    {isActive ? (
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-purple-600" />
-                          <span className="text-sm font-medium text-purple-700">
-                            {schedule.start_time} - {schedule.end_time}
-                          </span>
-                        </div>
-                        <Badge className="bg-purple-600 text-white">
-                          Activo
-                        </Badge>
-                      </div>
-                    ) : (
-                      <span className="text-sm text-slate-500">Día libre</span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          
-          <p className="text-xs text-slate-500 mt-4 text-center">
-            Solo el administrador puede modificar tu horario
-          </p>
-        </Card>
-      )}
+
     </div>
   );
 }
