@@ -1,5 +1,3 @@
-import * as bcrypt from 'https://deno.land/x/bcrypt@v0.4.1/mod.ts';
-
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, {
@@ -21,12 +19,18 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    const hash = await bcrypt.hash(pin);
+    // Generate hash using Web Crypto API
+    const encoder = new TextEncoder();
+    const data = encoder.encode(pin);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
     return Response.json({
       success: true,
-      pin_hash: hash,
-      pin_used: pin
+      pin_hash: hashHex,
+      pin_used: pin,
+      message: 'Copia el pin_hash y actualiza el secret ADMIN_PIN_HASH en el dashboard'
     }, { status: 200 });
   } catch (error) {
     console.error('Error:', error);
