@@ -48,7 +48,7 @@ function LayoutContent({ children, currentPageName }) {
   const shouldShowLayout = !noLayoutPages.includes(currentPageName);
   const isAdmin = user?.role === 'admin';
   const isDriver = user?.user_type === 'driver';
-  const isPassenger = !isAdmin && !isDriver;
+  const isPassenger = user?.user_type === 'passenger' || (!isAdmin && !isDriver);
 
   const getHomePage = () => {
     if (isDriver) return 'DriverDashboard';
