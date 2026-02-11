@@ -59,13 +59,25 @@ Deno.serve(async (req) => {
 
   try {
     const base44 = createClientFromRequest(req);
-    const { pin, csrfToken } = await req.json();
+    const { pin, csrf_token } = await req.json();
     
-    // CSRF Protection (opcional por ahora - pendiente frontend)
-    // TODO: Hacer obligatorio cuando frontend esté actualizado
-    const sessionCsrf = req.headers.get('X-CSRF-Token');
-    if (csrfToken && sessionCsrf && sessionCsrf !== csrfToken) {
-      return Response.json({ error: 'Invalid CSRF token' }, { 
+    // CSRF Protection - OBLIGATORIO
+    if (!csrf_token || typeof csrf_token !== 'string') {
+      return Response.json({ 
+        success: false,
+        error: 'Token CSRF inválido' 
+      }, { 
+        status: 403,
+        headers: { 'Access-Control-Allow-Origin': req.headers.get('origin') || '*' }
+      });
+    }
+    
+    const headerCsrf = req.headers.get('X-CSRF-Token');
+    if (headerCsrf !== csrf_token) {
+      return Response.json({ 
+        success: false,
+        error: 'Validación CSRF fallida' 
+      }, { 
         status: 403,
         headers: { 'Access-Control-Allow-Origin': req.headers.get('origin') || '*' }
       });
