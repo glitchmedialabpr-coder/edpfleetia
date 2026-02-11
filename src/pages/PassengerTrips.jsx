@@ -41,7 +41,8 @@ export default function PassengerTrips() {
   const [formData, setFormData] = useState({
     origin_type: '',
     destination_type: '',
-    destination_other: ''
+    destination_other: '',
+    comments: ''
   });
   const [refreshing, setRefreshing] = useState(false);
 
