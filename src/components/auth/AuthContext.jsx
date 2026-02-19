@@ -37,24 +37,15 @@ export function AuthProvider({ children }) {
       const sessionToken = localStorage.getItem('session_token');
       const accessToken = localStorage.getItem('access_token');
 
-      // Notificar login
+      // Notificar login sin bloquear (fire and forget)
       if (sessionToken && accessToken) {
-        try {
-          const clientIp = await fetch('https://api.ipify.org?format=json')
-            .then(r => r.json())
-            .then(d => d.ip)
-            .catch(() => 'unknown');
-
-          await base44.functions.invoke('notifyNewLogin', {
-            user_id: userData.id,
-            email: userData.email,
-            ip_address: clientIp,
-            user_agent: navigator.userAgent,
-            is_suspicious: false
-          });
-        } catch (error) {
-          console.error('Error notifying login:', error);
-        }
+        base44.functions.invoke('notifyNewLogin', {
+          user_id: userData.id,
+          email: userData.email,
+          ip_address: 'client',
+          user_agent: navigator.userAgent,
+          is_suspicious: false
+        }).catch(err => console.error('Notification error:', err));
       }
 
       return { success: true, user: userData };
