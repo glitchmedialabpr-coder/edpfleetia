@@ -1,73 +1,90 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
-import { Shield, Truck, GraduationCap, Info } from 'lucide-react';
+import { Shield, Truck, GraduationCap, Briefcase } from 'lucide-react';
 
 export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col justify-center items-center p-4">
-      {/* Hero Section */}
-      <div className="max-w-3xl w-full text-center mb-16">
-        <div className="w-32 h-32 mx-auto mb-8">
-          <img 
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6962e1b8eae90299f24a170a/a12aa5730_Addaheading.jpg" 
-            alt="EDP Fleetia"
-            className="w-full h-full object-cover rounded-2xl"
-          />
+    <div className="min-h-screen bg-black flex flex-col justify-center items-center p-6">
+      {/* Logo and Title */}
+      <div className="text-center mb-16">
+        <div className="mb-8">
+          <h1 className="text-6xl md:text-7xl font-bold text-white mb-1 tracking-tight">EDP</h1>
+          <h2 className="text-xl md:text-2xl font-light text-white tracking-widest">UNIVERSITY</h2>
+          <div className="mt-2">
+            <h3 className="text-3xl md:text-4xl font-bold text-white tracking-wide">FLEETIA</h3>
+            <p className="text-xs text-gray-500 mt-1 tracking-widest">by GLITCH MEDIA LAB</p>
+          </div>
         </div>
-        <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">Fleetia</h1>
-        <p className="text-xl text-slate-300 mb-8">Gestión integral de transporte y flota</p>
-        <p className="text-sm text-slate-400">by Glitch Media Lab</p>
+        
+        <p className="text-gray-400 text-sm md:text-base mb-2">Sistema de Gestión de Flotas y Transporte</p>
+        <p className="text-gray-500 text-sm">EDP University</p>
       </div>
 
-      {/* Login Options */}
-      <div className="grid md:grid-cols-2 gap-4 max-w-2xl w-full mb-12">
-        {/* Admin Login */}
+      {/* Login Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl w-full mb-16">
+        {/* Admin Card */}
         <button
           onClick={() => navigate(createPageUrl('AdminLogin'))}
-          className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:border-blue-400/50"
+          className="group relative bg-gradient-to-br from-red-600 to-red-700 rounded-2xl p-8 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-red-500/50"
         >
-          <Shield className="w-8 h-8 text-blue-400 mx-auto mb-3" />
-          <h3 className="font-bold text-white mb-1">Administrador</h3>
-          <p className="text-xs text-slate-400">PIN</p>
+          <div className="mb-4">
+            <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
+              <Shield className="w-8 h-8 text-white" />
+            </div>
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-2">Administrador</h3>
+          <p className="text-red-100 text-sm">Gestiona vehículos, conductores y viajes del sistema</p>
         </button>
 
-        {/* Driver Login */}
+        {/* Driver Card */}
         <button
           onClick={() => navigate(createPageUrl('DriverLogin'))}
-          className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:border-teal-400/50"
+          className="group relative bg-gradient-to-br from-teal-600 to-teal-700 rounded-2xl p-8 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-teal-500/50"
         >
-          <Truck className="w-8 h-8 text-teal-400 mx-auto mb-3" />
-          <h3 className="font-bold text-white mb-1">Conductor</h3>
-          <p className="text-xs text-slate-400">ID de Conductor</p>
+          <div className="mb-4">
+            <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
+              <Truck className="w-8 h-8 text-white" />
+            </div>
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-2">Chofer</h3>
+          <p className="text-teal-100 text-sm">Visualiza y gestiona tus viajes asignados</p>
         </button>
 
-        {/* Passenger Login */}
+        {/* Student Card */}
         <button
           onClick={() => navigate(createPageUrl('PassengerLogin'))}
-          className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:border-purple-400/50"
+          className="group relative bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-8 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/50"
         >
-          <GraduationCap className="w-8 h-8 text-purple-400 mx-auto mb-3" />
-          <h3 className="font-bold text-white mb-1">Estudiante</h3>
-          <p className="text-xs text-slate-400">ID de Estudiante</p>
+          <div className="mb-4">
+            <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
+              <GraduationCap className="w-8 h-8 text-white" />
+            </div>
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-2">Estudiante</h3>
+          <p className="text-purple-100 text-sm">Solicita transporte y rastrea tus viajes</p>
         </button>
 
-        {/* Complaints Login */}
+        {/* Employee Card */}
         <button
           onClick={() => navigate(createPageUrl('EmployeeLogin'))}
-          className="group bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:border-orange-400/50"
+          className="group relative bg-gradient-to-br from-orange-600 to-orange-700 rounded-2xl p-8 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/50"
         >
-          <Info className="w-8 h-8 text-orange-400 mx-auto mb-3" />
-          <h3 className="font-bold text-white mb-1">Solicitudes</h3>
-          <p className="text-xs text-slate-400">Clave de Acceso</p>
+          <div className="mb-4">
+            <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
+              <Briefcase className="w-8 h-8 text-white" />
+            </div>
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-2">Empleado</h3>
+          <p className="text-orange-100 text-sm">Solicita transporte para actividades laborales</p>
         </button>
       </div>
 
       {/* Footer */}
-      <div className="text-center text-xs text-slate-500">
-        <p>© 2026 by Glitch Media Lab</p>
+      <div className="text-center text-xs text-gray-600">
+        <p>© 2026 FLEETIA - EDP University. Todos los derechos reservados.</p>
       </div>
     </div>
   );
